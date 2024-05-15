@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>민원 게시판</title>
+</head>
+<body>
+  <!-- Header -->
+  <header class="border-shadow">
+    <div class="container ">
+      <nav>
+        <a href="/"><i class="fa-solid fa-address-book"></i> 민원 게시판</a>
+      </nav>
+    </div>
+  </header>
+  <!-- /Header -->
+
+  <!-- Main -->
+  <main id="site-main">
+    <div class="button-box">
+      <a href="#" class="btn btn-light"><i class="fa-solid fa-user-plus"></i>글 작성</a>
+      <input type="text" id="search" placeholder="Search">
+    </div>
+  
+    <table class="table">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>작성자</th>
+          <th>제목</th>
+          <th>조회수</th>
+        </tr>
+      </thead>
+      <tbody id="post-list">
+        <tr>
+          <td>id</td>
+          <td>author</td>
+          <td>title</td>
+          <td>views</td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+  <!-- /Main -->
