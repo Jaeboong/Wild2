@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import InfoInput from '../components/InfoInput';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import LoginButton from '../components/LoginButton';
 
 const Wrapper = styled.div`
   display: flex;
@@ -9,17 +10,6 @@ const Wrapper = styled.div`
   align-items: center;
   width: 100%;
   height: 100vh;
-`;
-
-const Button = styled.button`
-  width: 315px;
-  height: 40px;
-  border: none;
-  border-radius: 5px; 
-  background-color: #007bff;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
 `;
 
 const LoginTitle = styled.h1`
@@ -72,6 +62,8 @@ function SignUpPage(){
         setAgree(!Agree);
     }
 
+    const navigate = useNavigate();
+
     return (
       <Wrapper>
           <form style={{ display: 'flex', flexDirection: 'column'}}>
@@ -84,9 +76,11 @@ function SignUpPage(){
               <Checkbox type="checkbox" checked={Agree} onChange={onAgreeHandler} />
               I agree to all the Terms and Privacy Policies
             </CheckboxLabel>
-            <Button>
-              Create account
-            </Button>
+            <LoginButton 
+              title="Sign Up" 
+              onClick={() => {
+                navigate("/home");
+              }}/>
             <Description>
               Already have an account?  
               <MovePage to = "/login">

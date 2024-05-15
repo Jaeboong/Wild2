@@ -1,0 +1,52 @@
+[
+    {
+        "id": 1,
+        "board": "민원",
+        "title": "과기 1관 시설",
+        "author": "박승균",
+        "content": "시설이\n 너무\n 구려요\n",
+        "recommends": 10,
+        "comments": [
+            {
+                "id": 11,
+                "name": "김재환",
+                "content": "개추요"
+            },
+            {
+                "id": 12,
+                "name": "박승준",
+                "content": "ㅇㅈㅇㅈ"
+            }
+        ]
+    },
+
+    {
+        "id": 2,
+        "board": "민원",
+        "author": "김재환",
+        "title": "학식 개선",
+        "content": "",
+        "recommends": 4,
+        "comments": [
+            {
+                "id": 21,
+                "content": ""
+            }            
+        ]
+    },
+
+    {
+        "id": 3,
+        "board": "민원",
+        "author": "익명",
+        "title": "개코 라이브 지림",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
+    }
+]

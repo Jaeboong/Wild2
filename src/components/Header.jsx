@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Button from './Button';
 
 const HeaderWrapper = styled.div`
@@ -26,33 +26,39 @@ const Navigation = styled.div`
 
 const Linkto = styled(NavLink)`
   margin-right: 20px;
+  margin-left: 15px;
   text-decoration: none;
   padding-top: 5px;
-  margin-left: 15px;
   font-size: 15px;
   color: black;
-
 `;
 
 const UserInfo = styled.div`
-    padding-top: 2px;
-    margin-left: auto;
+  padding-top: 2px;
+  margin-left: auto;
 `;
 
-const Header = () => {
+function Header(){
+  const navigate = useNavigate();
+
   return (
     <HeaderWrapper>
       <Logo>로고</Logo>
       <Navigation>
-        <Linkto to="/">Home</Linkto>
-        <Linkto to="/">민원 게시판</Linkto>
+        <Linkto to="/home">Home</Linkto>
+        <Linkto to="/complain">민원 게시판</Linkto>
         <Linkto to="/">제보 게시판</Linkto>
         <Linkto to="/">HOT 게시판</Linkto>
         <Linkto to="/">공지사항</Linkto>
       </Navigation>
       <UserInfo>
         <Linkto to="/">내정보</Linkto>
-        <Button title="로그아웃" />
+        <Button 
+          title="로그아웃" 
+          onClick={() => {
+            navigate("/login");
+          }}
+        />
       </UserInfo>
     </HeaderWrapper>
   );
