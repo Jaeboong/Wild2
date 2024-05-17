@@ -1,23 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db');
+const Post = require('../models/Post'); // 예시 모델
 
 router.get('/', async (req, res) => {
-    let connection;
     try {
-        connection = await pool.getConnection();
-        if (!connection) {
-            throw new Error('Database connection failed: Connection object is undefined');
-        }
-        const rows = await connection.query('SHOW TABLES');
-        res.send(`Database connection successful: ${rows}`);
+        const posts = await Post.find(); // 게시물 목록 가져오기
+        res.render('board', { posts }); // 게시물 목록을 board.ejs에 전달
     } catch (err) {
-        res.status(500).send(`Database connection failed: ${err.message}`);
-    } finally {
-        if (connection) {
-            connection.release(); // 연결 해제
-        }
+        console.error(err);
+        res.status(500).send('Server Error');
     }
 });
 
 module.exports = router;
+
