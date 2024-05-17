@@ -22,7 +22,7 @@
 
     {
         "id": 2,
-        "board": "민원",
+        "board": "제보",
         "author": "김재환",
         "title": "학식 개선",
         "content": "",
@@ -37,9 +37,98 @@
 
     {
         "id": 3,
-        "board": "민원",
+        "board": "공지",
         "author": "익명",
-        "title": "개코 라이브 지림",
+        "title": "공지0",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "board": "민원",
+        "title": "과기 2관 시설",
+        "author": "박승균",
+        "content": "시설이\n 너무\n 구려요\n",
+        "recommends": 10,
+        "comments": [
+
+        ]
+    },
+    {
+        "id": 5,
+        "board": "민원",
+        "title": "과기 3관 시설",
+        "author": "박승균",
+        "content": "시설이\n 너무\n 구려요\n",
+        "recommends": 10,
+        "comments": [
+
+        ]
+    },
+    {
+        "id": 6,
+        "board": "민원",
+        "title": "과기 4관 시설",
+        "author": "박승균",
+        "content": "시설이\n 너무\n 구려요\n",
+        "recommends": 10,
+        "comments": [
+            
+        ]
+    },
+    {
+        "id": 7,
+        "board": "공지",
+        "author": "익명",
+        "title": "공지1",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "board": "공지",
+        "author": "익명",
+        "title": "공지2",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "board": "공지",
+        "author": "익명",
+        "title": "공지3",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "board": "공지",
+        "author": "익명",
+        "title": "공지4",
         "content": "",
         "recommends": 2,
         "comments": [

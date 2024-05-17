@@ -31,7 +31,7 @@ const PostContainer = styled.div`
 
 `;
 
-const VoteContainer = styled.div`
+const VoteContainer = styled.form`
     display: flex;
     flex-direction: column;
     width: 50%;
@@ -73,6 +73,16 @@ const CommentLabel = styled.p`
     font-weight: 500;
 `
 
+const MiddleBox = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
+const Recommends = styled.div`
+    display: flex;
+    justify-content: flex-end;
+`;
+
 function PostViewPage(props){
     const navigate = useNavigate();
     const {postId} = useParams();
@@ -93,6 +103,12 @@ function PostViewPage(props){
         setCheckValue(e.target.defaultValue);
 	};
 
+    const onSubmitVote = (e) => {
+        e.preventDefault();
+        console.log("투표 제출됨:", checkValue);
+        // 여기에서 투표 결과를 서버에 전송하거나 다른 작업을 수행할 수 있습니다.
+    };
+
     return (
         <>
         <Header/>
@@ -112,10 +128,12 @@ function PostViewPage(props){
                     </AuthorText>
                     <br/><h1>사진</h1><br/>
                     <ContentText>{post.content}</ContentText>
+                    <Recommends>추천 수 기능</Recommends>
                 </PostContainer>
 
-                <VoteContainer>
-                    <h2>투표</h2><hr />
+                <MiddleBox>
+                <VoteContainer onSubmit={onSubmitVote}>
+                    <h2>투표</h2><hr/>
                     <VoteRow>
                     <input
                         type="checkbox"
@@ -138,7 +156,10 @@ function PostViewPage(props){
                     />
                     <label>반대</label>
                     </VoteRow>
+                    <Button type="submit" title="제출하기" />
                 </VoteContainer>
+                <h3>추천하기기능</h3>
+                </MiddleBox>
 
                 <CommentLabel>댓글</CommentLabel>
                 <CommentList comments={post.comments}/>

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import InfoInput from '../components/InfoInput';
 import { NavLink, useNavigate } from 'react-router-dom';
 import LoginButton from '../components/LoginButton';
+import data from '../accountdata.json';
 
 
 const Wrapper = styled.div`
@@ -33,16 +34,36 @@ const MovePage = styled(NavLink)`
   text-decoration: none;
 `
 
+const ErrorWrap = styled.div`
+  color: #ef0000;
+  font-size: 12px;
+`;
+
+const User = {
+  id: '123',
+  pw: '123'
+}
 
 function LoginPage(){
-    const [Email, setEmail] = useState("");
+    const [ID, setID] = useState("");
     const [Password, setPassword] = useState("");
 
-    const onEmailHandler = (event) => {
-      setEmail(event.currentTarget.value);
+    const onIDHandler = (event) => {
+      setID(event.currentTarget.value);
     }
+
     const onPasswordHandler = (event) => {
       setPassword(event.currentTarget.value);
+    }
+
+    const onClickConfirmButton = () => {
+      if(ID === User.id && Password === User.pw) {
+        alert('로그인에 성공했습니다.')
+        return true;
+      } else {
+        alert("등록되지 않은 회원입니다.");
+        return false;
+      }
     }
 
     const navigate = useNavigate();
@@ -52,13 +73,16 @@ function LoginPage(){
           <form style={{ display: 'flex', flexDirection: 'column'}}>
             <LoginTitle>Login</LoginTitle>
             <br/>
-            <InfoInput name='Email' value={Email} onChange={onEmailHandler}/>
+            <InfoInput name='ID' value={ID} onChange={onIDHandler}/>
             <InfoInput name='Password' value={Password} onChange={onPasswordHandler}/>
+
             <MovePage href = "/"> Forgot Password? </MovePage>
             <LoginButton 
               title="Login" 
               onClick={() => {
-                navigate("/home");
+                if(onClickConfirmButton()){
+                  navigate("/home");
+                }
               }}/>
             <Description>
               Don't have an account?  

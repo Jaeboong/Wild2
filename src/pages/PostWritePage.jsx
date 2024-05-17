@@ -27,8 +27,9 @@ const Container = styled.div`
 `;
 
 const Footer = styled.div`
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 `;
 
 
@@ -50,6 +51,7 @@ function PostWritePage(props){
                     onChange={(event) => {
                         setTitle(event.target.value);
                     }}
+                    placeHolder = "제목"
                 />
 
                 <TextInput
@@ -58,19 +60,24 @@ function PostWritePage(props){
                     onChange={(event) => {
                         setContent(event.target.value);
                     }}
+                    placeHolder = "내용을 입력하세요"
                 />
 
-                <button>파일 첨부</button>
-                <input type="checkbox" />익명
-
                 <Footer>
+                    <input type="file" multiple />
+                    <div>
+                        <input type="checkbox" />익명
+                    </div>
+                </Footer>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button
                         title="글 작성하기"
                         onClick={() => {
                             navigate("/");
                         }}
                     />
-                </Footer>
+                </div>
             </Container>
         </Wrapper>
         </>

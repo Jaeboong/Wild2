@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
+import data from '../data.json';
 
 const BoardBox = styled.div`
   display: flex;
@@ -13,9 +14,11 @@ const BoardBox = styled.div`
   position: relative;
 `;
 
-const Title = styled.h2`
+const Title = styled(NavLink)`
   font-size: 18px;
   margin-bottom: 10px;
+  text-decoration: none;
+  color: #000;
 `;
 
 const BoardLink = styled(NavLink)`
@@ -33,13 +36,21 @@ const BoardLink = styled(NavLink)`
   }
 `;
 
-function SummaryBoard() {
+function SummaryBoard(props) {
+  const {postwhat} = props;
+  const top3Posts = data.filter(post => post.board === postwhat)
+                        .sort((a, b) => b.id - a.id)
+                        .slice(0, 4);
+
+  const boardLink = postwhat === '공지' ? '/announce' : '/complain';
+  const boardTitle = postwhat === '공지' ? '공지사항' : '민원 게시판';
+
   return (
     <BoardBox>
-      <Title>민원 게시판</Title>
-      <BoardLink to="/">첫 번째 게시물</BoardLink>
-      <BoardLink to="/">두 번째 게시물</BoardLink>
-      <BoardLink to="/">세 번째 게시물</BoardLink>
+      <Title to={boardLink}> {boardTitle + ' \+'} </Title>
+      {top3Posts.map(post => (
+        <BoardLink key={post.id} to={`/post/${post.id}`}>{post.title}</BoardLink>
+      ))}
     </BoardBox>
   );
 };

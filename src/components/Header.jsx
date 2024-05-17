@@ -43,16 +43,16 @@ function Header(){
 
   return (
     <HeaderWrapper>
-      <Logo>로고</Logo>
+      <Logo>고려대 신문고</Logo>
       <Navigation>
         <Linkto to="/home">Home</Linkto>
         <Linkto to="/complain">민원 게시판</Linkto>
-        <Linkto to="/">제보 게시판</Linkto>
-        <Linkto to="/">HOT 게시판</Linkto>
-        <Linkto to="/">공지사항</Linkto>
+        <Linkto to="/report">제보 게시판</Linkto>
+        <Linkto to="/hot">HOT 게시판</Linkto>
+        <Linkto to="/announce">공지사항</Linkto>
       </Navigation>
       <UserInfo>
-        <Linkto to="/">내정보</Linkto>
+        <Linkto to="/info">내정보</Linkto>
         <Button 
           title="로그아웃" 
           onClick={() => {

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import InfoInput from '../components/InfoInput';
 import { NavLink, useNavigate } from 'react-router-dom';
-import LoginButton from '../components/LoginButton';
+import SignUpButton from '../components/SignUpButton';
 
 const Wrapper = styled.div`
   display: flex;
@@ -45,15 +45,15 @@ const Checkbox = styled.input`
 
 function SignUpPage(){
     const [NickName, setNickName] = useState("");
-    const [Email, setEmail] = useState("");
+    const [ID, setID] = useState("");
     const [Password, setPassword] = useState("");
     const [Agree, setAgree] = useState(false);
 
     const onNickNameHandler = (event) => {
         setNickName(event.currentTarget.value);
     }
-    const onEmailHandler = (event) => {
-        setEmail(event.currentTarget.value);
+    const onIDHandler = (event) => {
+        setID(event.currentTarget.value);
     }
     const onPasswordHandler = (event) => {
         setPassword(event.currentTarget.value);
@@ -70,16 +70,17 @@ function SignUpPage(){
             <LoginTitle>SignUp</LoginTitle>
             <br/>
             <InfoInput name='NickName' value={NickName} onChange={onNickNameHandler}/>
-            <InfoInput name='Email' value={Email} onChange={onEmailHandler}/>
+            <InfoInput name='ID' value={ID} onChange={onIDHandler}/>
             <InfoInput name='Password' value={Password} onChange={onPasswordHandler}/>
             <CheckboxLabel>
               <Checkbox type="checkbox" checked={Agree} onChange={onAgreeHandler} />
               I agree to all the Terms and Privacy Policies
             </CheckboxLabel>
-            <LoginButton 
+            <SignUpButton 
               title="Sign Up" 
               onClick={() => {
-                navigate("/home");
+                navigate("/login");
+                alert("가입되었습니다. 아이디를 입력하여 로그인 해주세요.");
               }}/>
             <Description>
               Already have an account?  

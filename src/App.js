@@ -6,7 +6,11 @@ import HomePage from './pages/HomePage';
 import ComplainPage from './pages/ComplainPage';
 import PostViewPage from './pages/PostViewPage';
 import PostWritePage from './pages/PostWritePage';
-import Header from './components/Header';
+import ReportPage from './pages/ReportPage';
+import HotPage from './pages/HotPage';
+import MyInfoPage from './pages/MyInfoPage';
+import AnnouncementPage from './pages/AnnouncementPage';
+import MyPostPage from './pages/MyPostPage';
 
 function App() {
   return (
@@ -16,8 +20,13 @@ function App() {
         <Route path="login" element={<LoginPage />} />
         <Route path="home" element={<HomePage />} />
         <Route path="complain" element={<ComplainPage />} />
+        <Route path="report" element={<ReportPage />} />
+        <Route path="hot" element={<HotPage />} />
+        <Route path="announce" element={<AnnouncementPage />} />
         <Route path="post-write" element={<PostWritePage />} />
         <Route path="post/:postId" element={<PostViewPage />} />
+        <Route path="info" element={<MyInfoPage />} />
+        <Route path="mypost" element={<MyPostPage />} />
       </Routes>
     </BrowserRouter>
   );

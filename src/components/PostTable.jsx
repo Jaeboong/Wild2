@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import PostList from '../components/PostList';
 import { useNavigate } from 'react-router-dom';
 import data from '../data.json'
+import accountdata from '../accountdata.json'
 
 const Table = styled.table`
   border-collapse: collapse;
@@ -23,8 +24,28 @@ const Td = styled.td`
 `;
 
 
-function PostTable(){
+function PostTable(props){
+  const { postwhat } = props;
+  const user = accountdata;
   const navigate = useNavigate();
+  let boardPosts = data.filter(post => post.board === postwhat);
+
+  if(postwhat === 'mypost'){
+    boardPosts = [{
+      "id": 2,
+      "board": "mypost",
+      "author": "q",
+      "title": "qqq",
+      "content": "",
+      "recommends": 4,
+      "comments": [
+          {
+              "id": 21,
+              "content": ""
+          }            
+      ],
+    }]
+  }
 
   return (
         <Table>
@@ -38,7 +59,7 @@ function PostTable(){
             </thead>
 
               <PostList
-                    posts = {data}
+                    posts = {boardPosts} // 필터링된 게시물 전달
                     onClickItem = {(item) =>{
                         navigate(`/post/${item.id}`);
                     }}

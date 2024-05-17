@@ -30,8 +30,8 @@ function HomePage() {
           <h1>배너</h1>
         </LeftBottom>
         <RightBottom>
-          <SummaryBoard />
-          <SummaryBoard />
+          <SummaryBoard postwhat = "공지"/>
+          <SummaryBoard postwhat = "민원"/>
         </RightBottom>
       </Container>
     </>

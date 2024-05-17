@@ -20,14 +20,14 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `;
 
-function ComplainPage(){
+function AnnouncementPage(){
   const navigate = useNavigate();
 
-  
+
   return (
     <>
       <Header/>
-        <Title>민원 게시판</Title>
+        <Title>공지사항</Title>
         <Wrapper>
           <Button 
             title="글 작성" 
@@ -38,9 +38,9 @@ function ComplainPage(){
           <input placeholder='검색...'/>
         </Wrapper>
 
-        <PostTable postwhat='민원'/>
+        <PostTable postwhat='공지'/>
     </>
   );
 };
 
-export default ComplainPage;
+export default AnnouncementPage;
