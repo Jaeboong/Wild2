@@ -31,6 +31,15 @@ const Linkto = styled(NavLink)`
   padding-top: 5px;
   font-size: 15px;
   color: black;
+
+  
+  &:hover {
+    color: #007bff;
+  }
+
+  &.active {
+    color: #007bff;
+  }
 `;
 
 const UserInfo = styled.div`
