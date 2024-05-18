@@ -4,12 +4,58 @@
   <meta charset="UTF-8">
   <title><%= post.title %></title>
   <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <h1><%= post.title %></h1>
   <p>작성자: <%= post.author %></p>
   <p>내용: <%= post.content %></p>
-  <p>추천수: <%= post.votes.for %></p>
+  <h3>투표: <%= post.voteTitle %></h3>
+  <% if (!hasVoted) { %>
+    <form action="/board/vote/<%= post.id %>" method="POST">
+      <button type="submit" name="voteType" value="for">찬성</button>
+      <button type="submit" name="voteType" value="against">반대</button>
+    </form>
+  <% } else { %>
+    <p>이미 투표하셨습니다.</p>
+  <% } %>
+  <% if (!hasRecommended) { %>
+    <form action="/board/recommend/<%= post.id %>" method="POST">
+      <button type="submit">추천</button>
+    </form>
+  <% } else { %>
+    <p>이미 추천하셨습니다.</p>
+  <% } %>
+  <canvas id="voteChart" width="400" height="200"></canvas>
+  <script>
+    const ctx = document.getElementById('voteChart').getContext('2d');
+    const voteChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['찬성', '반대'],
+        datasets: [{
+          label: '투표 결과',
+          data: [<%= post.votes.for %>, <%= post.votes.against %>],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(255, 99, 132, 0.2)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
   <a href="/board/list">목록으로</a>
 </body>
 </html>

@@ -13,7 +13,7 @@
       <tr>
         <th>작성자</th>
         <th>제목</th>
-        <th>추천수</th>
+        <th>추천</th>
       </tr>
     </thead>
     <tbody>
@@ -21,7 +21,7 @@
         <tr>
           <td><%= post.author %></td>
           <td><a href="/board/view/<%= post.id %>"><%= post.title %></a></td>
-          <td><%= post.votes.for %></td>
+          <td><%= post.recommendations %></td>
         </tr>
       <% }) %>
     </tbody>

@@ -1,3 +1,4 @@
+// src/models/boardModel.js
 const posts = [];
 
 const getAllPosts = () => {
@@ -8,4 +9,22 @@ const createPost = (post) => {
   posts.push(post);
 };
 
-module.exports = { getAllPosts, createPost };
+const getPostById = (id) => {
+  return posts.find(post => post.id === parseInt(id));
+};
+
+const votePost = (id, voteType) => {
+  const post = getPostById(id);
+  if (voteType === 'for') {
+    post.votes.for++;
+  } else if (voteType === 'against') {
+    post.votes.against++;
+  }
+};
+
+const recommendPost = (id) => {
+  const post = getPostById(id);
+  post.recommendations++;
+};
+
+module.exports = { getAllPosts, createPost, getPostById, votePost, recommendPost };
