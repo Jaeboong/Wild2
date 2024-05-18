@@ -1,4 +1,3 @@
-// src/routes/boardRoutes.js
 const express = require('express');
 const router = express.Router();
 const { getAllPosts, createPost, getPostById, votePost, recommendPost } = require('../models/boardModel');

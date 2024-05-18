@@ -1,4 +1,3 @@
-// src/models/boardModel.js
 const posts = [];
 
 const getAllPosts = () => {
