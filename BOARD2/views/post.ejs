@@ -1,4 +1,38 @@
-<h1><%= post.title %></h1>
 <article class="article">
+    <h1><%= post.title %></h1>
     <%= post.body %>
+    <p>추천 수: <span id="recommendCount"><%= post.recommendations %></span></p>
+    <button id="recommendButton">추천</button>
 </article>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const recommendButton = document.getElementById('recommendButton');
+        const recommendCount = document.getElementById('recommendCount');
+        
+        recommendButton.addEventListener('click', async function() {
+            const postId = '<%= post._id %>';
+            
+            try {
+                const response = await fetch(`/post/${postId}/recommend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('추천 요청이 실패했습니다.');
+                }
+                
+                const data = await response.json();
+                const newRecommendations = data.recommendations;
+                recommendCount.textContent = newRecommendations;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    </script>
+    
+

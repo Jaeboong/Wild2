@@ -62,27 +62,43 @@ router.get(
 );
 
 // 게시글 상세보기
-router.get(
-    "/post/:id",
-    asyncHandler(async (req, res) => {
-        // 게시글 조회 및 조회수 증가
-        const post = await Post.findByIdAndUpdate(
-            req.params.id,
-            { $inc: { views: 1 } },
-            { new: true } // 업데이트된 문서를 반환
-        );
+router.get("/post/:id", asyncHandler(async (req, res) => {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+        return res.status(404).send("Post not found");
+    }
+    
+    res.render("post", { post, layout: mainLayout });
+}));
 
-        if (!post) {
-            return res.status(404).send("Post not found");
-        }
+// 게시글 추천 기능
+router.post('/post/:id/recommend', async (req, res) => {
+    try {
+      const postId = req.params.id;
+      const post = await Post.findById(postId);
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found.' });
+      }
+      post.recommendations++; // 추천 수 증가
+      await post.save();
+      res.json({ recommendations: post.recommendations });
+    } catch (error) {
+      console.error('Error recommending post:', error);
+      res.status(500).json({ error: 'Internal server error.' });
+    }
+  });
 
-        // 게시글 정보 다시 가져오기
-        const updatedPost = await Post.findById(req.params.id);
-
-        res.render("post", { post: updatedPost, layout: mainLayout });
-    })
-);
-
+router.get('/board', async (req, res) => {
+    try {
+      // 게시글 데이터와 추천 수를 함께 가져옴
+      const posts = await Post.find().select('title author recommendations createdAt');
+      res.render('board', { posts, layout: mainLayout });
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      res.status(500).send('Internal server error');
+    }
+  });
+  
 
 //검색기능
 router.get("/search", asyncHandler(async (req, res) => {

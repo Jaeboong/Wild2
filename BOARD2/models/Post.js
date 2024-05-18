@@ -17,10 +17,10 @@ const PostSchema = new mongoose.Schema( {
         type: String,
         required: true
     },
-    views: {
+    recommendations: {
         type: Number,
-        default: 0,
-    },
+        default: 0
+      },
     createdAt: {
         type: Date,
         default: Date.now()
