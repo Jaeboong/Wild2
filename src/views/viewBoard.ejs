@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= post.title %></title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <h1><%= post.title %></h1>
+  <p>작성자: <%= post.author %></p>
+  <p>내용: <%= post.content %></p>
+  <p>추천수: <%= post.votes.for %></p>
+  <a href="/board/list">목록으로</a>
+</body>
+</html>
