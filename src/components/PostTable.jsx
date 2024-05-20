@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import PostList from '../components/PostList';
 import { useNavigate } from 'react-router-dom';
 import data from '../data.json'
-import accountdata from '../accountdata.json'
 
 const Table = styled.table`
   border-collapse: collapse;
@@ -23,12 +22,21 @@ const Td = styled.td`
   ${({ wide }) => wide && 'width: 70%;'} /* 제목 열은 넓게 설정 */
 `;
 
+const Thead = styled.thead`
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #dfe4e7;
+  font-weight: 550;
+`;
+
 
 function PostTable(props){
-  const { postwhat } = props;
-  const user = accountdata;
+  const { postwhat, currentPage, postsPerPage } = props;
   const navigate = useNavigate();
   let boardPosts = data.filter(post => post.board === postwhat);
+
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = boardPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   if(postwhat === 'mypost'){
     boardPosts = [{
@@ -49,17 +57,17 @@ function PostTable(props){
 
   return (
         <Table>
-            <thead>
+            <Thead>
               <Tr>
                 <Td></Td>
                 <Td>작성자</Td>
                 <Td wide>제목</Td>
                 <Td>추천수</Td>
               </Tr>
-            </thead>
+            </Thead>
 
               <PostList
-                    posts = {boardPosts} // 필터링된 게시물 전달
+                    posts = {currentPosts} // 필터링된 게시물 전달
                     onClickItem = {(item) =>{
                         navigate(`/post/${item.id}`);
                     }}

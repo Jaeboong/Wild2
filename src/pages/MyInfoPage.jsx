@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import Header from "../components/Header"
 
 const Container = styled.div`
@@ -41,7 +41,7 @@ function MyInfoPage() {
         <LeftBottom>
           <h2>User Profile</h2>
           <Linkto to="/">● 개인 정보 수정</Linkto>
-          <Linkto to="/mypost">● 내가쓴 글</Linkto>
+          <Linkto to="/">● 내가쓴 글</Linkto>
           <Linkto to="/">● 추천한 글</Linkto>
         </LeftBottom>
         <RightBottom>

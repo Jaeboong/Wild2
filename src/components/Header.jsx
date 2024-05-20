@@ -12,7 +12,9 @@ const HeaderWrapper = styled.div`
 `;
 
 const Logo = styled.div`
-  font-size: 24px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 600;
+  font-size: 26px;
   font-weight: bold;
   color: #007bff;
 `;
@@ -25,18 +27,18 @@ const Navigation = styled.div`
 `;
 
 const Linkto = styled(NavLink)`
-  margin-right: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 550;
+  margin-right: 30px;
   margin-left: 15px;
   text-decoration: none;
   padding-top: 5px;
-  font-size: 15px;
+  font-size: 16px;
   color: black;
-
   
   &:hover {
     color: #007bff;
   }
-
   &.active {
     color: #007bff;
   }

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Tr = styled.tr`
+  font-family: 'Noto Sans KR', sans-serif;
   padding: 8px;
   &:hover{
     background-color: lightgray;
@@ -12,6 +13,7 @@ const Tr = styled.tr`
 const Td = styled.td`
   border: 1px solid #ccc;
   padding: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
 `;
 
 function Post(props){

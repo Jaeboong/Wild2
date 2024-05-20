@@ -15,7 +15,9 @@ const BoardBox = styled.div`
 `;
 
 const Title = styled(NavLink)`
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 18px;
+  font-weight: 550;
   margin-bottom: 10px;
   text-decoration: none;
   color: #000;
@@ -30,7 +32,8 @@ const BoardLink = styled(NavLink)`
   margin-bottom: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
-
+  font-family: 'Noto Sans KR', sans-serif;
+  
   &:hover {
     background-color: #f0f0f0;
   }
@@ -47,7 +50,7 @@ function SummaryBoard(props) {
 
   return (
     <BoardBox>
-      <Title to={boardLink}> {boardTitle + ' \+'} </Title>
+      <Title to={boardLink}> {boardTitle + ' +'} </Title>
       {top3Posts.map(post => (
         <BoardLink key={post.id} to={`/post/${post.id}`}>{post.title}</BoardLink>
       ))}

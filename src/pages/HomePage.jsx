@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import SummaryBoard from '../components/SummaryBoard';
-import Header from "../components/Header"
+import Header from "../components/Header";
 
 const Container = styled.div`
   display: flex;
@@ -21,17 +21,25 @@ const RightBottom = styled.div`
   margin-left: 60px;
 `;
 
+const BannerImage = styled.img`
+  max-width: 100vh;
+  height: 93.8vh;
+`;
+
 function HomePage() {
   return (
     <>
-      <Header/>
+      <Header />
       <Container>
         <LeftBottom>
-          <h1>배너</h1>
+          <BannerImage 
+            src={`${process.env.PUBLIC_URL}/image/고려대배너.jpg`} 
+            alt="고려대 배너"
+          />
         </LeftBottom>
         <RightBottom>
-          <SummaryBoard postwhat = "공지"/>
-          <SummaryBoard postwhat = "민원"/>
+          <SummaryBoard postwhat="공지" />
+          <SummaryBoard postwhat="민원" />
         </RightBottom>
       </Container>
     </>
