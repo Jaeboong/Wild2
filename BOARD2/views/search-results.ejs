@@ -1,0 +1,14 @@
+<h1>검색 결과</h1>
+<% if (data.length > 0) { %>
+  <ul>
+    <% data.forEach(post => { %>
+      <li>
+        <h2><%= post.title %></h2>
+        <p><%= post.content %></p>
+        <small>작성일: <%= new Date(post.createdAt).toLocaleDateString() %></small>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p>검색 결과가 없습니다.</p>
+<% } %>
