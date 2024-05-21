@@ -29,16 +29,41 @@ const SearchWrapper = styled.div`
   width: 100%;
 `;
 
+const SearchButton = styled.button`
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+`;
+
+
 function HotPage(){
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
   const postsPerPage = 10;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // const totalPosts = 100; 
-  // const totalPages = Math.ceil(totalPosts / postsPerPage);
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/search', {
+        params: {
+          query: searchKeyword,
+          page: currentPage,
+          limit: postsPerPage
+        }
+      });
+      setPosts(response.data.posts);
+      setTotalPosts(response.data.total);
+    } catch (error) {
+      console.error('Error searching posts:', error);
+    }
+  };
+
   const totalPages = 10;
 
 
@@ -46,11 +71,17 @@ function HotPage(){
     <>
       <Header/>
         <Title>HOT 게시판</Title>
+
         <Wrapper>
         <SearchWrapper>
-          <input placeholder='검색...' />
+          <input 
+            placeholder='검색...' 
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <SearchButton onClick={handleSearch}>검색</SearchButton>
         </SearchWrapper>
-        </Wrapper>
+      </Wrapper>
 
         <PostTable currentPage={currentPage} postsPerPage={postsPerPage} />
 

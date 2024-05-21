@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import InfoInput from '../components/InfoInput';
 import { NavLink, useNavigate } from 'react-router-dom';
 import LoginButton from '../components/LoginButton';
-import data from '../accountdata.json';
+import base64 from 'base-64';
 
 
 const Wrapper = styled.div`
@@ -33,20 +33,10 @@ const MovePage = styled(NavLink)`
   font-size: 12px;
   text-decoration: none;
 `
-
-const ErrorWrap = styled.div`
-  color: #ef0000;
-  font-size: 12px;
-`;
-
-const User = {
-  id: '123',
-  pw: '123'
-}
-
 function LoginPage(){
     const [ID, setID] = useState("");
     const [Password, setPassword] = useState("");
+    const [loginCheck, setLoginCheck] = useState(false); // 로그인 상태 체크
 
     const onIDHandler = (event) => {
       setID(event.currentTarget.value);
@@ -56,17 +46,46 @@ function LoginPage(){
       setPassword(event.currentTarget.value);
     }
 
-    const onClickConfirmButton = () => {
-      if(ID === User.id && Password === User.pw) {
-        alert('로그인에 성공했습니다.')
-        return true;
-      } else {
-        alert("등록되지 않은 회원입니다.");
-        return false;
-      }
-    }
-
     const navigate = useNavigate();
+
+    const handleLogin = async (event) => {
+      // 로그인 처리 로직
+      event.preventDefault();
+      await new Promise((r) => setTimeout(r, 500));
+      
+      const response = await fetch(
+        "http://localhost:4000/api/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json;charset=UTF-8",
+          },
+          body: JSON.stringify({
+            id: ID,
+            password: Password,
+          }),
+        }
+      );
+      const result = await response.json();
+  
+      if (response.status === 200) {
+        setLoginCheck(false);
+        // local storage에 토큰 저장
+        localStorage.setItem("token", result.token);
+        const payload = result.token.substring(result.token.indexOf('.')+1,result.token.lastIndexOf('.'));//토큰 디코딩
+        let dec = JSON.parse(base64.decode(payload));
+        localStorage.setItem("nickname", result.nickname); 
+        localStorage.setItem("userid", result.userid); 
+        localStorage.setItem("id", result.id); 
+        localStorage.setItem("password", result.pw); 
+        console.log("로그인성공, 아이디:" + dec.id);
+        alert(`${dec.nickname}님 환영합니다 !`);
+        navigate("/home"); // 성공시 홈으로 이동
+      } else {
+        alert("틀린 정보입니다. 다시 입력해주세요.");
+        setLoginCheck(true);
+      }
+    };
 
     return (
       <Wrapper>
@@ -79,11 +98,8 @@ function LoginPage(){
             <MovePage href = "/"> Forgot Password? </MovePage>
             <LoginButton 
               title="Login" 
-              onClick={() => {
-                if(onClickConfirmButton()){
-                  navigate("/home");
-                }
-              }}/>
+              onClick = {handleLogin}
+            />
             <Description>
               Don't have an account?  
               <MovePage to = "/signup">

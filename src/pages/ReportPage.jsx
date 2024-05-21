@@ -25,6 +25,21 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `;
 
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SearchButton = styled.button`
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+`;
+
+
 function ReportPage(){
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +49,23 @@ function ReportPage(){
     setCurrentPage(page);
   };
 
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/search', {
+        params: {
+          query: searchKeyword,
+          page: currentPage,
+          limit: postsPerPage
+        }
+      });
+      setPosts(response.data.posts);
+      setTotalPosts(response.data.total);
+    } catch (error) {
+      console.error('Error searching posts:', error);
+    }
+  };
+
+
   const totalPages = 10;
 
   return (
@@ -41,14 +73,17 @@ function ReportPage(){
       <Header/>
         <Title>제보 게시판</Title>
         <Wrapper>
-          <Button 
-            title="글 작성" 
-            onClick={() => {
-              navigate("/post-write");
-            }}
-          />
-          <input placeholder='검색...'/>
-        </Wrapper>
+        <Button 
+          title="글 작성" 
+          onClick={() => {
+            navigate("/post-write");
+          }}
+        />
+        <SearchWrapper>
+          <input placeholder='검색...' />
+          <SearchButton onClick={handleSearch}>검색</SearchButton>
+        </SearchWrapper>
+      </Wrapper>
         <PostTable postwhat='제보' currentPage={currentPage} postsPerPage={postsPerPage} />
         <Pagination 
         currentPage={currentPage} 

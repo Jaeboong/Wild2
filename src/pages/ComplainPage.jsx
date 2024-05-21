@@ -24,6 +24,20 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `;
 
+const SearchWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const SearchButton = styled.button`
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+`;
+
 function ComplainPage(){
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -33,8 +47,22 @@ function ComplainPage(){
     setCurrentPage(page);
   };
 
-  // const totalPosts = 100; 
-  // const totalPages = Math.ceil(totalPosts / postsPerPage);
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/search', {
+        params: {
+          query: searchKeyword,
+          page: currentPage,
+          limit: postsPerPage
+        }
+      });
+      setPosts(response.data.posts);
+      setTotalPosts(response.data.total);
+    } catch (error) {
+      console.error('Error searching posts:', error);
+    }
+  };
+
   const totalPages = 10;
 
   return (
@@ -48,7 +76,10 @@ function ComplainPage(){
             navigate("/post-write");
           }}
         />
-        <input placeholder='검색...' />
+        <SearchWrapper>
+          <input placeholder='검색...' />
+          <SearchButton onClick={handleSearch}>검색</SearchButton>
+        </SearchWrapper>
       </Wrapper>
       <PostTable postwhat='민원' currentPage={currentPage} postsPerPage={postsPerPage} />
       <Pagination 
