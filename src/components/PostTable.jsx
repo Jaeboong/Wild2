@@ -34,6 +34,8 @@ function PostTable(props){
   const navigate = useNavigate();
   let boardPosts = data.filter(post => post.board === postwhat);
 
+  boardPosts.reverse();
+
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = boardPosts.slice(indexOfFirstPost, indexOfLastPost);

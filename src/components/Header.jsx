@@ -67,7 +67,8 @@ function Header(){
         <Button 
           title="로그아웃" 
           onClick={() => {
-            navigate("/login");
+            localStorage.removeItem('token');
+            navigate("/");
           }}
         />
       </UserInfo>

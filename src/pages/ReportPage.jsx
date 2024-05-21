@@ -76,7 +76,7 @@ function ReportPage(){
         <Button 
           title="글 작성" 
           onClick={() => {
-            navigate("/post-write");
+            navigate("/post-write?board=report");
           }}
         />
         <SearchWrapper>

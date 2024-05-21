@@ -81,7 +81,7 @@ function SignUpPage() {
     const user = userInfo.find(user => user.id === Id && user.pw === Password);
     if (!user) {
       alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요 !`);
-      navigate("/login");
+      navigate("/");
       return true;
     } else {
       alert("이미 존재하는 아이디 입니다 !!");
@@ -128,7 +128,7 @@ function SignUpPage() {
       </form>
       <Description>
         Already have an account?
-        <MovePage to="/login">
+        <MovePage to="/">
           Login
         </MovePage>
       </Description>

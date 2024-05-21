@@ -5,6 +5,7 @@ import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import Header from "../components/Header";
 import Pagination from '../components/Pagination';
+import base64 from "base-64";
 
 const Title = styled.div`
   font-family: 'Noto Sans KR', sans-serif;
@@ -42,6 +43,11 @@ function ComplainPage(){
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 10;
+  
+  const token = localStorage.getItem("token");
+  const payload = token.substring(token.indexOf('.')+1,token.lastIndexOf('.')); //토큰 디코딩
+  let dec = JSON.parse(base64.decode(payload));
+  console.log(dec.nickname); //토큰을 디코딩해서 사용.. 이게 맞나?
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -73,7 +79,7 @@ function ComplainPage(){
         <Button 
           title="글 작성" 
           onClick={() => {
-            navigate("/post-write");
+            navigate("/post-write?board=complain");
           }}
         />
         <SearchWrapper>

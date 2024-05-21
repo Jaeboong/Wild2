@@ -72,12 +72,11 @@ function LoginPage(){
         setLoginCheck(false);
         // local storage에 토큰 저장
         localStorage.setItem("token", result.token);
-        const payload = result.token.substring(result.token.indexOf('.')+1,result.token.lastIndexOf('.'));//토큰 디코딩
-        let dec = JSON.parse(base64.decode(payload));
-        localStorage.setItem("nickname", result.nickname); 
-        localStorage.setItem("userid", result.userid); 
-        localStorage.setItem("id", result.id); 
-        localStorage.setItem("password", result.pw); 
+    
+        // 토큰 디코딩
+        const payload = result.token.split('.')[1];
+        const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0))));
+    
         console.log("로그인성공, 아이디:" + dec.id);
         alert(`${dec.nickname}님 환영합니다 !`);
         navigate("/home"); // 성공시 홈으로 이동

@@ -11,22 +11,103 @@ import HotPage from './pages/HotPage';
 import MyInfoPage from './pages/MyInfoPage';
 import AnnouncementPage from './pages/AnnouncementPage';
 import MyPostPage from './pages/MyPostPage';
+import ProtectedRoute from './route/ProtectedRoute';
 
 function App() {
+  // return (
+  //   <BrowserRouter>
+  //     <Routes>
+  //       <Route path="/" element={<LoginPage />} />
+  //       <Route path="/signup" element={<SignUpPage />} />
+  //       <Route path="/home" element={<HomePage />} />
+  //       <Route path="/complain" element={<ComplainPage />} />
+  //       <Route path="/report" element={<ReportPage />} />
+  //       <Route path="/hot" element={<HotPage />} />
+  //       <Route path="/announce" element={<AnnouncementPage />} />
+  //       <Route path="/post-write" element={<PostWritePage />} />
+  //       <Route path="/post/:postId" element={<PostViewPage />} />
+  //       <Route path="/info" element={<MyInfoPage />} />
+  //       <Route path="/mypost" element={<MyPostPage />} />
+  //     </Routes>
+  //   </BrowserRouter>
+  // );
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="signup" element={<SignUpPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="home" element={<HomePage />} />
-        <Route path="complain" element={<ComplainPage />} />
-        <Route path="report" element={<ReportPage />} />
-        <Route path="hot" element={<HotPage />} />
-        <Route path="announce" element={<AnnouncementPage />} />
-        <Route path="post-write" element={<PostWritePage />} />
-        <Route path="post/:postId" element={<PostViewPage />} />
-        <Route path="info" element={<MyInfoPage />} />
-        <Route path="mypost" element={<MyPostPage />} />
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/complain" 
+          element={
+            <ProtectedRoute>
+              <ComplainPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/report" 
+          element={
+            <ProtectedRoute>
+              <ReportPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/hot" 
+          element={
+            <ProtectedRoute>
+              <HotPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/announce" 
+          element={
+            <ProtectedRoute>
+              <AnnouncementPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/post-write" 
+          element={
+            <ProtectedRoute>
+              <PostWritePage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/post/:postId" 
+          element={
+            <ProtectedRoute>
+              <PostViewPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/info" 
+          element={
+            <ProtectedRoute>
+              <MyInfoPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/mypost" 
+          element={
+            <ProtectedRoute>
+              <MyPostPage />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );
