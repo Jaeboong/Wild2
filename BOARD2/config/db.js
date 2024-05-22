@@ -1,10 +1,13 @@
-const mongoose = require("mongoose");
-const asyncHandler = require("express-async-handler");
-require("dotenv").config();
+require('dotenv').config();
+const mariadb = require('mariadb');
 
-const connectDb = asyncHandler(async () => {
-    const connect = await mongoose.connect(process.env.MONGODB_URI);
-    console.log(`DB Connected: ${connect.connection.host}`);
+const conn = mariadb.createConnection({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    connectionLimit: 5
 });
 
-module.exports = connectDb;
+module.exports.conn = conn;

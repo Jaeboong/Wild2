@@ -1,32 +1,37 @@
-const mongoose = require("mongoose");
+// models/Post.js
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const PostSchema = new mongoose.Schema( {
+const Post = sequelize.define('Post', {
     number: {
-        type: Number,
-        required: true,
+        type: DataTypes.INTEGER,
+        allowNull: false
     },
     author: {
-        type: String,
-        required: true,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     title: {
-        type: String,
-        required: true
+        type: DataTypes.STRING,
+        allowNull: false
     },
     body: {
-        type: String,
-        required: true
+        type: DataTypes.TEXT,
+        allowNull: false
     },
     recommendations: {
-        type: Number,
-        default: 0
-      },
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
     createdAt: {
-        type: Date,
-        default: Date.now()
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     }
 });
 
-PostSchema.index({ title: 'text', body: 'text' });
+Post.sync({force:true})
 
-module.exports= mongoose.model("Post", PostSchema);
+const post = new Post({number:1, author:"작성자1", title:"민원", body:"민원임", recommendations:0})
+post.save()
+
+module.exports = Post;

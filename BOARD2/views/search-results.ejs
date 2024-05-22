@@ -1,14 +1,30 @@
-<h1>검색 결과</h1>
-<% if (data.length > 0) { %>
-  <ul>
-    <% data.forEach(post => { %>
-      <li>
-        <h2><%= post.title %></h2>
-        <p><%= post.content %></p>
-        <small>작성일: <%= new Date(post.createdAt).toLocaleDateString() %></small>
-      </li>
-    <% }) %>
-  </ul>
-<% } else { %>
-  <p>검색 결과가 없습니다.</p>
-<% } %>
+<div class="articles">
+  <h2 class="articles-heading">검색 결과</h2>
+  <% if (data.length > 0) { %>
+    <table class="article-table search-results">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>추천수</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.forEach((post, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
+            <td><%= post.author %></td>
+            <td><%= post.recommendations %></td>
+            <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p>검색 결과가 없습니다.</p>
+  <% } %>
+</div>
+
