@@ -11,8 +11,8 @@ const PageButton = styled.button`
   margin: 0 5px;
   padding: 5px 10px;
   border: 1px solid #ccc;
-  background-color: ${props => props.active ? '#007bff' : '#fff'};
-  color: ${props => props.active ? '#fff' : '#007bff'};
+  background-color: ${props => props.active ? '#8C0327' : '#fff'};
+  color: ${props => props.active ? '#fff' : '#8C0327'};
   cursor: pointer;
   &:disabled {
     cursor: not-allowed;

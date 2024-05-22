@@ -38,8 +38,8 @@ function HomePage() {
           />
         </LeftBottom>
         <RightBottom>
-          <SummaryBoard postwhat="공지" />
-          <SummaryBoard postwhat="민원" />
+          <SummaryBoard title="공지사항" postwhat="announce" link="/announce" />
+          <SummaryBoard title="Hot 게시판" postwhat="hot" link="/hot" />
         </RightBottom>
       </Container>
     </>

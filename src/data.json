@@ -251,5 +251,19 @@
                 "content": ""
             }
         ]
+    },
+    {
+        "id": 19,
+        "board": "민원",
+        "author": "익명",
+        "title": "공지3",
+        "content": "",
+        "recommends": 2,
+        "comments": [
+            {
+                "id": 31,
+                "content": ""
+            }
+        ]
     }
 ]

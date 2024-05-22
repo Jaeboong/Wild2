@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PostTable from '../components/PostTable';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
-import Header from "../components/Header"
+import Header from '../components/Header';
 import Pagination from '../components/Pagination';
-import { useState } from 'react';
+import axios from 'axios';
 
 const Title = styled.div`
   display: flex;
@@ -34,64 +34,83 @@ const SearchButton = styled.button`
   margin-left: 10px;
   padding: 5px 10px;
   border: 1px solid #ccc;
-  background-color: #007bff;
+  background-color: #8C0327;
   color: #fff;
   cursor: pointer;
 `;
 
-
-function ReportPage(){
+function ReportPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [posts, setPosts] = useState([]);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [clickSearch, setClickSearch] = useState(false);
+
   const postsPerPage = 10;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSearch = async () => {
+  const fetchPosts = async (keyword = '', board = 'report', page = 1) => {
     try {
-      const response = await axios.get('http://localhost:4000/api/search', {
+      const endpoint = keyword ? 'search' : 'report';
+      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
         params: {
-          query: searchKeyword,
-          page: currentPage,
-          limit: postsPerPage
+          query: keyword,
+          page: page,
+          limit: postsPerPage,
+          board: board
         }
       });
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {
-      console.error('Error searching posts:', error);
+      console.error('Error fetching posts:', error);
     }
   };
 
+  useEffect(() => {
+    if (clickSearch) {
+      fetchPosts(searchKeyword, 'report', currentPage);
+    } else {
+      fetchPosts('', 'report', currentPage);
+    }
+  }, [currentPage, clickSearch]);
 
-  const totalPages = 10;
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setClickSearch(true);
+    fetchPosts(searchKeyword, 'report', 1);
+  };
+
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   return (
     <>
-      <Header/>
-        <Title>제보 게시판</Title>
-        <Wrapper>
-        <Button 
-          title="글 작성" 
+      <Header />
+      <Title>제보 게시판</Title>
+      <Wrapper>
+        <Button
+          title="글 작성"
           onClick={() => {
-            navigate("/post-write?board=report");
+            navigate('/post-write?board=report');
           }}
         />
         <SearchWrapper>
-          <input placeholder='검색...' />
+          <input
+            placeholder="검색..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
           <SearchButton onClick={handleSearch}>검색</SearchButton>
         </SearchWrapper>
       </Wrapper>
-        <PostTable postwhat='제보' currentPage={currentPage} postsPerPage={postsPerPage} />
-        <Pagination 
-        currentPage={currentPage} 
-        totalPages={totalPages} 
-        onPageChange={handlePageChange} 
-        />  
+      <PostTable postwhat={posts} currentPage={currentPage} postsPerPage={postsPerPage} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
     </>
   );
-};
+}
 
 export default ReportPage;

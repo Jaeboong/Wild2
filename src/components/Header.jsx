@@ -7,7 +7,7 @@ const HeaderWrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 10px 20px;
-  background-color: #f3f3f3;
+  background-color: #8C0327;
   border-bottom: 1px solid #ccc;
 `;
 
@@ -16,7 +16,7 @@ const Logo = styled.div`
   font-weight: 600;
   font-size: 26px;
   font-weight: bold;
-  color: #007bff;
+  color: #ffffff;
 `;
 
 const Navigation = styled.div`
@@ -34,13 +34,13 @@ const Linkto = styled(NavLink)`
   text-decoration: none;
   padding-top: 5px;
   font-size: 16px;
-  color: black;
+  color: #ffffff;
   
   &:hover {
-    color: #007bff;
+    color: #ffbbcd;
   }
   &.active {
-    color: #007bff;
+    color: #ffbbcd;
   }
 `;
 

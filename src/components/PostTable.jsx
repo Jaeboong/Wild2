@@ -24,7 +24,7 @@ const Td = styled.td`
 
 const Thead = styled.thead`
   font-family: 'Noto Sans KR', sans-serif;
-  background-color: #dfe4e7;
+  background-color: #e7dfe3;
   font-weight: 550;
 `;
 
@@ -32,13 +32,13 @@ const Thead = styled.thead`
 function PostTable(props){
   const { postwhat, currentPage, postsPerPage } = props;
   const navigate = useNavigate();
-  let boardPosts = data.filter(post => post.board === postwhat);
 
-  boardPosts.reverse();
+  // let boardPosts = data.filter(post => post.board === postwhat);
+  // boardPosts.reverse();
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = boardPosts.slice(indexOfFirstPost, indexOfLastPost);
+  // const currentPosts = boardPosts.slice(indexOfFirstPost, indexOfLastPost);
 
   if(postwhat === 'mypost'){
     boardPosts = [{
@@ -69,7 +69,8 @@ function PostTable(props){
             </Thead>
 
               <PostList
-                    posts = {currentPosts} // 필터링된 게시물 전달
+                    posts = {postwhat}
+                    // posts = {boardPosts}
                     onClickItem = {(item) =>{
                         navigate(`/post/${item.id}`);
                     }}

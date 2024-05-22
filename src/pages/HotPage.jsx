@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PostTable from '../components/PostTable';
-import Header from "../components/Header"
+import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 import Pagination from '../components/Pagination';
-import { useState } from 'react';
+import axios from 'axios';
 
 const Title = styled.div`
   display: flex;
@@ -33,39 +35,58 @@ const SearchButton = styled.button`
   margin-left: 10px;
   padding: 5px 10px;
   border: 1px solid #ccc;
-  background-color: #007bff;
+  background-color: #8C0327;
   color: #fff;
   cursor: pointer;
 `;
 
 
 function HotPage(){
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const [posts, setPosts] = useState([]);
+  const [totalPosts, setTotalPosts] = useState(0);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [clickSearch, setClickSearch] = useState(false);
   const postsPerPage = 10;
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSearch = async () => {
+  const fetchPosts = async (keyword = '', board = 'hot', page = 1) => {
     try {
-      const response = await axios.get('http://localhost:4000/api/search', {
+      const endpoint = keyword ? 'search' : 'hot';
+      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
         params: {
-          query: searchKeyword,
-          page: currentPage,
-          limit: postsPerPage
+          query: keyword,
+          page: page,
+          limit: postsPerPage,
+          board: board
         }
       });
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {
-      console.error('Error searching posts:', error);
+      console.error('Error fetching posts:', error);
     }
   };
 
-  const totalPages = 10;
+  useEffect(() => {
+    if (clickSearch) {
+      fetchPosts(searchKeyword, 'hot', currentPage);
+    } else {
+      fetchPosts('', 'hot', currentPage);
+    }
+  }, [currentPage, clickSearch]);
 
+  const handleSearch = () => {
+    setCurrentPage(1);
+    setClickSearch(true);
+    fetchPosts(searchKeyword, 'hot', 1);
+  };
+
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   return (
     <>
@@ -83,7 +104,7 @@ function HotPage(){
         </SearchWrapper>
       </Wrapper>
 
-        <PostTable currentPage={currentPage} postsPerPage={postsPerPage} />
+      <PostTable postwhat={posts} currentPage={currentPage} postsPerPage={postsPerPage} />
 
       <Pagination 
         currentPage={currentPage} 
