@@ -1,10 +1,9 @@
-//PostWritePage.jsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
-import Header from "../components/Header"
+import Header from "../components/Header";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -20,7 +19,7 @@ const Container = styled.div`
     max-width: 720px;
 
     & > * {
-        :not(:last-child){
+        :not(:last-child) {
             margin-bottom: 16px;
         }
     }
@@ -32,7 +31,6 @@ const Footer = styled.div`
     align-items: center;
 `;
 
-
 function PostWritePage(props) {
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,24 +41,28 @@ function PostWritePage(props) {
     const [content, setContent] = useState("");
     const [isAnonymous, setIsAnonymous] = useState(false);
 
+    
+    const token = localStorage.getItem('token');
+    const payload = token.split('.')[1];
+    const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
+
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-        const author = isAnonymous ? "익명" : localStorage.getItem("nickname");
+        const author = isAnonymous ? "익명" : dec.nickname;
 
         try {
             const response = await fetch("http://localhost:4000/api/posts", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify({
-                title,
-                content,
-                author,
-                board: boardType
-            })
-        });
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json;charset=UTF-8",
+                },
+                body: JSON.stringify({
+                    title,
+                    content,
+                    author: author,
+                    board: boardType
+                })
+            });
 
             if (response.ok) {
                 navigate(`/${boardType}`);

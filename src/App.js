@@ -12,6 +12,7 @@ import MyInfoPage from './pages/MyInfoPage';
 import AnnouncementPage from './pages/AnnouncementPage';
 import MyPostPage from './pages/MyPostPage';
 import ProtectedRoute from './route/ProtectedRoute';
+import PostEditPage from './pages/PostEditPage';
 
 function App() {
   // return (
@@ -89,6 +90,14 @@ function App() {
           element={
             <ProtectedRoute>
               <PostViewPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/edit-post/:postId"
+          element={
+            <ProtectedRoute>
+              <PostEditPage />
             </ProtectedRoute>
           } 
         />

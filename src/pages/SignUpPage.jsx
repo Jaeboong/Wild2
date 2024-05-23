@@ -73,11 +73,6 @@ function SignUpPage() {
   }, []);
 
   const userConfirm = () => {
-    if (!userInfo || userInfo.length === 0) {
-      alert("등록되지 않은 회원입니다.");
-      return false;
-    }
-
     const user = userInfo.find(user => user.id === Id && user.pw === Password);
     if (!user) {
       alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요 !`);

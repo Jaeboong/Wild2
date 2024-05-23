@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import PostList from '../components/PostList';
 import { useNavigate } from 'react-router-dom';
-import data from '../data.json'
 
 const Table = styled.table`
   border-collapse: collapse;

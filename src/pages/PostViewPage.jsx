@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import CommentList from "../components/CommentList"; 
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
-import data from "../data.json";
-import Header from "../components/Header"
+import Header from "../components/Header";
+import axios from "axios";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -28,7 +27,6 @@ const Container = styled.div`
 `;
 
 const PostContainer = styled.div`
-
 `;
 
 const VoteContainer = styled.div`
@@ -48,50 +46,119 @@ const VoteRow = styled.div`
 const TitleText = styled.p`
     font-size: 28px;
     font-weight: 500;
-`
+`;
 
 const AuthorText = styled.p`
     display: flex;
     justify-content: space-between;
     font-size: 12px;
     font-weight: 400;
-`
+`;
 
 const ReportButton = styled.button`
     font-size: 12px;
     display: flex;
-`
+`;
 
 const ContentText = styled.p`
     font-size: 16px;
     line-height: 32px;
     white-space: pre-wrap;
-`
+`;
 
 const CommentLabel = styled.p`
     font-size: 16px;
     font-weight: 500;
-`
+`;
 
-function PostViewPage(props){
+function PostViewPage() {
     const navigate = useNavigate();
-    const {postId} = useParams();
-
-    const post = data.find((item)=>{
-        return item.id == postId;
-    });
-
+    const { postId } = useParams();
+    const [post, setPost] = useState(null);
     const [comment, setComment] = useState("");
-
     const [checkValue, setCheckValue] = useState('사용');
+    const [hasRecommended, setHasRecommended] = useState(false);
+    const [isAuthor, setIsAuthor] = useState(false);
+    
+    const token = localStorage.getItem('token');
+    const payload = token.split('.')[1];
+    const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/posts/${postId}`);
+                setPost(response.data);
+                setIsAuthor(response.data.author === dec.nickname);
+                setHasRecommended(response.data.recommendedBy.includes(dec.nickname));
+            } catch (error) {
+                console.error("Error fetching post:", error);
+            }
+        };
+
+        fetchPost();
+    }, [postId]);
+
+    const handleRecommendation = async () => {
+        try {
+            const url = `http://localhost:4000/api/posts/${postId}/recommend`;
+            const method = hasRecommended ? 'DELETE' : 'POST';
+            const response = await axios({
+                method,
+                url,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+
+            if (response.status === 200) {
+                setPost(prevPost => ({
+                    ...prevPost,
+                    recommends: hasRecommended ? prevPost.recommends - 1 : prevPost.recommends + 1
+                }));
+                setHasRecommended(!hasRecommended);
+            } else {
+                console.error("Error updating recommendation");
+            }
+        } catch (error) {
+            console.error("Error updating recommendation:", error);
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+
+            if (response.status === 200) {
+                navigate("/complain");
+            } else {
+                console.error("Error deleting post");
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error);
+        }
+    };
+
+    const handleEdit = () => {
+        navigate(`/edit-post/${postId}`);
+    };
+
     const checkOnlyOne = (e) => {
         let checkItem = document.getElementsByName("useType");
         Array.prototype.forEach.call(checkItem, function (el) {
-        	el.checked = false;
+            el.checked = false;
         });
         e.target.checked = true;
         setCheckValue(e.target.defaultValue);
-	};
+    };
+
+    if (!post) {
+        return <p>Loading...</p>;
+    }
 
     return (
         <>
@@ -114,6 +181,14 @@ function PostViewPage(props){
                     <ContentText>{post.content}</ContentText>
                 </PostContainer>
 
+                {isAuthor && (
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button title="수정" onClick={handleEdit} />
+                        <Button title="삭제" onClick={handleDelete} />
+                    </div>
+                )}
+
+                <div style={{display:"flex", justifyContent:"space-between"}}>
                 <VoteContainer>
                     <h2>투표</h2><hr />
                     <VoteRow>
@@ -139,9 +214,21 @@ function PostViewPage(props){
                     <label>반대</label>
                     </VoteRow>
                 </VoteContainer>
+                
+                <div style={{display: "flex", alignItems: "flex-end"}}>
+                    <h2>추천수 : {post.recommends}</h2>
+                </div>
+                </div>
+                    
+                <div style={{display:"flex", justifyContent:"flex-end"}}>
+                <Button
+                    title="추천"
+                    onClick={handleRecommendation}
+                />
+                </div>
 
                 <CommentLabel>댓글</CommentLabel>
-                <CommentList comments={post.comments}/>
+                {/* <CommentList comments={post.comments}/> */}
 
                 <TextInput
                     height = {30}
@@ -150,13 +237,14 @@ function PostViewPage(props){
                         setComment(event.target.value);
                     }}
                 />
-
+                <div style={{display:"flex", justifyContent:"flex-end"}}>
                 <Button
                     title="댓글 작성"
                     onClick={() => {
                         navigate("/");
                     }}
                 />
+                </div>
             </Container>
         </Wrapper>
         </>

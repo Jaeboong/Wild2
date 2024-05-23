@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Header from "../components/Header"
 import axios from 'axios';
 
@@ -36,14 +36,6 @@ const Linkto = styled(NavLink)`
   padding-top: 5px;
   font-size: 20px;
   color: black;
-
-  &:hover{
-    color: red;
-  }
-
-  &:active{
-    color: red;
-  }
 `;
 
 const Form = styled.form`
@@ -58,6 +50,7 @@ const Input = styled.input`
   padding: 5px;
   height: 30px;
   width: 45%;
+  font-size: 30px;
 `;
 
 const Button = styled.button`
@@ -79,6 +72,8 @@ function MyInfoPage() {
   const [pw, setPw] = useState(dec.pw);
   const [editMode, setEditMode] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
@@ -89,11 +84,30 @@ function MyInfoPage() {
       });
       if (response.status === 200) {
         alert('정보가 성공적으로 수정되었습니다.');
-        setEditMode(false); // 수정 후 보기 모드로 전환
+        setEditMode(false); 
       }
     } catch (error) {
       console.error('Error updating user information:', error);
-      alert('정보 수정에 실패했습니다.');
+      alert('아이디는 바꿀 수 없습니다.');
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete('http://localhost:4000/api/user', {
+          data: { id: dec.id }
+        });
+        if (response.status === 200) {
+          alert('회원 탈퇴가 성공적으로 처리되었습니다.');
+          localStorage.removeItem('token');
+          navigate('/'); 
+        }
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        alert('회원 탈퇴에 실패했습니다.');
+      }
     }
   };
 
@@ -107,6 +121,7 @@ function MyInfoPage() {
           <Linkto to="#" onClick={() => setEditMode(true)}>● 개인 정보 수정</Linkto>
           <Linkto to="/mypost">● 내가쓴 글</Linkto>
           <Linkto to="/">● 추천한 글</Linkto>
+          <Linkto to="#" onClick={handleDelete}>● 회원 탈퇴</Linkto>
         </LeftBottom>
         <RightBottom>
           {editMode ? (
