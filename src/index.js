@@ -16,8 +16,11 @@ if (config.use_env_variable) {
 }
 
 const User = require('./models/user');
+const Post = require('./models/Post');
 User.init(sequelize);
+Post.init(sequelize);
 db.User = User;
+db.Post = Post;
 
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

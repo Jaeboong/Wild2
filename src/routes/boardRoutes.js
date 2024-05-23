@@ -1,6 +1,7 @@
 const express = require('express');
 const asyncHandler = require('express-async-handler');
 const router = express.Router();
+const Post = require("../models/Post");
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
 
 router.get('/list', asyncHandler(async (req, res) => {
@@ -8,23 +9,22 @@ router.get('/list', asyncHandler(async (req, res) => {
   res.render('listBoard', { posts });
 }));
 
-router.get('/create', (req, res) => {
+router.get('/create', asyncHandler(async(req, res) => {
   res.render('createBoard');
-});
+}));
 
 router.post('/create', asyncHandler(async (req, res) => {
   const { author, title, content, voteTitle } = req.body;
   const newPost = {
-    id: Date.now(),
     author,
     title,
     content,
     voteTitle,
-    votes: { for: 0, against: 0 },
-    recommendations: 0,
-    comments: []
+    votesFor: 0,
+    votesAgainst: 0,
+    recommendations: 0
   };
-  createPost(newPost);
+  await Post.create(newPost);
   res.redirect('/board/list');
 }));
 
