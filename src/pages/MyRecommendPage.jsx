@@ -40,7 +40,7 @@ const SearchButton = styled.button`
   cursor: pointer;
 `;
 
-function MyPostPage() {
+function MyRecommendPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState([]);
@@ -58,16 +58,13 @@ function MyPostPage() {
     setCurrentPage(page);
   };
 
-  const fetchPosts = async (keyword = '', board = 'mypost', page = 1) => {
+  const fetchPosts = async (keyword = '', board = 'myrecommend', page = 1) => {
     try {
-      const endpoint = keyword ? 'search' : 'mypost';
+      const endpoint = keyword ? 'search' : 'myrecommend';
       const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
-        params: {
-          query: keyword,
-          page: page,
-          limit: postsPerPage,
-          author: dec.nickname
-        }
+        query: keyword,
+        page: page,
+        userid: dec.id,
       });
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
@@ -77,13 +74,13 @@ function MyPostPage() {
   };
 
   useEffect(() => {
-    fetchPosts(searchKeyword, 'mypost', currentPage);
+    fetchPosts(searchKeyword, 'myrecommend', currentPage);
   }, [currentPage, clickSearch]);
 
   const handleSearch = () => {
     setCurrentPage(1);
     setClickSearch(true);
-    fetchPosts(searchKeyword, 'mypost', 1);
+    fetchPosts(searchKeyword, 'myrecommend', 1);
   };
 
   const totalPages = Math.ceil(totalPosts / postsPerPage);
@@ -91,7 +88,7 @@ function MyPostPage() {
   return (
     <>
       <Header />
-      <Title>내가쓴 글</Title>
+      <Title>추천한 글</Title>
       <Wrapper>
         <SearchWrapper>
           <input
@@ -108,4 +105,4 @@ function MyPostPage() {
   );
 }
 
-export default MyPostPage;
+export default MyRecommendPage;

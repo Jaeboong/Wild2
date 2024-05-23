@@ -13,6 +13,7 @@ import AnnouncementPage from './pages/AnnouncementPage';
 import MyPostPage from './pages/MyPostPage';
 import ProtectedRoute from './route/ProtectedRoute';
 import PostEditPage from './pages/PostEditPage';
+import MyRecommendPage from './pages/MyRecommendPage';
 
 function App() {
   // return (
@@ -114,6 +115,14 @@ function App() {
           element={
             <ProtectedRoute>
               <MyPostPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/myrecommend" 
+          element={
+            <ProtectedRoute>
+              <MyRecommendPage />
             </ProtectedRoute>
           } 
         />

@@ -25,17 +25,12 @@ const Container = styled.div`
     }
 `;
 
-const Footer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
 function PostWritePage(props) {
     const navigate = useNavigate();
     const location = useLocation();
+
     const queryParams = new URLSearchParams(location.search);
-    const boardType = queryParams.get('board');
+    const boardType = queryParams.get('board'); //url에서 board타입 추출
     
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -48,7 +43,6 @@ function PostWritePage(props) {
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-        const author = isAnonymous ? "익명" : dec.nickname;
 
         try {
             const response = await fetch("http://localhost:4000/api/posts", {
@@ -59,7 +53,7 @@ function PostWritePage(props) {
                 body: JSON.stringify({
                     title,
                     content,
-                    author: author,
+                    author: dec.nickname,
                     board: boardType
                 })
             });
@@ -98,16 +92,7 @@ function PostWritePage(props) {
                         placeHolder="내용을 입력하세요"
                     />
 
-                    <Footer>
-                        <input type="file" multiple />
-                        <div>
-                            <input
-                                type="checkbox"
-                                checked={isAnonymous}
-                                onChange={() => setIsAnonymous(!isAnonymous)}
-                            /> 익명
-                        </div>
-                    </Footer>
+                    <input type="file" multiple />
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button

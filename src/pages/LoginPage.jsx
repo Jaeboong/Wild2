@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import InfoInput from '../components/InfoInput';
 import { NavLink, useNavigate } from 'react-router-dom';
 import LoginButton from '../components/LoginButton';
-import base64 from 'base-64';
-
+import axios from 'axios';
 
 const Wrapper = styled.div`
   display: flex;
@@ -52,35 +51,33 @@ function LoginPage(){
       // 로그인 처리 로직
       event.preventDefault();
       await new Promise((r) => setTimeout(r, 500));
-      
-      const response = await fetch(
-        "http://localhost:4000/api/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json;charset=UTF-8",
-          },
-          body: JSON.stringify({
+  
+      try {
+        const response = await axios.post(
+          "http://localhost:4000/api/login",
+          {
             id: ID,
             password: Password,
-          }),
-        }
-      );
-      const result = await response.json();
+          }
+        );
   
-      if (response.status === 200) {
-        setLoginCheck(false);
-        // local storage에 토큰 저장
-        localStorage.setItem("token", result.token);
-    
-        // 토큰 디코딩
-        const payload = result.token.split('.')[1];
-        const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0))));
-    
-        console.log("로그인성공, 아이디:" + dec.id);
-        alert(`${dec.nickname}님 환영합니다 !`);
-        navigate("/home"); // 성공시 홈으로 이동
-      } else {
+        const result = response.data;
+  
+        if (response.status === 200) {
+          setLoginCheck(false);
+          // local storage에 토큰 저장
+          localStorage.setItem("token", result.token);
+  
+          // 토큰 디코딩
+          const payload = result.token.split('.')[1];
+          const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), c => c.charCodeAt(0))));
+  
+          console.log("로그인성공, 아이디:" + dec.id);
+          alert(`${dec.nickname}님 환영합니다 !`);
+          navigate("/home"); // 성공시 홈으로 이동
+        }
+      } catch (error) {
+        console.error("로그인 실패:", error);
         alert("틀린 정보입니다. 다시 입력해주세요.");
         setLoginCheck(true);
       }

@@ -39,23 +39,6 @@ function PostTable(props){
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   // const currentPosts = boardPosts.slice(indexOfFirstPost, indexOfLastPost);
 
-  if(postwhat === 'mypost'){
-    boardPosts = [{
-      "id": 2,
-      "board": "mypost",
-      "author": "q",
-      "title": "qqq",
-      "content": "",
-      "recommends": 4,
-      "comments": [
-          {
-              "id": 21,
-              "content": ""
-          }            
-      ],
-    }]
-  }
-
   return (
         <Table>
             <Thead>
@@ -69,9 +52,8 @@ function PostTable(props){
 
               <PostList
                     posts = {postwhat}
-                    // posts = {boardPosts}
                     onClickItem = {(item) =>{
-                        navigate(`/post/${item.id}`);
+                        navigate(`/post/${item.id}?board=${item.board}`);
                     }}
                 />
         </Table>

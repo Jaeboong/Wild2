@@ -120,7 +120,7 @@ function MyInfoPage() {
           <Linkto to="#" onClick={() => setEditMode(false)}>● 내 정보</Linkto>
           <Linkto to="#" onClick={() => setEditMode(true)}>● 개인 정보 수정</Linkto>
           <Linkto to="/mypost">● 내가쓴 글</Linkto>
-          <Linkto to="/">● 추천한 글</Linkto>
+          <Linkto to="/myrecommend">● 추천한 글</Linkto>
           <Linkto to="#" onClick={handleDelete}>● 회원 탈퇴</Linkto>
         </LeftBottom>
         <RightBottom>

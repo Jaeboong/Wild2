@@ -83,70 +83,7 @@ function PostViewPage() {
     const token = localStorage.getItem('token');
     const payload = token.split('.')[1];
     const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
-
-    useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const response = await axios.get(`http://localhost:4000/api/posts/${postId}`);
-                setPost(response.data);
-                setIsAuthor(response.data.author === dec.nickname);
-                setHasRecommended(response.data.recommendedBy.includes(dec.nickname));
-            } catch (error) {
-                console.error("Error fetching post:", error);
-            }
-        };
-
-        fetchPost();
-    }, [postId]);
-
-    const handleRecommendation = async () => {
-        try {
-            const url = `http://localhost:4000/api/posts/${postId}/recommend`;
-            const method = hasRecommended ? 'DELETE' : 'POST';
-            const response = await axios({
-                method,
-                url,
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            });
-
-            if (response.status === 200) {
-                setPost(prevPost => ({
-                    ...prevPost,
-                    recommends: hasRecommended ? prevPost.recommends - 1 : prevPost.recommends + 1
-                }));
-                setHasRecommended(!hasRecommended);
-            } else {
-                console.error("Error updating recommendation");
-            }
-        } catch (error) {
-            console.error("Error updating recommendation:", error);
-        }
-    };
-
-    const handleDelete = async () => {
-        try {
-            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                }
-            });
-
-            if (response.status === 200) {
-                navigate("/complain");
-            } else {
-                console.error("Error deleting post");
-            }
-        } catch (error) {
-            console.error("Error deleting post:", error);
-        }
-    };
-
-    const handleEdit = () => {
-        navigate(`/edit-post/${postId}`);
-    };
-
+    
     const checkOnlyOne = (e) => {
         let checkItem = document.getElementsByName("useType");
         Array.prototype.forEach.call(checkItem, function (el) {
@@ -155,6 +92,90 @@ function PostViewPage() {
         e.target.checked = true;
         setCheckValue(e.target.defaultValue);
     };
+
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                const response1 = await axios.get(`http://localhost:4000/api/posts/${postId}`);
+                setPost(response1.data);
+                setIsAuthor(response1.data.author === dec.nickname);
+
+                const response2 = await axios.get(`http://localhost:4000/api/posts/${postId}/comment`);
+                setComment(response2.data);
+            } catch (error) {
+                console.error("Error fetching post:", error);
+            }
+        };
+
+        fetchPost();
+    }, [postId /*댓글, 투표, 추천 하면 바뀌도록 */]);
+
+    const handleDelete = async () => {
+        try {
+            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`);
+
+            if (response.status === 200) {
+                alert("게시글이 정상적으로 삭제되었습니다.");
+                navigate(`/${post.board}`);
+            } else {
+                console.error("Error deleting post");
+            }
+        } catch (error) {
+            console.error("Error deleting post:", error);
+        }
+    };
+
+    const handleRecommendation = async () => {
+        try {
+            const response = await axios.post(
+                `http://localhost:4000/api/posts/${postId}/recommend`,
+            {
+                userid: dec.id,
+            });
+            //추천수 정보 받아와서 렌더링
+        } catch (error) {
+            console.error("Error updating recommendation:", error);
+        }
+    };
+
+    const handleVote = async () => {
+        try {
+            await axios.post(
+                `http://localhost:4000/api/posts/${postId}/vote`,
+            {
+                userid: dec.id,
+            });
+        } catch (error) {
+            console.error("Error updating recommendation:", error);
+        }
+    };
+
+    const handleReport = async () => {
+        try {
+            const response = await axios.post(
+                `http://localhost:4000/api/posts/${postId}/report`,
+            {
+                userid: dec.id,
+            });
+        } catch (error) {
+            console.error("Error updating recommendation:", error);
+        }
+
+        // 바로 투표 정보 받아오기 ??
+    };
+
+    const handleComment = async () => {
+        try {
+            const response = await axios.post(
+                `http://localhost:4000/api/posts/${postId}/comment`,
+            {
+                username: dec.nickname,
+                content: comment,
+            });
+        } catch (error) {
+            console.error("Error updating recommendation:", error);
+        }
+    }
 
     if (!post) {
         return <p>Loading...</p>;
@@ -168,14 +189,14 @@ function PostViewPage() {
                 <Button
                     title="글 목록"
                     onClick={() => {
-                        navigate("/complain");
+                        navigate(`/${post.board}`);
                     }}
                 />
                 <PostContainer>
                     <TitleText>{post.title}</TitleText>
                     <AuthorText>
                         {post.author}
-                        <ReportButton>신고하기</ReportButton>
+                        <ReportButton onClick={handleReport}>신고하기</ReportButton>
                     </AuthorText>
                     <br/><h1>사진</h1><br/>
                     <ContentText>{post.content}</ContentText>
@@ -183,7 +204,10 @@ function PostViewPage() {
 
                 {isAuthor && (
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button title="수정" onClick={handleEdit} />
+                        <Button title="수정" onClick={() => {
+                            navigate(`/edit-post/${postId}`);
+                            }
+                        } />
                         <Button title="삭제" onClick={handleDelete} />
                     </div>
                 )}
@@ -213,11 +237,12 @@ function PostViewPage() {
                     />
                     <label>반대</label>
                     </VoteRow>
+                    <Button title='제출' onClick={handleVote}/>
                 </VoteContainer>
                 
-                <div style={{display: "flex", alignItems: "flex-end"}}>
-                    <h2>추천수 : {post.recommends}</h2>
-                </div>
+                    <div style={{display: "flex", alignItems: "flex-end"}}>
+                        <h2>추천수 : {post.recommends}</h2>
+                    </div>
                 </div>
                     
                 <div style={{display:"flex", justifyContent:"flex-end"}}>
@@ -228,7 +253,7 @@ function PostViewPage() {
                 </div>
 
                 <CommentLabel>댓글</CommentLabel>
-                {/* <CommentList comments={post.comments}/> */}
+                {/* <CommentList comments={comment}/> */}
 
                 <TextInput
                     height = {30}
@@ -240,9 +265,7 @@ function PostViewPage() {
                 <div style={{display:"flex", justifyContent:"flex-end"}}>
                 <Button
                     title="댓글 작성"
-                    onClick={() => {
-                        navigate("/");
-                    }}
+                    onClick={handleComment}
                 />
                 </div>
             </Container>
