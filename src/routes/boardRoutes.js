@@ -5,8 +5,12 @@ const Post = require("../models/Post");
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
 
 router.get('/list', asyncHandler(async (req, res) => {
-  const posts = getAllPosts();
-  res.render('listBoard', { posts });
+  try {
+    const posts = await getAllPosts();
+    res.render('listBoard', { posts });
+  } catch (error) {
+    res.status(500).send('Error retrieving posts');
+  }
 }));
 
 router.get('/create', asyncHandler(async(req, res) => {
@@ -22,14 +26,15 @@ router.post('/create', asyncHandler(async (req, res) => {
     voteTitle,
     votesFor: 0,
     votesAgainst: 0,
-    recommendations: 0
+    recommendations: 0,
+    comments: []
   };
   await Post.create(newPost);
   res.redirect('/board/list');
 }));
 
 router.get('/view/:id', asyncHandler(async (req, res) => {
-  const post = getPostById(req.params.id);
+  const post = await getPostById(req.params.id);
   if (!post) {
     res.status(404).send('Post not found');
     return;
@@ -47,7 +52,7 @@ router.post('/vote/:id', asyncHandler(async (req, res) => {
 
   if (!req.session.votes.includes(req.params.id)) {
     const { voteType } = req.body;
-    votePost(req.params.id, voteType);
+    await votePost(req.params.id, voteType);
     req.session.votes.push(req.params.id);
   }
 
@@ -60,7 +65,7 @@ router.post('/recommend/:id', asyncHandler(async (req, res) => {
   }
 
   if (!req.session.recommendations.includes(req.params.id)) {
-    recommendPost(req.params.id);
+    await recommendPost(req.params.id); 
     req.session.recommendations.push(req.params.id);
   }
 
@@ -70,13 +75,18 @@ router.post('/recommend/:id', asyncHandler(async (req, res) => {
 router.post('/comment/:id', asyncHandler(async (req, res) => {
   const { author, comment } = req.body;
   const newComment = {
-    id: Date.now(),
     author,
     content: comment,
+    postId: req.params.id,
     recommendations: 0
   };
-  addComment(req.params.id, newComment);
-  res.redirect(`/board/view/${req.params.id}`);
+  try {
+    await addComment(req.params.id, newComment);
+    res.redirect(`/board/view/${req.params.id}`);
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).send('Error adding comment');
+  }
 }));
 
 router.post('/comment/recommend/:postId/:commentId', asyncHandler(async (req, res) => {
@@ -87,7 +97,7 @@ router.post('/comment/recommend/:postId/:commentId', asyncHandler(async (req, re
   }
 
   if (!req.session.commentRecommendations[commentId]) {
-    recommendComment(postId, parseInt(commentId));
+    await recommendComment(postId, parseInt(commentId));
     req.session.commentRecommendations[commentId] = true;
   }
 
@@ -97,5 +107,19 @@ router.post('/comment/recommend/:postId/:commentId', asyncHandler(async (req, re
 router.use((req, res) => {
   res.status(404).send('Page not found');
 });
+
+router.get('/vote/data/:id', asyncHandler(async (req, res) => {
+  const post = await getPostById(req.params.id);
+  if (!post) {
+    res.status(404).send('Post not found');
+    return;
+  }
+  res.json({
+    votesFor: post.votesFor,
+    votesAgainst: post.votesAgainst
+  });
+}));
+
+
 
 module.exports = router;

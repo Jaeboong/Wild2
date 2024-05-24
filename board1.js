@@ -7,7 +7,7 @@ const asyncHandler = require('express-async-handler');
 const { sequelize, User } = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));

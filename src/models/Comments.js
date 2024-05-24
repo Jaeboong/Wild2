@@ -3,43 +3,31 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('../index'); // sequelize 인스턴스를 가져옵니다
 
-module.exports = class Post extends Sequelize.Model {
+module.exports = class Comment extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
       author: {
-        type: DataTypes.STRING(8),
-        allowNull: false,
-      },
-      title: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING,
         allowNull: false,
       },
       content: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      voteTitle: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
-      votesFor: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
-      votesAgainst: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
       recommendations: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      postId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      }
     }, {
       sequelize,
       timestamps: true,
       underscored: false,
-      modelName: 'Post',
-      tableName: 'posts',
+      modelName: 'Comment',
+      tableName: 'comments',
       paranoid: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
@@ -47,6 +35,6 @@ module.exports = class Post extends Sequelize.Model {
   }
 
   static associate(index) {
-    this.hasMany(index.Comments, { foreignKey: 'postId', sourceKey: 'id', as: 'comments' });
+    this.belongsTo(index.Post, { foreignKey: 'postId', targetKey: 'id' });
   }
 }

@@ -1,45 +1,92 @@
-const posts = [];
+const Post = require('./Post');
+const Comment = require('./Comments');
 
-const getAllPosts = () => {
-  return posts;
-};
-
-const createPost = (post) => {
-  posts.push(post);
-};
-
-const getPostById = (id) => {
-  return posts.find(post => post.id === parseInt(id));
-};
-
-const votePost = (id, voteType) => {
-  const post = getPostById(id);
-  if (voteType === 'for') {
-    post.votes.for++;
-  } else if (voteType === 'against') {
-    post.votes.against++;
+const getAllPosts = async () => {
+  try {
+    const posts = await Post.findAll(); 
+    return posts;
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
   }
 };
 
-const recommendPost = (id) => {
-  const post = getPostById(id);
-  post.recommendations++;
-};
-
-const addComment = (id, comment) => {
-  const post = getPostById(id);
-  if (post) {
-    post.comments.push(comment);
+const createPost = async (post) => {
+  try {
+    await Post.create(post); 
+  } catch (error) {
+    console.error('Error creating post:', error);
+    throw error;
   }
 };
 
-const recommendComment = (postId, commentId) => {
-  const post = getPostById(postId);
-  if (post) {
-    const comment = post.comments.find(comment => comment.id === commentId);
+const getPostById = async (id) => {
+  try {
+    const post = await Post.findByPk(id, {
+      include: [{ model: Comment, as: 'comments' }]
+    });
+    return post;
+  } catch (error) {
+    console.error('Error fetching post by id:', error);
+    throw error;
+  }
+};
+
+const votePost = async (id, voteType) => {
+  try {
+    const post = await getPostById(id); 
+    if (!post) return;
+
+    if (voteType === 'for') {
+      post.votesFor++; 
+    } else if (voteType === 'against') {
+      post.votesAgainst++; 
+    }
+    await post.save(); 
+  } catch (error) {
+    console.error('Error voting post:', error);
+    throw error;
+  }
+};
+
+const recommendPost = async (id) => {
+  try {
+    const post = await getPostById(id); 
+    if (!post) return;
+
+    post.recommendations++; 
+    await post.save(); 
+  } catch (error) {
+    console.error('Error recommending post:', error);
+    throw error;
+  }
+};
+
+const addComment = async (id, comment) => {
+  try {
+    const post = await getPostById(id);
+    if (!post) return;
+
+    await Comment.create({ ...comment, postId: id });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    throw error;
+  }
+};
+
+const recommendComment = async (postId, commentId) => {
+  try {
+    const post = await getPostById(postId);
+    if (!post) return;
+
+    const comment = await Comment.findOne({ where: { id: commentId, postId: postId } });
     if (comment) {
       comment.recommendations++;
+      await comment.save(); 
     }
+  } catch (error) {
+    console.error('Error recommending comment:', error);
+    throw error;
   }
 };
 
