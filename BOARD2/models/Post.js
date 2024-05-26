@@ -18,12 +18,12 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.STRING(20),
         allowNull: false,
       },
-      body: { 
+      content: { 
         type: DataTypes.TEXT,
         allowNull: false,
       },
       recommendations: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         defaultValue: 0,
       }
     }, {

@@ -13,7 +13,7 @@ router.get(
             title: "Board",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("board", { locals, data, layout: mainLayout });
     })
@@ -27,7 +27,7 @@ router.get(
             title: "Report",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("report", { locals, data, layout: mainLayout });
     })
@@ -41,7 +41,7 @@ router.get(
             title: "Hot",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("hot", { locals, data, layout: mainLayout });
     })
@@ -55,7 +55,7 @@ router.get(
             title: "Notice",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("notice", { locals, data, layout: mainLayout });
     })
@@ -70,7 +70,7 @@ router.get(
             title: "Reports",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("reports", { locals, data, layout: mainLayout });
     })
@@ -85,7 +85,7 @@ router.get(
             title: "MyWrite",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("mywrite", { locals, data, layout: mainLayout });
     })
@@ -94,7 +94,7 @@ router.get(
 router.get("/post", asyncHandler(async (req, res) => {
     try {
         const posts = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
         res.render("post", { posts, layout: mainLayout });
     } catch (error) {
@@ -119,39 +119,6 @@ router.get("/post/:id", asyncHandler(async (req, res) => {
 }));
 
 
-
-
-// 게시글 추천 기능
-router.post('/post/:id/recommend', async (req, res) => {
-    try {
-      const postId = req.params.id;
-      const post = await Post.findByPk(postId);
-      if (!post) {
-        return res.status(404).json({ error: 'Post not found.' });
-      }
-      post.recommendations++; // 추천 수 증가
-      await post.save();
-      res.json({ recommendations: post.recommendations });
-    } catch (error) {
-      console.error('Error recommending post:', error);
-      res.status(500).json({ error: 'Internal server error.' });
-    }
-  });
-
-router.get('/board', async (req, res) => {
-    try {
-      // 게시글 데이터와 추천 수를 함께 가져옴
-      const posts = await Post.findAll({
-          attributes: ['title', 'author', 'recommendations', 'createdAt']
-      });
-      res.render('board', { posts, layout: mainLayout });
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-      res.status(500).send('Internal server error');
-    }
-  });
-  
-
   //검색 기능
   router.get("/search", asyncHandler(async (req, res) => {
     // 클라이언트로부터 검색어를 받음
@@ -169,7 +136,7 @@ router.get('/board', async (req, res) => {
                     { author: { [Op.like]: `%${keyword}%` } }
                 ]
             },
-            attributes: ['title', 'body', 'author', 'createdAt']
+            attributes: ['title', 'content', 'author', 'createdAt']
         });
     
         res.render('search-results', { data: searchResults, layout: 'layouts/main' });
