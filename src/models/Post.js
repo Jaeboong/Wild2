@@ -22,6 +22,11 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'complain',
+      },
       votesFor: {
         type: DataTypes.INTEGER,
         defaultValue: 0,

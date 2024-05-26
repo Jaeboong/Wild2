@@ -40,7 +40,7 @@ router.post('/login', async function(req, res) {
       const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
       res.cookie('token', token, { httpOnly: true });
 
-      return res.redirect('/board/list');
+      return res.redirect('/board/complain');
     } else {
       return res.status(401).send('비밀번호가 일치하지 않습니다');
     }
@@ -96,11 +96,57 @@ router.post('/sign-up', async function(req, res) {
 router.get('/logout', (req, res) => {
   res.clearCookie('token');
   req.session.destroy(() => {
-    res.redirect('/board/login');
+    res.redirect('/login');
   });
 });
 
-router.get('/list', checkLogin, asyncHandler(async (req, res) => {
+/////////////////////////////////////////////
+
+router.get(
+  ["/board/hot"],
+  asyncHandler(async (req, res) => {
+      const locals = {
+          title: "Hot",
+      };
+      const data = await Post.findAll({
+          attributes: ['title', 'body', 'author', 'createdAt']
+      });
+      res.render("hot", { locals, data, layout: mainLayout });
+  })
+);
+
+// 공지 게시판
+router.get(
+  ["/board/announce"],
+  asyncHandler(async (req, res) => {
+      const locals = {
+          title: "Notice",
+      };
+      const data = await Post.findAll({
+          attributes: ['title', 'body', 'author', 'createdAt']
+      });
+      res.render("notice", { locals, data, layout: mainLayout });
+  })
+);
+
+
+// 신고 목록
+router.get(
+  ["/board/reportList"],
+  asyncHandler(async (req, res) => {
+      const locals = {
+          title: "Reports",
+      };
+      const data = await Post.findAll({
+          attributes: ['title', 'body', 'author', 'createdAt']
+      });
+      res.render("reports", { locals, data, layout: mainLayout });
+  })
+);
+
+/////////////////////////////////////////////
+
+router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
   try {
     const posts = await getAllPosts();
     res.render('listBoard', { posts });
@@ -109,11 +155,11 @@ router.get('/list', checkLogin, asyncHandler(async (req, res) => {
   }
 }));
 
-router.get('/create', checkLogin, asyncHandler(async(req, res) => {
+router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
   res.render('createBoard');
 }));
 
-router.post('/create', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
   const { title, content, voteTitle } = req.body;
   const author = req.user.id;
   const newPost = {
@@ -121,28 +167,50 @@ router.post('/create', checkLogin, asyncHandler(async (req, res) => {
     title,
     content,
     voteTitle,
+    category, 
     votesFor: 0,
     votesAgainst: 0,
     recommendations: 0,
     comments: []
   };
   await Post.create(newPost);
-  res.redirect('/board/list');
+    // 선택한 카테고리에 따라 리다이렉트
+    if (category === 'complain') {
+      res.redirect('/board/complain');
+    } else if (category === 'report') {
+      res.redirect('/board/announce');
+    } else {
+      res.redirect('/board/complain');  // 기본적으로 민원게시판으로 리다이렉트
+    }
 }));
 
-router.get('/view/:id', checkLogin, asyncHandler(async (req, res) => {
+router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
   const post = await getPostById(req.params.id);
   if (!post) {
     res.status(404).send('Post not found');
     return;
   }
+  
+  // 작성자의 이름 가져오기
+  const author = await User.findByPk(post.author);
+  post.authorName = author ? author.name : 'Unknown';
+
+  // 댓글 작성자의 이름 가져오기
+  const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
+    const commentAuthor = await User.findByPk(comment.author);
+    return {
+      ...comment,
+      authorName: commentAuthor ? commentAuthor.name : 'Unknown'
+    };
+  }));
+
   const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
   const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
   const commentRecommendations = req.session.commentRecommendations || {};
-  res.render('viewBoard', { post, hasVoted, hasRecommended, commentRecommendations });
+  res.render('viewBoard', { post, comments: commentsWithAuthors, hasVoted, hasRecommended, commentRecommendations });
 }));
 
-router.post('/vote/:id', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/vote/:id', checkLogin, asyncHandler(async (req, res) => {
   if (!req.session.votes) {
     req.session.votes = [];
   }
@@ -156,7 +224,7 @@ router.post('/vote/:id', checkLogin, asyncHandler(async (req, res) => {
   res.redirect(`/board/view/${req.params.id}`);
 }));
 
-router.post('/recommend/:id', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/recommend/:id', checkLogin, asyncHandler(async (req, res) => {
   if (!req.session.recommendations) {
     req.session.recommendations = [];
   }
@@ -169,16 +237,27 @@ router.post('/recommend/:id', checkLogin, asyncHandler(async (req, res) => {
   res.redirect(`/board/view/${req.params.id}`);
 }));
 
-router.post('/comment/:id', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/comment/:id', checkLogin, asyncHandler(async (req, res) => {
   const { comment } = req.body;
-  const author = req.user.id;
-  const newComment = {
-    author,
-    content: comment,
-    postId: req.params.id,
-    recommendations: 0
-  };
+  const authorId = req.user.id;  // 로그인된 사용자의 ID를 가져옵니다.
+
   try {
+    // 로그인된 사용자의 이름을 가져옵니다.
+    const author = await User.findByPk(authorId);
+
+    if (!author) {
+      return res.status(400).send('사용자를 찾을 수 없습니다.');
+    }
+
+
+    const newComment = {
+      author: authorId,
+      authorName: author.name,  // 작성자의 이름 저장
+      content: comment,
+      postId: req.params.id,
+      recommendations: 0
+    };
+
     await addComment(req.params.id, newComment);
     res.redirect(`/board/view/${req.params.id}`);
   } catch (error) {
@@ -187,7 +266,7 @@ router.post('/comment/:id', checkLogin, asyncHandler(async (req, res) => {
   }
 }));
 
-router.post('/comment/recommend/:postId/:commentId', asyncHandler(async (req, res) => {
+router.post('/board/comment/recommend/:postId/:commentId', asyncHandler(async (req, res) => {
   const { postId, commentId } = req.params;
 
   if (!req.session.commentRecommendations) {

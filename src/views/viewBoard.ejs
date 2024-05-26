@@ -5,9 +5,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
 </head>
 <body>
-  <a href="/board/logout">로그아웃</a>
+  <a href="/logout">로그아웃</a>
   <h1><%= post.title %></h1>
-  <p>작성자: <%= post.author %></p>
+  <p>작성자: <%= post.authorName %></p>
   <p><%= post.content %></p>
   <p>찬성 투표 수: <%= post.votesFor %> | 반대 투표 수: <%= post.votesAgainst %></p>
   <p>추천 수: <%= post.recommendations %></p>
@@ -71,7 +71,7 @@
     // 페이지 로드 시 차트를 렌더링
     window.onload = renderVoteChart;
   </script>
-
+  
   <h2>댓글</h2>
   <ul>
     <% (post.comments || []).forEach(comment => { %>
@@ -94,6 +94,6 @@
 
   
 
-  <a href="/board/list">목록으로 돌아가기</a>
+  <a href="/board/complain">목록으로 돌아가기</a>
 </body>
 </html>

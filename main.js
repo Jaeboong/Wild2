@@ -24,7 +24,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 
 const boardRoutes = require('./src/routes/boardRoutes');
-app.use('/board', asyncHandler(boardRoutes));
+app.use('/', asyncHandler(boardRoutes));
 
 app.use((req, res, next) => {
   res.status(404).send('Page not found');

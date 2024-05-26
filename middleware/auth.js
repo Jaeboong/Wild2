@@ -4,7 +4,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const checkLogin = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.redirect("/board/login");
+    return res.redirect("/login");
   }
   
   try {
@@ -12,7 +12,7 @@ const checkLogin = (req, res, next) => {
     req.user = decoded; 
     next();
   } catch (error) {
-    return res.redirect("/board/login"); 
+    return res.redirect("/login"); 
   }
 };
 
