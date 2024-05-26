@@ -7,7 +7,7 @@ const { Op } = require('sequelize');
 
 // 민원 게시판
 router.get(
-    ["/board"],
+    ["/board/complain"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "Board",
@@ -21,7 +21,7 @@ router.get(
 
 // 제보 게시판
 router.get(
-    ["/report"],
+    ["/board/report"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "Report",
@@ -35,7 +35,7 @@ router.get(
 
 // HOT 게시판
 router.get(
-    ["/hot"],
+    ["/board/hot"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "Hot",
@@ -49,7 +49,7 @@ router.get(
 
 // 공지 게시판
 router.get(
-    ["/notice"],
+    ["/board/notice"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "Notice",
@@ -64,7 +64,7 @@ router.get(
 
 // 신고 목록
 router.get(
-    ["/reports"],
+    ["/board/reportList"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "Reports",
@@ -79,7 +79,7 @@ router.get(
 
 //내 게시글 보기(로그인 하고)
 router.get(
-    ["/mywrite"],
+    ["/board/mywrite"],
     asyncHandler(async (req, res) => {
         const locals = {
             title: "MyWrite",
@@ -90,6 +90,20 @@ router.get(
         res.render("mywrite", { locals, data, layout: mainLayout });
     })
 )
+
+router.get("/post", asyncHandler(async (req, res) => {
+    try {
+        const posts = await Post.findAll({
+            attributes: ['title', 'body', 'author', 'createdAt']
+        });
+        res.render("post", { posts, layout: mainLayout });
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).send("Internal server error");
+    }
+}));
+
+
 
 router.get("/post/:id", asyncHandler(async (req, res) => {
     try {
