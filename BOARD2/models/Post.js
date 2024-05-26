@@ -23,10 +23,10 @@ module.exports = class Post extends Sequelize.Model {
         allowNull: true,
         defaultValue: 'complain',
       },
-      recommendations: {
+      recommend: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
-      },
+      }, 
       reports: {
         type: DataTypes.INTEGER,
         allowNull: true,

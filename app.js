@@ -26,7 +26,7 @@ const initializeApp = async () => {
       title: '제목1', 
       content: '내용 1 - 민원넣습니다.', 
       category: 'complain', 
-      recommendations: 19, 
+      recommend: 19, 
       reports: 0, 
       createdAt: new Date('2024-05-19T00:00:00.000Z'), 
       updatedAt: new Date('2024-05-26T16:17:23.037Z') 
@@ -37,7 +37,7 @@ const initializeApp = async () => {
       title: '제목2', 
       content: '내용 2 - 민원넣습니다.', 
       category: 'complain', 
-      recommendations: 5, 
+      recommend: 5, 
       reports: 0, 
       createdAt: new Date('2024-05-20T00:00:00.000Z'), 
       updatedAt: new Date('2024-05-26T16:17:23.037Z') 
@@ -48,7 +48,7 @@ const initializeApp = async () => {
       title: '제목3', 
       content: '내용 3 - 민원넣습니다.', 
       category: 'complain', 
-      recommendations: 2, 
+      recommend: 2, 
       reports: 0, 
       createdAt: new Date('2024-05-21T00:00:00.000Z'), 
       updatedAt: new Date('2024-05-26T16:17:23.037Z') 
