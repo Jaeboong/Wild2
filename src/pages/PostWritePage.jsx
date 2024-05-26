@@ -34,21 +34,23 @@ function PostWritePage(props) {
     
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [isAnonymous, setIsAnonymous] = useState(false);
 
-    
     const token = localStorage.getItem('token');
     const payload = token.split('.')[1];
     const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
+        const timestamp = new Date();
+        const date = new Date(timestamp).toISOString().slice(0, 19);
+        console.log(date); //날짜 찍기
 
         try {
             const response = await fetch("http://localhost:4000/api/posts", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
                 body: JSON.stringify({
                     title,

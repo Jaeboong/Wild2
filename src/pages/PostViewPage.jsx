@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import Header from "../components/Header";
 import axios from "axios";
+
+const baseURL = "http://localhost:3000";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -76,43 +78,50 @@ function PostViewPage() {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [comment, setComment] = useState("");
-    const [checkValue, setCheckValue] = useState('사용');
+    const [checkValue, setCheckValue] = useState('');
+    const [hasReported, setHasReported] = useState(false);
     const [hasRecommended, setHasRecommended] = useState(false);
+    const [hasVoted, setHasVoted] = useState(false);
     const [isAuthor, setIsAuthor] = useState(false);
     
+    const location = useLocation();
+
     const token = localStorage.getItem('token');
     const payload = token.split('.')[1];
     const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
     
     const checkOnlyOne = (e) => {
-        let checkItem = document.getElementsByName("useType");
-        Array.prototype.forEach.call(checkItem, function (el) {
-            el.checked = false;
-        });
         e.target.checked = true;
         setCheckValue(e.target.defaultValue);
     };
 
+    const fetchPost = async () => {
+        try {
+            const response = await axios.get(`http://localhost:4000/api/posts/${postId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+            setPost(response.data);
+            setIsAuthor(response.data.author === dec.nickname);
+            setHasReported(response.data.hasReported);
+            setHasVoted(response.data.hasVoted);
+        } catch (error) {
+            console.error("Error fetching post:", error);
+        }
+    };
+
     useEffect(() => {
-        const fetchPost = async () => {
-            try {
-                const response1 = await axios.get(`http://localhost:4000/api/posts/${postId}`);
-                setPost(response1.data);
-                setIsAuthor(response1.data.author === dec.nickname);
-
-                const response2 = await axios.get(`http://localhost:4000/api/posts/${postId}/comment`);
-                setComment(response2.data);
-            } catch (error) {
-                console.error("Error fetching post:", error);
-            }
-        };
-
         fetchPost();
-    }, [postId /*댓글, 투표, 추천 하면 바뀌도록 */]);
+    }, [postId, hasRecommended, hasVoted, hasReported]);
 
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`);
+            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
 
             if (response.status === 200) {
                 alert("게시글이 정상적으로 삭제되었습니다.");
@@ -129,10 +138,14 @@ function PostViewPage() {
         try {
             const response = await axios.post(
                 `http://localhost:4000/api/posts/${postId}/recommend`,
-            {
-                userid: dec.id,
-            });
-            //추천수 정보 받아와서 렌더링
+                { userid: dec.id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+            setHasRecommended(response.data.hasRecommended);
         } catch (error) {
             console.error("Error updating recommendation:", error);
         }
@@ -140,13 +153,18 @@ function PostViewPage() {
 
     const handleVote = async () => {
         try {
-            await axios.post(
+            const response = await axios.post(
                 `http://localhost:4000/api/posts/${postId}/vote`,
-            {
-                userid: dec.id,
-            });
+                { userid: dec.id, checked: checkValue },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+            setHasVoted(response.data.hasVoted);
         } catch (error) {
-            console.error("Error updating recommendation:", error);
+            console.error("Error updating vote:", error);
         }
     };
 
@@ -154,28 +172,47 @@ function PostViewPage() {
         try {
             const response = await axios.post(
                 `http://localhost:4000/api/posts/${postId}/report`,
-            {
-                userid: dec.id,
-            });
+                { userid: dec.id },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+            setHasReported(true);
         } catch (error) {
-            console.error("Error updating recommendation:", error);
+            console.error("Error reporting post:", error);
         }
-
-        // 바로 투표 정보 받아오기 ??
     };
 
     const handleComment = async () => {
         try {
             const response = await axios.post(
                 `http://localhost:4000/api/posts/${postId}/comment`,
-            {
-                username: dec.nickname,
-                content: comment,
-            });
+                { username: dec.nickname, content: comment },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                setComment("");
+                fetchPost();  // 댓글 작성 후 게시글 정보를 다시 불러옴
+            }
         } catch (error) {
-            console.error("Error updating recommendation:", error);
+            console.error("Error posting comment:", error);
         }
-    }
+    };
+    
+    const handleCopyClipBoard = async (text) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            alert("클립보드에 링크가 복사되었습니다.");
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     if (!post) {
         return <p>Loading...</p>;
@@ -192,11 +229,21 @@ function PostViewPage() {
                         navigate(`/${post.board}`);
                     }}
                 />
+
                 <PostContainer>
                     <TitleText>{post.title}</TitleText>
                     <AuthorText>
+                        <div style={{display: "flex", flexDirection: "column"}}>
                         {post.author}
+                        날짜
+                        </div>
+
+                        <div>
+                        <button
+	                        onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
+                        >주소복사</button>
                         <ReportButton onClick={handleReport}>신고하기</ReportButton>
+                        </div>
                     </AuthorText>
                     <br/><h1>사진</h1><br/>
                     <ContentText>{post.content}</ContentText>
@@ -212,45 +259,42 @@ function PostViewPage() {
                     </div>
                 )}
 
-                <div style={{display:"flex", justifyContent:"space-between"}}>
-                <VoteContainer>
-                    <h2>투표</h2><hr />
-                    <VoteRow>
-                    <input
-                        type="checkbox"
-                        id="agree"
-                        name="useType"
-                        value="찬성"
-                        onChange={(e) => checkOnlyOne(e)}
-                        checked={checkValue === "찬성"}
-                    />
-                    <label>찬성</label>
-                    </VoteRow>
-                    <VoteRow>
-                    <input
-                        type="checkbox"
-                        id="disagree"
-                        name="useType"
-                        value="반대"
-                        onChange={(e) => checkOnlyOne(e)}
-                        checked={checkValue === "반대"}
-                    />
-                    <label>반대</label>
-                    </VoteRow>
-                    <Button title='제출' onClick={handleVote}/>
-                </VoteContainer>
-                
-                    <div style={{display: "flex", alignItems: "flex-end"}}>
-                        <h2>추천수 : {post.recommends}</h2>
+                    <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        {!hasVoted ? (
+                            <VoteContainer>
+                                <h2>투표</h2><hr />
+                                <VoteRow>
+                                    <input
+                                        type="checkbox"
+                                        value="agree"
+                                        onChange={(e) => checkOnlyOne(e)}
+                                        checked={checkValue === "agree"}
+                                    />
+                                    <label>찬성</label>
+                                </VoteRow>
+                                <VoteRow>
+                                    <input
+                                        type="checkbox"
+                                        value="disagree"
+                                        onChange={(e) => checkOnlyOne(e)}
+                                        checked={checkValue === "disagree"}
+                                    />
+                                    <label>반대</label>
+                                </VoteRow>
+                                <Button title='제출' onClick={handleVote} />
+                            </VoteContainer>
+                        ) : (
+                            <div>
+                                <h2>투표 결과</h2>
+                                {/* <p>찬성: {post.votes.filter(vote => vote.choice === 'agree').length}</p>
+                                <p>반대: {post.votes.filter(vote => vote.choice === 'disagree').length}</p> */}
+                            </div>
+                        )}
+
+                        <div style={{ display: "flex", alignItems: "flex-end" }}>
+                            <h2>추천수 : {post.recommends}</h2>
+                        </div>
                     </div>
-                </div>
-                    
-                <div style={{display:"flex", justifyContent:"flex-end"}}>
-                <Button
-                    title="추천"
-                    onClick={handleRecommendation}
-                />
-                </div>
 
                 <CommentLabel>댓글</CommentLabel>
                 {/* <CommentList comments={comment}/> */}
