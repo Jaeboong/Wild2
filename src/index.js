@@ -24,7 +24,7 @@ if (config.use_env_variable) {
 }
 
 // 모델을 가져와 초기화
-const User = require('./models/user');
+const User = require('./models/users');
 const Post = require('./models/Post');
 const Comments = require('./models/Comments');
 User.init(sequelize);

@@ -4,6 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const asyncHandler = require('express-async-handler');
+const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt'); 
 const { sequelize, User } = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
 
 const app = express();
@@ -11,6 +13,7 @@ const port = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 app.use(session({
   secret: 'your-secret-key',
   resave: false,
@@ -34,13 +37,16 @@ const initializeApp = async () => {
     await sequelize.sync({ force: true });  // 데이터베이스 동기화 (force: true로 설정하여 기존 테이블을 삭제하고 다시 생성)
     console.log('Database synchronized');
 
-    // 목업 데이터 삽입
+    
+    const adminPassword = await bcrypt.hash('qwer1234', 10);
     await User.bulkCreate([
-      { name: 'Alice2', age: 30, married: false },
-      { name: 'Bob2', age: 40, married: true },
-      { name: 'Charlie2', age: 25, married: false },
+      { name: 'admin', 
+      phone: '010-1111-1111', 
+      email: 'admin@admin.com', 
+      password: adminPassword,
+      admin: true }
     ]);
-    console.log('Mock data inserted');
+    console.log('Admin account created');
 
   } catch (error) {
     console.error('Unable to connect to the database:', error);
