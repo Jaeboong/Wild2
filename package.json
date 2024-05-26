@@ -17,6 +17,8 @@
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.0",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.3.0",
     "method-override": "^3.0.0",

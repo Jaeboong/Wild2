@@ -1,37 +1,44 @@
-// models/Post.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+'use strict';
 
-const Post = sequelize.define('Post', {
-    number: {
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = require('../models/index'); // sequelize 인스턴스를 가져옵니다
+
+module.exports = class Post extends Sequelize.Model {
+  static init(sequelize) {
+    return super.init({
+      number: {
         type: DataTypes.INTEGER,
         allowNull: false
-    },
-    author: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    title: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    body: {
+      },
+      author: {
+        type: DataTypes.STRING(8),
+        allowNull: false,
+      },
+      title: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+      },
+      body: { 
         type: DataTypes.TEXT,
-        allowNull: false
-    },
-    recommendations: {
+        allowNull: false,
+      },
+      recommendations: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    }
-});
+        defaultValue: 0,
+      }
+    }, {
+      sequelize,
+      timestamps: true, // timestamps를 true로 설정
+      underscored: false,
+      modelName: 'Post',
+      tableName: 'posts',
+      paranoid: false,
+      charset: 'utf8',
+      collate: 'utf8_general_ci',
+    });
+  }
 
-Post.sync({force:true})
-
-const post = new Post({number:1, author:"작성자1", title:"민원", body:"민원임", recommendations:0})
-post.save()
-
-module.exports = Post;
+  static associate(db) {
+    
+  }
+};

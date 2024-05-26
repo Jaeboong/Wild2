@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mainLayout = "../views/layouts/main.ejs";
-const Post = require("../models/Post");
+const Post = require("../models/Post")
 const asyncHandler = require("express-async-handler");
 const { Op } = require('sequelize');
 
@@ -61,6 +61,22 @@ router.get(
     })
 );
 
+
+// 신고 목록
+router.get(
+    ["/reports"],
+    asyncHandler(async (req, res) => {
+        const locals = {
+            title: "Reports",
+        };
+        const data = await Post.findAll({
+            attributes: ['title', 'body', 'author', 'createdAt']
+        });
+        res.render("reports", { locals, data, layout: mainLayout });
+    })
+);
+
+
 //내 게시글 보기(로그인 하고)
 router.get(
     ["/mywrite"],
@@ -75,15 +91,37 @@ router.get(
     })
 )
 
-// 게시글 상세보기
-router.get("/post/:id", asyncHandler(async (req, res) => {
-    const post = await Post.findByPk(req.params.id);
-    if (!post) {
-        return res.status(404).send("Post not found");
+
+
+router.get("/post", asyncHandler(async (req, res) => {
+    try {
+        // 게시물 목록을 가져오는 코드를 추가합니다.
+        const posts = await Post.findAll({
+            attributes: ['title', 'body', 'author', 'createdAt']
+        });
+        res.render("postList", { posts, layout: mainLayout });
+    } catch (error) {
+        console.error("Error fetching posts:", error);
+        res.status(500).send("Internal server error");
     }
-    
-    res.render("post", { post, layout: mainLayout });
 }));
+
+
+router.get("/post/:id", asyncHandler(async (req, res) => {
+    try {
+        const post = await Post.findByPk(req.params.id);
+        if (!post) {
+            return res.status(404).send("Post not found");
+        }
+        res.render("post", { post, layout: mainLayout });
+    } catch (error) {
+        console.error("Error fetching post:", error);
+        res.status(500).send("Internal server error");
+    }
+}));
+
+
+
 
 // 게시글 추천 기능
 router.post('/post/:id/recommend', async (req, res) => {

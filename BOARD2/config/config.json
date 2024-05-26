@@ -1,0 +1,26 @@
+{
+    "development": {
+      "username": "root",
+      "password": "wild2",
+      "database": "wild2",
+      "host": "127.0.0.1",
+      "dialect": "mariadb",
+      "port" : "3308"
+    },
+    "test": {
+      "username": "root",
+      "password": "wild2",
+      "database": "wild2",
+      "host": "127.0.0.1",
+      "dialect": "mariadb",
+      "port" : "3308"
+    },
+    "production": {
+      "username": "root",
+      "password": "wild2",
+      "database": "wild2",
+      "host": "127.0.0.1",
+      "dialect": "mariadb",
+      "port" : "3308"
+    }
+  }
