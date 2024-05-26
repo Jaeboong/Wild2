@@ -152,26 +152,34 @@ router.get('/board', async (req, res) => {
   });
   
 
-//검색기능
-router.get("/search", asyncHandler(async (req, res) => {
+  //검색 기능
+  router.get("/search", asyncHandler(async (req, res) => {
     // 클라이언트로부터 검색어를 받음
     const searchKeyword = req.query.query;
 
     // 검색어가 제공되지 않은 경우 기본 검색어 설정
     const keyword = searchKeyword || "기본 검색어";
-    console.log(searchKeyword)
 
     try {
-        // 정규 표현식을 사용하여 제목에서 검색 단어를 포함하는 게시물 찾기
+        // 제목과 작성자에 검색어가 포함된 게시물을 찾아 검색 결과로 반환
         const searchResults = await Post.findAll({ 
-            where: { title: { [Op.iLike]: `%${keyword}%` } },
-            attributes: ['title', 'body', 'createdAt']
+            where: { 
+                [Op.or]: [
+                    { title: { [Op.like]: `%${keyword}%` } },
+                    { author: { [Op.like]: `%${keyword}%` } }
+                ]
+            },
+            attributes: ['title', 'body', 'author', 'createdAt']
         });
     
         res.render('search-results', { data: searchResults, layout: 'layouts/main' });
-      } catch (err) {
+    } catch (err) {
+        console.error("Error searching posts:", err);
         res.status(500).send({ error: '검색 중 오류가 발생했습니다.' });
-      }
+    }
 }));
+
+
+
 
 module.exports = router;
