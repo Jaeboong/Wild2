@@ -6,11 +6,7 @@ const sequelize = require('../models/index'); // sequelize 인스턴스를 가�
 module.exports = class Post extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      number: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
-      author: {
+      userId: {
         type: DataTypes.STRING(8),
         allowNull: false,
       },
@@ -18,27 +14,34 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.STRING(20),
         allowNull: false,
       },
-      content: { 
+      content: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      category: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'complain',
       },
       recommendations: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
+      },
+      reports: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
       }
     }, {
       sequelize,
-      timestamps: true, // timestamps를 true로 설정
+      timestamps: true,
       underscored: false,
       modelName: 'Post',
-      tableName: 'posts',
+      tableName: 'test',
       paranoid: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
     });
   }
+}
 
-  static associate(db) {
-    
-  }
-};

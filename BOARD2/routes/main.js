@@ -13,7 +13,7 @@ router.get(
             title: "Board",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("board", { locals, data, layout: mainLayout });
     })
@@ -27,7 +27,7 @@ router.get(
             title: "Report",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("report", { locals, data, layout: mainLayout });
     })
@@ -41,7 +41,7 @@ router.get(
             title: "Hot",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("hot", { locals, data, layout: mainLayout });
     })
@@ -55,7 +55,7 @@ router.get(
             title: "Notice",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("notice", { locals, data, layout: mainLayout });
     })
@@ -70,7 +70,7 @@ router.get(
             title: "Reports",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("reports", { locals, data, layout: mainLayout });
     })
@@ -85,7 +85,7 @@ router.get(
             title: "MyWrite",
         };
         const data = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("mywrite", { locals, data, layout: mainLayout });
     })
@@ -94,7 +94,7 @@ router.get(
 router.get("/post", asyncHandler(async (req, res) => {
     try {
         const posts = await Post.findAll({
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
         res.render("post", { posts, layout: mainLayout });
     } catch (error) {
@@ -133,10 +133,10 @@ router.get("/post/:id", asyncHandler(async (req, res) => {
             where: { 
                 [Op.or]: [
                     { title: { [Op.like]: `%${keyword}%` } },
-                    { author: { [Op.like]: `%${keyword}%` } }
+                    { userId: { [Op.like]: `%${keyword}%` } }
                 ]
             },
-            attributes: ['title', 'content', 'author', 'createdAt']
+            attributes: ['title', 'content', 'userId', 'createdAt']
         });
     
         res.render('search-results', { data: searchResults, layout: 'layouts/main' });
