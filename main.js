@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const asyncHandler = require('express-async-handler');
 const { sequelize, User } = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
-const homepageRouter = require('./routes/main');
+const Announcement = require('./models/announcement');
+const Complain = require('./models/complain');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,11 +19,20 @@ const initializeApp = async () => {
     console.log('Database synchronized');
 
     // 목업 데이터 삽입
-    await User.bulkCreate([
-      { name: 'Alice', age: 30, married: false },
-      { name: 'Bob', age: 40, married: true },
-      { name: 'Charlie', age: 25, married: false },
+    await Announcement.bulkCreate([
+      { title: 'Sample Announcement 1' },
+      { title: 'Sample Announcement 2' },
+      { title: 'Sample Announcement 3' },
+      { title: 'Sample Announcement 4' }
     ]);
+
+    await Complain.bulkCreate([
+      { title: 'Sample Complain 1' },
+      { title: 'Sample Complain 2' },
+      { title: 'Sample Complain 3' },
+      { title: 'Sample Complain 4' }
+    ]);
+
     console.log('Mock data inserted');
 
   } catch (error) {
@@ -42,7 +52,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to the home page');
 });
 
-app.use('/homepage', homepageRouter);
 
 app.use((req, res, next) => {
   res.status(404).send('Page not found');
