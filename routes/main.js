@@ -1,4 +1,3 @@
-// routes/main.js
 const express = require('express');
 const router = express.Router();
 const Announcement = require('../models/announcement');
