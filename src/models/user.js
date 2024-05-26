@@ -1,4 +1,3 @@
-// src/models/user.js
 'use strict';
 
 const { Sequelize, DataTypes } = require('sequelize');
@@ -7,24 +6,44 @@ module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
       name: {
-        type: DataTypes.STRING(20),
+        type: DataTypes.STRING(50),  
+        allowNull: false,
+      },
+      phone: {
+        type: DataTypes.STRING(20),  
         allowNull: false,
         unique: true,
+        defaultValue: 'N/A',  // 기본값 설정
       },
-      age: {
-        type: DataTypes.INTEGER.UNSIGNED,
+      email: {
+        type: DataTypes.STRING(100),  
         allowNull: false,
+        unique: true,
+        defaultValue: 'N/A',  // 기본값 설정
       },
-      married: {
+      password: {
+        type: DataTypes.STRING(100), 
+        allowNull: false,
+        defaultValue: 'N/A',  // 기본값 설정
+      },
+      admin:{
         type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
+        
       },
+      blacked:{
+        type: DataTypes.INTEGER,
+        allownull: true,
+        defaultValue: 0,
+        
+      }
     }, {
       sequelize,
       timestamps: false,
       underscored: false,
       modelName: 'User',
-      tableName: 'wild2',
+      tableName: 'users',
       paranoid: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
