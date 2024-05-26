@@ -1,19 +1,22 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../src/index');
 
-const Board = sequelize.define('Board', {
+const Complain = sequelize.define('Complain', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
   title: {
     type: DataTypes.STRING,
     allowNull: false
   },
   createdAt: {
     type: DataTypes.DATE,
-    allowNull: false,
     defaultValue: DataTypes.NOW
   }
 }, {
-  timestamps: true,
-  updatedAt: false
+  timestamps: false
 });
 
-module.exports = Board;
+module.exports = Complain;
