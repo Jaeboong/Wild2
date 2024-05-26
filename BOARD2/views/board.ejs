@@ -25,7 +25,7 @@
     </tr>
   </thead>
   <tbody>
-    <% post.forEach((post, index) => { %>
+    <% data.forEach((post, index) => { %>
       <tr>
         <td><%= index + 1 %></td>
         <td><a href="/post/<%= post.id %>"><%= post.title %></a></td>
@@ -34,7 +34,7 @@
         <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
       </tr>
     <% }) %>
-  </tbody>
+  </tbody>  
 </table>
   <!-- 페이지네이션 컨트롤 -->
   <div class="pagination">

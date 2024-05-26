@@ -91,22 +91,6 @@ router.get(
     })
 )
 
-
-
-router.get("/post", asyncHandler(async (req, res) => {
-    try {
-        const posts = await Post.findAll({
-            attributes: ['title', 'body', 'author', 'createdAt']
-        });
-        res.render("postList", { posts, layout: mainLayout });
-    } catch (error) {
-        console.error("Error fetching posts:", error);
-        res.status(500).send("Internal server error");
-    }
-}));
-
-
-
 router.get("/post/:id", asyncHandler(async (req, res) => {
     try {
         const post = await Post.findByPk(req.params.id);
