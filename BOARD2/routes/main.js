@@ -95,7 +95,6 @@ router.get(
 
 router.get("/post", asyncHandler(async (req, res) => {
     try {
-        // 게시물 목록을 가져오는 코드를 추가합니다.
         const posts = await Post.findAll({
             attributes: ['title', 'body', 'author', 'createdAt']
         });
@@ -105,6 +104,7 @@ router.get("/post", asyncHandler(async (req, res) => {
         res.status(500).send("Internal server error");
     }
 }));
+
 
 
 router.get("/post/:id", asyncHandler(async (req, res) => {

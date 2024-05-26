@@ -1,0 +1,15 @@
+<!-- postList.ejs -->
+
+<!-- 게시물 목록을 나열하는 컨테이너 -->
+<div class="post-list">
+    <% posts.forEach((post, index) => { %>
+        <!-- 각 게시물에 대한 항목 -->
+        <div class="post-item">
+            <!-- 게시물 제목과 작성자 -->
+            <h2><a href="/post/<%= post.id %>"><%= post.title %></a></h2>
+            <p>작성자: <%= post.author %></p>
+            <!-- 게시물 작성일 -->
+            <p>작성일: <%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></p>
+        </div>
+    <% }) %>
+</div>
