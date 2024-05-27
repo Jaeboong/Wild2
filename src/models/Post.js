@@ -5,6 +5,10 @@ const { Sequelize, DataTypes } = require('sequelize');
 module.exports = class Post extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
+      postid: {
+        type: DataTypes.INTEGER(15), 
+        allowNull: false,
+      },
       userid: {
         type: DataTypes.STRING(15), // 변경된 부분
         allowNull: false,

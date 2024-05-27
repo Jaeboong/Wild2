@@ -109,13 +109,24 @@ router.get('/logout', (req, res) => {
 router.get(
   ["/board/hot"],
   asyncHandler(async (req, res) => {
-      const locals = {
-          title: "Hot",
-      };
-      const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+          where: {
+              recommend: {
+                  [Op.gte]: 10 // 추천수가 10 이상인 게시물만 가져옴
+              }
+          },
+          order: [
+            ['date', 'DESC'],
+            ['postid', 'DESC']
+          ],
+          limit: limit,
+          offset: offset,
       });
-      res.render("hot", { locals, data, layout: mainLayout });
+      res.json({ total: count, posts: rows });
   })
 );
 
@@ -123,39 +134,71 @@ router.get(
 router.get(
   ["/board/announce"],
   asyncHandler(async (req, res) => {
-      const locals = {
-          title: "Notice",
-      };
-      const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+        where: {
+          category: 'announce'
+        },
+        order: [
+          ['date', 'DESC'],
+          ['postid', 'DESC']
+        ],
+        limit: limit,
+        offset: offset,
       });
-      res.render("notice", { locals, data, layout: mainLayout });
+      res.json({ total: count, posts: rows });
   })
 );
 
 // 신고 게시판 목록
 router.get(
-  ["/board/reportList"],
+  ["/board/report"],
   asyncHandler(async (req, res) => {
-      const locals = {
-          title: "Reports",
-      };
-      const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+      const { page = 1 } = req.query;
+      const limit = 10;
+      const offset = (page - 1) * limit;
+
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+        where: {
+          category: 'report'
+        },
+        order: [
+          ['date', 'DESC'],
+          ['postid', 'DESC']
+        ],
+        limit: limit,
+        offset: offset,
       });
-      res.render("reports", { locals, data, layout: mainLayout });
+      res.json({ total: count, posts: rows });
   })
 );
 
 // 민원 게시판 목록
-router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
-  try {
-    const posts = await getAllPosts();
-    res.render('listBoard', { posts });
-  } catch (error) {
-    res.status(500).send('Error retrieving posts');
-  }
-}));
+router.get(
+  ["/board/complain"],
+  asyncHandler(async (req, res) => {
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+        where: {
+          category: 'complain'
+        },
+        order: [
+          ['date', 'DESC'],
+          ['postid', 'DESC']
+        ],
+        limit: limit,
+        offset: offset,
+      });
+      res.json({ total: count, posts: rows });
+  })
+);
 
 // 게시물 작성 페이지
 router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
@@ -164,8 +207,7 @@ router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
 
 // 게시물 작성 처리
 router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
-  const { title, content, category } = req.body;
-  const userid = req.user.id; // req.user.id를 사용하여 userid 설정
+  const { title, content, category, userid } = req.body;
 
   const newPost = {
     userid, // userid를 추가
@@ -182,18 +224,20 @@ router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
 }));
 
 // 게시물 보기
-router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
-  const post = await getPostById(req.params.id);
+router.get('/board/view/:id', asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const post = await getPostById(id);
   if (!post) {
     res.status(404).send('Post not found');
     return;
   }
+  console.log(post);
 
   // 작성자의 이름 가져오기
   const author = await User.findByPk(post.userid);
   post.authorName = author ? author.username : 'Unknown';
 
-  // 댓글 작성자의 이름 가져오기
+  //댓글 작성자의 이름 가져오기
   const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
     const commentAuthor = await User.findByPk(comment.userid);
     return {
@@ -201,11 +245,57 @@ router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
       authorName: commentAuthor ? commentAuthor.username : 'Unknown'
     };
   }));
+  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  //★★★★★★★★★★게시물보기 이렇게 해야 제대로 실행 된다 참고하셈★★★★★★★★★★★★★★
+  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  // router.get('/board/view/:id', asyncHandler(async (req, res) => {
+  //   const { id } = req.params;
+    
+  //   const post = await Post.findByPk(id, {
+  //     include: [
+  //       {
+  //         model: Comment,
+  //         as: 'Comments',
+  //         include: [
+  //           {
+  //             model: User,
+  //             as: 'User',  // 'Author' 대신 'User' 사용
+  //             attributes: ['username']
+  //           }
+  //         ]
+  //       }
+  //     ]
+  //   });
+  
+  //   if (!post) {
+  //     res.status(404).send('Post not found');
+  //     return;
+  //   }
+  
+  //   // 작성자의 이름 가져오기
+  //   const author = await User.findByPk(post.userid);
+  //   post.dataValues.authorName = author ? author.username : 'Unknown';
+  
+  //   // 댓글 작성자의 이름 가져오기
+  //   const commentsWithAuthors = post.Comments.map(comment => {
+  //     return {
+  //       ...comment.dataValues,
+  //       authorName: comment.User ? comment.User.username : 'Unknown'
+  //     };
+  //   });
+  
+  //   const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
+  //   const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
+  //   const commentRecommendations = req.session.commentRecommendations || {};
+  
+  //   res.json({ post: post.dataValues, comments: commentsWithAuthors, hasVoted, hasRecommended, commentRecommendations });
+  // }));
 
   const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
   const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
   const commentRecommendations = req.session.commentRecommendations || {};
-  res.render('viewBoard', { post, comments: commentsWithAuthors, hasVoted, hasRecommended, commentRecommendations });
+
+  res.json({post, author});
 }));
 
 // 게시물 투표 처리
