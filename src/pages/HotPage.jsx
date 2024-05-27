@@ -57,12 +57,11 @@ function HotPage(){
   const fetchPosts = async (keyword = '', board = 'hot', page = 1) => {
     try {
       const endpoint = keyword ? 'search' : 'hot';
-      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
+      const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
         params: {
           query: keyword,
           page: page,
-          limit: postsPerPage,
-          board: board
+          category: board
         }
       });
       setPosts(response.data.posts);

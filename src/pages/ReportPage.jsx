@@ -63,6 +63,7 @@ function ReportPage() {
           category: board
         }
       });
+      
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {

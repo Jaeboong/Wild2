@@ -29,8 +29,8 @@ function CommentListItem(props){
 
     return (
         <Wrapper>
-            <Name>{comment.name}</Name>
-            <CommentText>{comment.content}</CommentText>
+            <Name>{comment.userid}</Name>
+            <CommentText>{comment.comment}</CommentText>
         </Wrapper>
     );
 }

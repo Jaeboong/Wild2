@@ -5,6 +5,7 @@ import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import Header from "../components/Header";
 import axios from "axios";
+import CommentList from "../components/CommentList";
 
 const baseURL = "http://localhost:8080";
 
@@ -45,12 +46,12 @@ const VoteRow = styled.div`
     display: flex;
 `;
 
-const TitleText = styled.p`
+const TitleText = styled.div`
     font-size: 28px;
     font-weight: 500;
 `;
 
-const AuthorText = styled.p`
+const AuthorText = styled.div`
     display: flex;
     justify-content: space-between;
     font-size: 12px;
@@ -62,13 +63,13 @@ const ReportButton = styled.button`
     display: flex;
 `;
 
-const ContentText = styled.p`
+const ContentText = styled.div`
     font-size: 16px;
     line-height: 32px;
     white-space: pre-wrap;
 `;
 
-const CommentLabel = styled.p`
+const CommentLabel = styled.div`
     font-size: 16px;
     font-weight: 500;
 `;
@@ -78,11 +79,13 @@ function PostViewPage() {
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [comment, setComment] = useState("");
+    const [bringedComment, setBringedComment] = useState([]);
     const [checkValue, setCheckValue] = useState('');
     const [hasReported, setHasReported] = useState(false);
     const [hasRecommended, setHasRecommended] = useState(false);
     const [hasVoted, setHasVoted] = useState(false);
     const [isAuthor, setIsAuthor] = useState(false);
+    const [author, setAuthor] = useState("");
     
     const location = useLocation();
 
@@ -97,42 +100,22 @@ function PostViewPage() {
 
     const fetchPost = async () => {
         try {
-            const response = await axios.get(`http://localhost:4000/api/posts/${postId}`, {
+            const response = await axios.get(`http://localhost:3001/board/view/${postId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            setPost(response.data);
-            setIsAuthor(response.data.author === dec.nickname);
+            
+            setPost(response.data.post);
+            setBringedComment(response.data.comments);
+            setAuthor(response.data.author);
+            setIsAuthor(response.data.author === dec.username);
             setHasReported(response.data.hasReported);
             setHasVoted(response.data.hasVoted);
         } catch (error) {
             console.error("Error fetching post:", error);
         }
     };
-
-    // const fetchPost = async () => {
-    //     try {
-    //         const response = await axios.get(`http://localhost:3001/board/view/${postId}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${localStorage.getItem("token")}`
-    //             }
-    //         });
-    //         setPost(response.data.post);
-    //         setComment(response.data.comments)
-    //         setIsAuthor(post.username === dec.username);
-    //         setHasReported(response.data.hasReported); //이거 부탁
-    //         setHasVoted(response.data.hasVoted);
-    //         setHasRecommended(response.data.hasRecommended)
-
-    //         if(hasVoted){
-    //             const voteInfo = await axios.get(`http://localhost:3001/vote/data/${postId}`);
-    //         }
-
-    //     } catch (error) {
-    //         console.error("Error fetching post:", error);
-    //     }
-    // };
 
     useEffect(() => {
         fetchPost();
@@ -256,7 +239,7 @@ function PostViewPage() {
                     <TitleText>{post.title}</TitleText>
                     <AuthorText>
                         <div style={{display: "flex", flexDirection: "column"}}>
-                        {post.author}
+                        {author}
                         {/* 날짜 */}
                         </div>
 
@@ -328,7 +311,7 @@ function PostViewPage() {
                     </div>
 
                 <CommentLabel>댓글</CommentLabel>
-                {/* <CommentList comments={comment}/> */}
+                <CommentList comments={bringedComment}/>
 
                 <TextInput
                     height = {30}

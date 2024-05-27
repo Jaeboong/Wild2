@@ -47,15 +47,17 @@ function PostTable(props){
                 <Td>작성자</Td>
                 <Td wide>제목</Td>
                 <Td>추천수</Td>
+                <Td>작성일</Td>
               </Tr>
             </Thead>
 
-              <PostList
+              {postwhat && <PostList
                     posts = {postwhat}
-                    onClickItem = {(item) =>{
-                        navigate(`/post/${item.id}?board=${item.board}`);
+                    onClickItem = {(item) => {
+                        navigate(`/post/${item.postid}`);
                     }}
                 />
+                  }
         </Table>
   );
 };

@@ -10,7 +10,7 @@ function PostList(props){
             {posts.map((post, index)=>{
                 return(
                     <Post
-                        key={post.id}
+                        key={post.postid}
                         post = {post}
                         onClick={() => {
                             onClickItem(post);

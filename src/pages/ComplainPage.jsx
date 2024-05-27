@@ -55,7 +55,7 @@ function ComplainPage(){
 
   const fetchPosts = async (keyword = '', board = 'complain', page = 1) => {
     try {
-      const endpoint = keyword ? 'search' : 'complain';  //http://localhost:3001/board/${endpoint}
+      const endpoint = keyword ? 'search' : 'complain';
       const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
         params: {
           query: keyword,
@@ -63,6 +63,7 @@ function ComplainPage(){
           category: board
         }
       });
+      
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {

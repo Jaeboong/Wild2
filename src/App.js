@@ -16,23 +16,6 @@ import PostEditPage from './pages/PostEditPage';
 import MyRecommendPage from './pages/MyRecommendPage';
 
 function App() {
-  // return (
-  //   <BrowserRouter>
-  //     <Routes>
-  //       <Route path="/" element={<LoginPage />} />
-  //       <Route path="/signup" element={<SignUpPage />} />
-  //       <Route path="/home" element={<HomePage />} />
-  //       <Route path="/complain" element={<ComplainPage />} />
-  //       <Route path="/report" element={<ReportPage />} />
-  //       <Route path="/hot" element={<HotPage />} />
-  //       <Route path="/announce" element={<AnnouncementPage />} />
-  //       <Route path="/post-write" element={<PostWritePage />} />
-  //       <Route path="/post/:postId" element={<PostViewPage />} />
-  //       <Route path="/info" element={<MyInfoPage />} />
-  //       <Route path="/mypost" element={<MyPostPage />} />
-  //     </Routes>
-  //   </BrowserRouter>
-  // );
   return (
     <BrowserRouter>
       <Routes>

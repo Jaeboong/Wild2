@@ -56,11 +56,12 @@ function PostWritePage(props) {
                     title,
                     content,
                     category: boardType,
-                    id: dec.userid,
+                    userid: dec.userid,
                 })
             });
 
             if (response.ok) {
+                console.log("ok");
                 navigate(`/${boardType}`);
             } else {
                 console.error('Error creating post');

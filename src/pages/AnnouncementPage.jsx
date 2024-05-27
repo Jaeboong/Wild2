@@ -57,14 +57,14 @@ function AnnouncementPage() {
   const fetchPosts = async (keyword = '', board = 'announce', page = 1) => {
     try {
       const endpoint = keyword ? 'search' : 'announce';
-      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
+      const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
         params: {
           query: keyword,
           page: page,
-          limit: postsPerPage,
-          board: board
+          category: board
         }
       });
+      
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {
