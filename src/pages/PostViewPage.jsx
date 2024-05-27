@@ -6,7 +6,7 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import axios from "axios";
 
-const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:8080";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -111,6 +111,29 @@ function PostViewPage() {
         }
     };
 
+    // const fetchPost = async () => {
+    //     try {
+    //         const response = await axios.get(`http://localhost:3001/board/view/${postId}`, {
+    //             headers: {
+    //                 Authorization: `Bearer ${localStorage.getItem("token")}`
+    //             }
+    //         });
+    //         setPost(response.data.post);
+    //         setComment(response.data.comments)
+    //         setIsAuthor(post.username === dec.username);
+    //         setHasReported(response.data.hasReported); //이거 부탁
+    //         setHasVoted(response.data.hasVoted);
+    //         setHasRecommended(response.data.hasRecommended)
+
+    //         if(hasVoted){
+    //             const voteInfo = await axios.get(`http://localhost:3001/vote/data/${postId}`);
+    //         }
+
+    //     } catch (error) {
+    //         console.error("Error fetching post:", error);
+    //     }
+    // };
+
     useEffect(() => {
         fetchPost();
     }, [postId, hasRecommended, hasVoted, hasReported]);
@@ -137,15 +160,14 @@ function PostViewPage() {
     const handleRecommendation = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:4000/api/posts/${postId}/recommend`,
-                { userid: dec.id },
+                `http://localhost:3001/board/recommend/${postId}`,
+                { userid: dec.userid },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                 }
-            );
-            setHasRecommended(response.data.hasRecommended);
+            );// 백에서 추천했으면 -1, 안했으면 +1
         } catch (error) {
             console.error("Error updating recommendation:", error);
         }
@@ -154,15 +176,15 @@ function PostViewPage() {
     const handleVote = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:4000/api/posts/${postId}/vote`,
-                { userid: dec.id, checked: checkValue },
+                `http://localhost:3001/board/vote/${postId}`,
+                { userid: dec.userid, checked: checkValue },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                 }
             );
-            setHasVoted(response.data.hasVoted);
+            setHasVoted(true);
         } catch (error) {
             console.error("Error updating vote:", error);
         }
@@ -226,7 +248,7 @@ function PostViewPage() {
                 <Button
                     title="글 목록"
                     onClick={() => {
-                        navigate(`/${post.board}`);
+                        navigate(`/${post.category}`);
                     }}
                 />
 
@@ -235,13 +257,15 @@ function PostViewPage() {
                     <AuthorText>
                         <div style={{display: "flex", flexDirection: "column"}}>
                         {post.author}
-                        날짜
+                        {/* 날짜 */}
                         </div>
 
                         <div>
                         <button
 	                        onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
-                        >주소복사</button>
+                        >
+                            주소복사 {/*아이콘으로 변경 예정*/}
+                        </button>
                         <ReportButton onClick={handleReport}>신고하기</ReportButton>
                         </div>
                     </AuthorText>
@@ -286,14 +310,21 @@ function PostViewPage() {
                         ) : (
                             <div>
                                 <h2>투표 결과</h2>
-                                {/* <p>찬성: {post.votes.filter(vote => vote.choice === 'agree').length}</p>
-                                <p>반대: {post.votes.filter(vote => vote.choice === 'disagree').length}</p> */}
+                                {/* <p>찬성: {voteInfo.votesFor}</p>
+                                <p>반대: {voteInfo.votesAgainst}</p> */}
                             </div>
                         )}
 
                         <div style={{ display: "flex", alignItems: "flex-end" }}>
-                            <h2>추천수 : {post.recommends}</h2>
+                            <h2>추천수 : {post.recommends}</h2> {/*따봉 아이콘으로 변경 예정*/}
                         </div>
+                    </div>
+                    
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                        <Button 
+                            title="추천하기"
+                            onClick={handleRecommendation}
+                        />
                     </div>
 
                 <CommentLabel>댓글</CommentLabel>

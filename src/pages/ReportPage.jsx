@@ -60,8 +60,7 @@ function ReportPage() {
         params: {
           query: keyword,
           page: page,
-          limit: postsPerPage,
-          board: board
+          category: board
         }
       });
       setPosts(response.data.posts);

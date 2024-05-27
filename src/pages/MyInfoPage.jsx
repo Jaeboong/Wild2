@@ -156,7 +156,7 @@ function MyInfoPage() {
           ) : (
             <>
               <h1>사용자 정보</h1>
-              <h1>닉네임 : {dec.nickname}</h1>
+              <h1>닉네임 : {dec.username}</h1>
               <h1>아이디 : {dec.id}</h1>
               <h1>패스워드 : {dec.pw}</h1>
             </>
