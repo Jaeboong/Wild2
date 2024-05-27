@@ -9,12 +9,12 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.STRING(15), // 변경된 부분
         allowNull: false,
       },
-      content: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       title: {
         type: DataTypes.STRING(20),
+        allowNull: false,
+      },
+      content: {
+        type: DataTypes.STRING,
         allowNull: false,
       },
       category: {
@@ -26,10 +26,12 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      /*
       image: {
         type: DataTypes.STRING,
         allowNull: true,
       },
+      */
       date: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -54,7 +56,7 @@ module.exports = class Post extends Sequelize.Model {
 
   static associate(index) {
     this.belongsTo(index.User, { foreignKey: 'userid', targetKey: 'userid' }); // 변경된 부분
-    this.hasMany(index.Comment, { foreignKey: 'postid', sourceKey: 'id' });
+    this.hasMany(index.Comment, { foreignKey: 'postid', sourceKey: 'id', as: 'comments' }); // alias 정의
     this.hasMany(index.Recommend, { foreignKey: 'postid', sourceKey: 'id' });
     this.hasMany(index.Report, { foreignKey: 'postid', sourceKey: 'id' });
     this.hasMany(index.Vote, { foreignKey: 'postid', sourceKey: 'id' });

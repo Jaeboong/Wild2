@@ -1,0 +1,38 @@
+<!-- 게시물 -->
+<section class="articles">
+  <h2 class="articles-heading">공지사항</h2>
+
+  <!-- 글 검색 폼 -->
+  <form action="/search" method="GET" class="search-form">
+    <input type="text" name="query" placeholder="Search" class="search-input">
+    <button type="submit" class="search-btn">검색</button>
+  </form>
+
+  <!-- 표 형태로 표시 -->
+<table class="article-table">
+  <thead>
+    <tr>
+      <th>번호</th>
+      <th>제목</th>
+      <th>작성자</th>
+      <th>작성일</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% data.forEach((post, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
+        <td><%= post.userId %></td>
+        <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<!-- 페이지네이션 컨트롤 -->
+<div class="pagination">
+  <button id="prev-btn">이전</button>
+  <div id="page-btns" class="page-buttons"></div>
+  <button id="next-btn">다음</button>
+</div>
+</section>

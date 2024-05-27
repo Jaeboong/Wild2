@@ -6,6 +6,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const bcrypt = require('bcrypt');
 const path = require('path');
 const checkLogin = require('../../middleware/auth');
+const mainLayout = "../views/layout/main.ejs";
 const { User, Post, Comment, Recommend, Report, Vote } = require('../index');
 const { Op } = require('sequelize');
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
@@ -15,6 +16,7 @@ const cors = require('cors');
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+
 
 // 로그인 페이지
 router.get('/login', (req, res) => {
@@ -50,8 +52,7 @@ router.post('/login', async function(req, res) {
           expiresIn: '1h'
         });
       res.cookie('token', token, { httpOnly: true });
-
-      return res.json({token});
+      return res.redirect('/board/complain');
     } else {
       return res.status(401).send('비밀번호가 일치하지 않습니다');
     }
@@ -65,8 +66,8 @@ router.post('/login', async function(req, res) {
 router.post('/signup', async function(req, res) {
   const userid = req.body.userid; // userid 필드 추가
   const username = req.body.username; // name을 username으로 변경
-  const password = req.body.pw;
-  const confirmPassword = req.body.cpw;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
 
   // 모두 입력 안하는 경우
   if (!userid || !username || !password || !confirmPassword) {
@@ -90,7 +91,7 @@ router.post('/signup', async function(req, res) {
 
     // DB 저장 (username 추가됨)
     const newUser = await User.create({ userid: userid, username: username, password: hashedPassword }); // 수정된 부분
-    return res.status(201).send('회원가입이 완료되었습니다.')
+    return res.status(201).redirect('/login');
   } catch (err) {
     console.error(err);
     return res.status(500).send('Internal server error');
@@ -113,7 +114,7 @@ router.get(
           title: "Hot",
       };
       const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+        attributes: ['title', 'content', 'userid', 'date']
       });
       res.render("hot", { locals, data, layout: mainLayout });
   })
@@ -127,7 +128,7 @@ router.get(
           title: "Notice",
       };
       const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+          attributes: ['title', 'content', 'userid', 'date']
       });
       res.render("notice", { locals, data, layout: mainLayout });
   })
@@ -141,7 +142,7 @@ router.get(
           title: "Reports",
       };
       const data = await Post.findAll({
-          attributes: ['title', 'body', 'author', 'createdAt']
+        attributes: ['title', 'content', 'userid', 'date']
       });
       res.render("reports", { locals, data, layout: mainLayout });
   })
@@ -151,7 +152,7 @@ router.get(
 router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
   try {
     const posts = await getAllPosts();
-    res.render('listBoard', { posts });
+    res.render('listBoard', { posts, layout: mainLayout });
   } catch (error) {
     res.status(500).send('Error retrieving posts');
   }
@@ -197,7 +198,7 @@ router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
   const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
     const commentAuthor = await User.findByPk(comment.userid);
     return {
-      ...comment,
+      ...comment.dataValues,
       authorName: commentAuthor ? commentAuthor.username : 'Unknown'
     };
   }));
@@ -261,22 +262,6 @@ router.post('/board/comment/:id', checkLogin, asyncHandler(async (req, res) => {
     console.error('Error adding comment:', error);
     res.status(500).send('Error adding comment');
   }
-}));
-
-// 댓글 추천 처리
-router.post('/board/comment/recommend/:postId/:commentId', asyncHandler(async (req, res) => {
-  const { postId, commentId } = req.params;
-
-  if (!req.session.commentRecommendations) {
-    req.session.commentRecommendations = {};
-  }
-
-  if (!req.session.commentRecommendations[commentId]) {
-    await recommendComment(postId, parseInt(commentId));
-    req.session.commentRecommendations[commentId] = true;
-  }
-
-  res.redirect(`/board/view/${postId}`);
 }));
 
 // 페이지가 존재하지 않는 경우

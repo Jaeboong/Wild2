@@ -1,99 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-  <title>게시글 보기</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    <meta charset="UTF-8">
+    <title><%= post.title %></title>
 </head>
 <body>
-  <a href="/logout">로그아웃</a>
-  <h1><%= post.title %></h1>
-  <p>작성자: <%= post.authorName %></p>
-  <p><%= post.content %></p>
-  <p>찬성 투표 수: <%= post.votesFor %> | 반대 투표 수: <%= post.votesAgainst %></p>
-  <p>추천 수: <%= post.recommendations %></p>
+    <h1><%= post.title %></h1>
+    <p><%= post.content %></p>
+    <p>작성자: <%= post.authorName %></p>
+    <p>작성일: <%= post.date %></p>
+    <p>추천 수: <%= post.recommend %></p>
+    <p>신고 수: <%= post.reports %></p>
 
-  <% if (!hasVoted) { %>
-    <form action="/board/vote/<%= post.id %>" method="POST">
-      <button type="submit" name="voteType" value="for">찬성</button>
-      <button type="submit" name="voteType" value="against">반대</button>
+    <h2>댓글</h2>
+    <ul>
+        <% comments.forEach(comment => { %>
+            <li>
+                <p>작성자: <%= comment.authorName %> 내용: <%= comment.comment %></p>
+            </li>
+        <% }); %>
+    </ul>
+
+    <form action="/board/comment/<%= post.id %>" method="post">
+        <textarea name="comment" placeholder="댓글을 입력하세요" required></textarea>
+        <button type="submit">댓글 작성</button>
     </form>
-  <% } else { %>
-    <p>투표하셨습니다.</p>
-  <% } %>
-
-  <% if (!hasRecommended) { %>
-    <form action="/board/recommend/<%= post.id %>" method="POST">
-      <button type="submit">추천</button>
-    </form>
-  <% } else { %>
-    <p>추천하셨습니다.</p>
-  <% } %>
-
-  <h2>투표 결과</h2>
-  <canvas id="voteChart" width="400" height="200"></canvas> <!-- 투표 차트를 표시할 캔버스 요소 추가 -->
-
-  <script>
-    async function renderVoteChart() {
-      try {
-        const response = await fetch(`/board/vote/data/<%= post.id %>`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const voteData = await response.json();
-        console.log(voteData); // 데이터를 콘솔에 출력하여 확인
-
-        const ctx = document.getElementById('voteChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ['찬성', '반대'],
-            datasets: [{
-              label: '투표 결과',
-              data: [voteData.votesFor, voteData.votesAgainst],
-              backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-              borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
-              borderWidth: 1
-            }]
-          },
-          options: {
-            scales: {
-              y: {
-                beginAtZero: true
-              }
-            }
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching vote data:', error); // 오류 메시지를 콘솔에 출력
-      }
-    }
-
-    // 페이지 로드 시 차트를 렌더링
-    window.onload = renderVoteChart;
-  </script>
-  
-  <h2>댓글</h2>
-  <ul>
-    <% (post.comments || []).forEach(comment => { %>
-      <li>
-        <p><%= comment.author %>: <%= comment.content %> (<%= comment.recommendations %> 추천)</p>
-        <% if (!commentRecommendations[comment.id]) { %>
-          <form action="/board/comment/recommend/<%= post.id %>/<%= comment.id %>" method="POST">
-            <button type="submit">추천</button>
-          </form>
-        <% } %>
-      </li>
-    <% }) %>
-  </ul>
-
-  <h2>댓글 작성</h2>
-  <form action="/board/comment/<%= post.id %>" method="POST">
-    <textarea name="comment" placeholder="댓글 내용" required></textarea>
-    <button type="submit">작성</button>
-  </form>
-
-  
-
-  <a href="/board/complain">목록으로 돌아가기</a>
 </body>
 </html>
