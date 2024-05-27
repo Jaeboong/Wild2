@@ -4,9 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const asyncHandler = require('express-async-handler');
-const { sequelize, User } = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
-const Announcement = require('./models/announcement');
-const Complain = require('./models/complain');
+const sequelize = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
+const mainRouter = require('./routes/main');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -18,23 +17,6 @@ const initializeApp = async () => {
     await sequelize.sync({ force: true });  // 데이터베이스 동기화 (force: true로 설정하여 기존 테이블을 삭제하고 다시 생성)
     console.log('Database synchronized');
 
-    // 목업 데이터 삽입
-    await Announcement.bulkCreate([
-      { title: 'Sample Announcement 1' },
-      { title: 'Sample Announcement 2' },
-      { title: 'Sample Announcement 3' },
-      { title: 'Sample Announcement 4' }
-    ]);
-
-    await Complain.bulkCreate([
-      { title: 'Sample Complain 1' },
-      { title: 'Sample Complain 2' },
-      { title: 'Sample Complain 3' },
-      { title: 'Sample Complain 4' }
-    ]);
-
-    console.log('Mock data inserted');
-
   } catch (error) {
     console.error('Unable to connect to the database:', error);
   }
@@ -44,6 +26,7 @@ initializeApp();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/homepage', mainRouter);
 app.set('views', path.join(__dirname, 'src', 'views'));
 
 
