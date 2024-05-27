@@ -10,6 +10,12 @@ const { User, Post, Comment, Recommend, Report, Vote } = require('../index');
 const { Op } = require('sequelize');
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
 
+const bodyParser = require('body-parser'); //여기부터 추가함
+const cors = require('cors');
+router.use(cors());
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
+
 // 로그인 페이지
 router.get('/login', (req, res) => {
   const filePath = path.join(__dirname, '../views', 'login.html');
@@ -24,22 +30,28 @@ router.get('/sign-up', (req, res) => {
 
 // 로그인 처리
 router.post('/login', async function(req, res) {
-  const username = req.body.username; // 올바르게 수정된 부분
+  const userid = req.body.userid; // 올바르게 수정된 부분
   const password = req.body.password;
 
   try {
-    const user = await User.findOne({ where: { username: username } });
-
+    const user = await User.findOne({ where: { userid: userid } });
     if (!user) {
       return res.status(401).send('없는 정보입니다');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
+      const token = jwt.sign({
+        username: user.username, 
+        id: user.userid, 
+        pw: user.password
+        }, 
+        jwtSecret, {
+          expiresIn: '1h'
+        });
       res.cookie('token', token, { httpOnly: true });
 
-      return res.redirect('/board/complain');
+      return res.json({token});
     } else {
       return res.status(401).send('비밀번호가 일치하지 않습니다');
     }
@@ -50,11 +62,11 @@ router.post('/login', async function(req, res) {
 });
 
 // 회원가입 처리
-router.post('/sign-up', async function(req, res) {
+router.post('/signup', async function(req, res) {
   const userid = req.body.userid; // userid 필드 추가
   const username = req.body.username; // name을 username으로 변경
-  const password = req.body.psw;
-  const confirmPassword = req.body.cPsw;
+  const password = req.body.pw;
+  const confirmPassword = req.body.cpw;
 
   // 모두 입력 안하는 경우
   if (!userid || !username || !password || !confirmPassword) {
@@ -166,6 +178,7 @@ router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
   };
   await createPost(newPost);
   res.redirect('/board/complain');
+  console.log("post creat success");
 }));
 
 // 게시물 보기
