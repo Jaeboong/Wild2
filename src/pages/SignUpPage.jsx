@@ -49,6 +49,7 @@ function SignUpPage() {
   const [NickName, setNickName] = useState("");
   const [Id, setID] = useState("");
   const [Password, setPassword] = useState("");
+  const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Agree, setAgree] = useState(false);
 
   const onNickNameHandler = (event) => {
@@ -60,6 +61,9 @@ function SignUpPage() {
   const onPasswordHandler = (event) => {
     setPassword(event.currentTarget.value);
   }
+  const onConfirmPasswordHandler = (event) => {
+    setConfirmPassword(event.currentTarget.value);
+  }
   const onAgreeHandler = () => {
     setAgree(!Agree);
   }
@@ -67,40 +71,29 @@ function SignUpPage() {
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState(null);
-  useEffect(() => {
-    axios.get('http://localhost:4000/api/user')
-      .then((response) => setUserInfo(response.data));
-  }, []);
+  // useEffect(() => {
+  //   axios.get('http://localhost:4000/api/user')
+  //     .then((response) => setUserInfo(response.data));
+  // }, []);
 
-  const userConfirm = () => {
-    const user = userInfo.find(user => user.id === Id && user.pw === Password);
-    if (!user) {
-      alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요 !`);
-      navigate("/");
-      return true;
-    } else {
-      alert("이미 존재하는 아이디 입니다 !!");
-      return false;
-    }
-  }
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    const nickname = NickName;
-    const id = Id;
-    const pw = Password;
+    const response = await axios.post('http://localhost:3001/signup', {
+      username: NickName,
+      userid: Id,
+      pw: Password,
+      cpw: ConfirmPassword
+    });
 
-    if (userConfirm()) {
-      axios.post('http://localhost:4000/api/user', {
-        nickname,
-        id,
-        pw
-      }).then(response => {
-        console.log(response.data);
-      }).catch(error => {
-        console.error(error);
-      });
+    if(response.status == 201){
+      alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요! `);
+      navigate(`/`);
+    }
+    else{
+      alert(response.status);
+      navigate(`/signup`);
     }
   }
 
@@ -112,6 +105,7 @@ function SignUpPage() {
         <InfoInput name='NickName' value={NickName} onChange={onNickNameHandler} />
         <InfoInput name='id' value={Id} onChange={onIDHandler} />
         <InfoInput name='Password' value={Password} onChange={onPasswordHandler} />
+        <InfoInput name='ConfirmPassword' value={ConfirmPassword} onChange={onConfirmPasswordHandler} />
         <CheckboxLabel>
           <Checkbox type="checkbox" checked={Agree} onChange={onAgreeHandler} />
           I agree to all the Terms and Privacy Policies
@@ -127,19 +121,22 @@ function SignUpPage() {
           Login
         </MovePage>
       </Description>
-      <>
-        <h1>유저 정보</h1>
-        {userInfo?.map((user) => (
-          <div key={user.userid} style={{ display: 'flex' }}>
-            <div>{user.userid}</div>
-            <div>{user.nickname}</div>
-            <div>{user.id}</div>
-            <div>{user.pw}</div>
-          </div>
-        ))}
-      </>
     </Wrapper>
   )
 }
 
 export default SignUpPage;
+
+
+
+{/* <>
+<h1>유저 정보</h1>
+{userInfo?.map((user) => (
+  <div key={user.userid} style={{ display: 'flex' }}>
+    <div>{user.userid}</div>
+    <div>{user.nickname}</div>
+    <div>{user.id}</div>
+    <div>{user.pw}</div>
+  </div>
+))}
+</> */}

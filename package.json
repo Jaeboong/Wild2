@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "axios": "^1.7.2",
     "base-64": "^1.0.0",
     "eslint-config-react-app": "^7.0.1",
     "react": "^18.3.1",
@@ -15,7 +16,7 @@
     "styled-components": "^6.1.11"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set PORT=8080 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -32,6 +33,7 @@
       "last 1 safari version"
     ]
   },
+  "proxy" : "http://localhost:3001",
   "devDependencies": {
     "web-vitals": "^4.0.1"
   }

@@ -41,12 +41,12 @@ function PostWritePage(props) {
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-        const timestamp = new Date();
-        const date = new Date(timestamp).toISOString().slice(0, 19);
-        console.log(date); //날짜 찍기
+        // const timestamp = new Date();
+        // const date = new Date(timestamp).toISOString().slice(0, 19);
+        // console.log(date); //날짜 찍기
 
         try {
-            const response = await fetch("http://localhost:4000/api/posts", {
+            const response = await fetch("http://localhost:3001/board/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
@@ -55,8 +55,8 @@ function PostWritePage(props) {
                 body: JSON.stringify({
                     title,
                     content,
-                    author: dec.nickname,
-                    board: boardType
+                    category: boardType,
+                    id: dec.userid,
                 })
             });
 
