@@ -21,7 +21,6 @@ module.exports = class Post extends Sequelize.Model {
       category: {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: 'complain',
       },
       recommend: {
         type: DataTypes.INTEGER,

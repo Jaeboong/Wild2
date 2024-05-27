@@ -1,22 +1,17 @@
-<!-- post.ejs -->
-
-<!-- 게시물 정보를 나타내는 컨테이너 -->
-<div class="post-container">
-    <!-- 게시물 제목 -->
-    <h1><%= post.title %></h1>
-    <!-- 게시물 내용 -->
-    <div class="post-content">
-        <%= post.body %>
-    </div>
-    <!-- 게시물 작성자 -->
-    <p>작성자: <%= post.author %></p>
-    <!-- 게시물 작성일 -->
-    <p>작성일: <%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></p>
-    <!-- 추천 수 -->
-    <p>추천 수: <span id="recommendCount"><%= post.recommendations %></span></p>
-    <!-- 추천 버튼 -->
-    <button id="recommendButton">추천</button>
+<div class="post-list">
+    <% posts.forEach((post, index) => { %>
+        <!-- 각 게시물에 대한 항목 -->
+        <div class="post-item">
+            <!-- 게시물 제목 -->
+            <h2><%= post.title %></h2>
+            <!-- 게시물 내용 -->
+            <p><%= post.content %></p>
+            <!-- 게시물 작성일 -->
+            <p>작성일: <%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></p>
+        </div>
+    <% }) %>
 </div>
+
 
 
 

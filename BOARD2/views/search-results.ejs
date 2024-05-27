@@ -1,6 +1,6 @@
 <div class="articles">
-  <h2 class="articles-heading">검색 결과</h2>
-  <% if (data.length > 0) { %>
+  <% if (complainData.length > 0) { %>
+    <h2 class="articles-heading">민원 게시판 검색 결과</h2>
     <table class="article-table search-results">
       <thead>
         <tr>
@@ -12,10 +12,10 @@
         </tr>
       </thead>
       <tbody>
-        <% data.forEach((post, index) => { %>
+        <% complainData.forEach((post, index) => { %>
           <tr>
             <td><%= index + 1 %></td>
-            <td><a href="/post/<%= post._id %>"><%= post.title %></a></td>
+            <td><a href="/post/<%= post.id %>"><%= post.title %></a></td>
             <td><%= post.userId %></td>
             <td><%= post.recommend %></td>
             <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
@@ -23,7 +23,85 @@
         <% }) %>
       </tbody>
     </table>
-  <% } else { %>
+  <% } %>
+
+  <% if (reportData.length > 0) { %>
+    <h2 class="articles-heading">제보 게시판 검색 결과</h2>
+    <table class="article-table search-results">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>추천수</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% reportData.forEach((post, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><a href="/post/<%= post.id %>"><%= post.title %></a></td>
+            <td><%= post.userId %></td>
+            <td><%= post.recommend %></td>
+            <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <% if (hotData.length > 0) { %>
+    <h2 class="articles-heading">HOT 게시판 검색 결과</h2>
+    <table class="article-table search-results">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>추천수</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% hotData.forEach((post, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><a href="/post/<%= post.id %>"><%= post.title %></a></td>
+            <td><%= post.userId %></td>
+            <td><%= post.recommend %></td>
+            <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <% if (noticeData.length > 0) { %>
+    <h2 class="articles-heading">공지사항 검색 결과</h2>
+    <table class="article-table search-results">
+      <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% noticeData.forEach((post, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><a href="/post/<%= post.id %>"><%= post.title %></a></td>
+            <td><%= post.userId %></td>
+            <td><%= new Date(post.createdAt).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\./g, '.') %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+  <% if (complainData.length === 0 && reportData.length === 0 && hotData.length === 0 && noticeData.length === 0) { %>
     <p>검색 결과가 없습니다.</p>
   <% } %>
 </div>

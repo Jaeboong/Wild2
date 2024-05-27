@@ -17,7 +17,7 @@ const initializeApp = async () => {
     await sequelize.sync({ force: true });  // 데이터베이스 동기화 (force: true로 설정하여 기존 테이블을 삭제하고 다시 생성)
     console.log('Database synchronized');
 
-    // 목업 데이터 삽입
+
     // 목업 데이터 삽입
     await Post.bulkCreate([
       { 
@@ -36,12 +36,23 @@ const initializeApp = async () => {
       userId: '작성자2', 
       title: '제목2', 
       content: '내용 2 - 민원넣습니다.', 
-      category: 'complain', 
+      category: 'report', 
       recommend: 5, 
       reports: 0, 
       createdAt: new Date('2024-05-20T00:00:00.000Z'), 
       updatedAt: new Date('2024-05-26T16:17:23.037Z') 
       },
+      { 
+        number: 2, 
+        userId: '작성자1', 
+        title: '제목1', 
+        content: '내용 1 - 민원넣습니다.', 
+        category: 'report', 
+        recommend: 10, 
+        reports: 0, 
+        createdAt: new Date('2024-05-29T00:00:00.000Z'), 
+        updatedAt: new Date('2024-05-26T16:17:23.037Z') 
+        },
       { 
       number: 3, 
       userId: '작성자3', 
@@ -50,9 +61,20 @@ const initializeApp = async () => {
       category: 'complain', 
       recommend: 2, 
       reports: 0, 
-      createdAt: new Date('2024-05-21T00:00:00.000Z'), 
+      createdAt: new Date('2024-05-26T00:00:00.000Z'), 
       updatedAt: new Date('2024-05-26T16:17:23.037Z') 
-      }
+      },
+      { 
+        number: 1, 
+        userId: '관리자', 
+        title: '공지사항', 
+        content: '내용 1 - 공지입니다', 
+        category: 'notice', 
+        recommend: 0, 
+        reports: 0, 
+        createdAt: new Date('2024-05-19T00:00:00.000Z'), 
+        updatedAt: new Date('2024-05-26T16:17:23.037Z') 
+        }
     ]);
 
     console.log('Mock data inserted');
