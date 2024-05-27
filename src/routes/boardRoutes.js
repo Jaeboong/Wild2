@@ -4,39 +4,38 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const bcrypt = require('bcrypt');
-const Post = require("../models/Post");
 const path = require('path');
 const checkLogin = require('../../middleware/auth');
-const{ User } = require('../index');
+const { User, Post, Comment, Recommend, Report, Vote } = require('../index');
 const { Op } = require('sequelize');
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
 
-
+// 로그인 페이지
 router.get('/login', (req, res) => {
   const filePath = path.join(__dirname, '../views', 'login.html');
   res.sendFile(filePath);
 });
 
+// 회원가입 페이지
 router.get('/sign-up', (req, res) => {
   const filePath = path.join(__dirname, '../views', 'sign-up.html');
   res.sendFile(filePath);
 });
 
+// 로그인 처리
 router.post('/login', async function(req, res) {
-  const email = req.body.email;
+  const username = req.body.username; // 올바르게 수정된 부분
   const password = req.body.password;
 
   try {
-    const user = await User.findOne({ where: { email: email } });
+    const user = await User.findOne({ where: { username: username } });
 
     if (!user) {
       return res.status(401).send('없는 정보입니다');
     }
 
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-
       const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
       res.cookie('token', token, { httpOnly: true });
 
@@ -50,16 +49,15 @@ router.post('/login', async function(req, res) {
   }
 });
 
-// 회원가입
+// 회원가입 처리
 router.post('/sign-up', async function(req, res) {
-  const name = req.body.fName + req.body.lName;
-  const phone = req.body.phone;
-  const email = req.body.email;
+  const userid = req.body.userid; // userid 필드 추가
+  const username = req.body.username; // name을 username으로 변경
   const password = req.body.psw;
   const confirmPassword = req.body.cPsw;
 
   // 모두 입력 안하는 경우
-  if (!name || !phone || !email || !password || !confirmPassword) {
+  if (!userid || !username || !password || !confirmPassword) {
     return res.status(400).send('정보를 모두 입력하세요');
   }
 
@@ -69,30 +67,25 @@ router.post('/sign-up', async function(req, res) {
   }
 
   try {
-    // 이메일 또는 전화번호 중복 확인
-    const existingUser = await User.findOne({ where: { [Op.or]: [{ email: email }, { phone: phone }] } });
+    // 아이디 중복 확인
+    const existingUser = await User.findOne({ where: { userid: userid } });
     if (existingUser) {
-      if (existingUser.email === email) {
-        return res.status(400).send('이미 사용 중인 이메일입니다.');
-      } else if (existingUser.phone === phone) {
-        return res.status(400).send('이미 사용 중인 전화번호입니다.');
-      }
+      return res.status(400).send('이미 사용 중인 아이디입니다.');
     }
 
     // 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // db저장
-    const newUser = await User.create({ name, phone, email, password: hashedPassword });
+    // DB 저장 (username 추가됨)
+    const newUser = await User.create({ userid: userid, username: username, password: hashedPassword }); // 수정된 부분
     return res.status(201).send('회원가입이 완료되었습니다.')
   } catch (err) {
     console.error(err);
-    // 기타 오류 처리
     return res.status(500).send('Internal server error');
   }
-
 });
 
+// 로그아웃 처리
 router.get('/logout', (req, res) => {
   res.clearCookie('token');
   req.session.destroy(() => {
@@ -100,8 +93,7 @@ router.get('/logout', (req, res) => {
   });
 });
 
-/////////////////////////////////////////////
-
+// 핫 게시물 목록
 router.get(
   ["/board/hot"],
   asyncHandler(async (req, res) => {
@@ -115,7 +107,7 @@ router.get(
   })
 );
 
-// 공지 게시판
+// 공지 게시판 목록
 router.get(
   ["/board/announce"],
   asyncHandler(async (req, res) => {
@@ -129,8 +121,7 @@ router.get(
   })
 );
 
-
-// 신고 목록
+// 신고 게시판 목록
 router.get(
   ["/board/reportList"],
   asyncHandler(async (req, res) => {
@@ -144,8 +135,7 @@ router.get(
   })
 );
 
-/////////////////////////////////////////////
-
+// 민원 게시판 목록
 router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
   try {
     const posts = await getAllPosts();
@@ -155,52 +145,47 @@ router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
   }
 }));
 
+// 게시물 작성 페이지
 router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
   res.render('createBoard');
 }));
 
+// 게시물 작성 처리
 router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
-  const { title, content, voteTitle } = req.body;
-  const author = req.user.id;
+  const { title, content, category } = req.body;
+  const userid = req.user.id; // req.user.id를 사용하여 userid 설정
+
   const newPost = {
-    author,
+    userid, // userid를 추가
     title,
     content,
-    voteTitle,
-    category, 
-    votesFor: 0,
-    votesAgainst: 0,
-    recommendations: 0,
-    comments: []
+    category,
+    recommend: 0,
+    reports: 0,
+    date: new Date(),
   };
-  await Post.create(newPost);
-    // 선택한 카테고리에 따라 리다이렉트
-    if (category === 'complain') {
-      res.redirect('/board/complain');
-    } else if (category === 'report') {
-      res.redirect('/board/announce');
-    } else {
-      res.redirect('/board/complain');  // 기본적으로 민원게시판으로 리다이렉트
-    }
+  await createPost(newPost);
+  res.redirect('/board/complain');
 }));
 
+// 게시물 보기
 router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
   const post = await getPostById(req.params.id);
   if (!post) {
     res.status(404).send('Post not found');
     return;
   }
-  
+
   // 작성자의 이름 가져오기
-  const author = await User.findByPk(post.author);
-  post.authorName = author ? author.name : 'Unknown';
+  const author = await User.findByPk(post.userid);
+  post.authorName = author ? author.username : 'Unknown';
 
   // 댓글 작성자의 이름 가져오기
   const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
-    const commentAuthor = await User.findByPk(comment.author);
+    const commentAuthor = await User.findByPk(comment.userid);
     return {
       ...comment,
-      authorName: commentAuthor ? commentAuthor.name : 'Unknown'
+      authorName: commentAuthor ? commentAuthor.username : 'Unknown'
     };
   }));
 
@@ -210,6 +195,7 @@ router.get('/board/view/:id', checkLogin, asyncHandler(async (req, res) => {
   res.render('viewBoard', { post, comments: commentsWithAuthors, hasVoted, hasRecommended, commentRecommendations });
 }));
 
+// 게시물 투표 처리
 router.post('/board/vote/:id', checkLogin, asyncHandler(async (req, res) => {
   if (!req.session.votes) {
     req.session.votes = [];
@@ -224,6 +210,7 @@ router.post('/board/vote/:id', checkLogin, asyncHandler(async (req, res) => {
   res.redirect(`/board/view/${req.params.id}`);
 }));
 
+// 게시물 추천 처리
 router.post('/board/recommend/:id', checkLogin, asyncHandler(async (req, res) => {
   if (!req.session.recommendations) {
     req.session.recommendations = [];
@@ -237,25 +224,22 @@ router.post('/board/recommend/:id', checkLogin, asyncHandler(async (req, res) =>
   res.redirect(`/board/view/${req.params.id}`);
 }));
 
+// 댓글 작성 처리
 router.post('/board/comment/:id', checkLogin, asyncHandler(async (req, res) => {
   const { comment } = req.body;
-  const authorId = req.user.id;  // 로그인된 사용자의 ID를 가져옵니다.
+  const userid = req.user.id;
 
   try {
-    // 로그인된 사용자의 이름을 가져옵니다.
-    const author = await User.findByPk(authorId);
+    const author = await User.findByPk(userid);
 
     if (!author) {
       return res.status(400).send('사용자를 찾을 수 없습니다.');
     }
 
-
     const newComment = {
-      author: authorId,
-      authorName: author.name,  // 작성자의 이름 저장
-      content: comment,
-      postId: req.params.id,
-      recommendations: 0
+      userid,
+      postid: req.params.id,
+      comment,
     };
 
     await addComment(req.params.id, newComment);
@@ -266,6 +250,7 @@ router.post('/board/comment/:id', checkLogin, asyncHandler(async (req, res) => {
   }
 }));
 
+// 댓글 추천 처리
 router.post('/board/comment/recommend/:postId/:commentId', asyncHandler(async (req, res) => {
   const { postId, commentId } = req.params;
 
@@ -281,10 +266,12 @@ router.post('/board/comment/recommend/:postId/:commentId', asyncHandler(async (r
   res.redirect(`/board/view/${postId}`);
 }));
 
+// 페이지가 존재하지 않는 경우
 router.use((req, res) => {
   res.status(404).send('Page not found');
 });
 
+// 투표 데이터 가져오기
 router.get('/vote/data/:id', asyncHandler(async (req, res) => {
   const post = await getPostById(req.params.id);
   if (!post) {
@@ -296,7 +283,5 @@ router.get('/vote/data/:id', asyncHandler(async (req, res) => {
     votesAgainst: post.votesAgainst
   });
 }));
-
-
 
 module.exports = router;

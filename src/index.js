@@ -1,4 +1,3 @@
-// src/index.js
 'use strict';
 
 const fs = require('fs');
@@ -26,13 +25,24 @@ if (config.use_env_variable) {
 // 모델을 가져와 초기화
 const User = require('./models/users');
 const Post = require('./models/Post');
-const Comments = require('./models/Comments');
+const Comment = require('./models/Comments');
+const Recommend = require('./models/Recommend');
+const Report = require('./models/Report');
+const Vote = require('./models/Vote');
+
 User.init(sequelize);
 Post.init(sequelize);
-Comments.init(sequelize);
+Comment.init(sequelize);
+Recommend.init(sequelize);
+Report.init(sequelize);
+Vote.init(sequelize);
+
 db.User = User;
 db.Post = Post;
-db.Comments = Comments;
+db.Comment = Comment;
+db.Recommend = Recommend;
+db.Report = Report;
+db.Vote = Vote;
 
 // 모델 간의 관계 설정
 Object.keys(db).forEach(modelName => {

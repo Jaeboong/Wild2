@@ -1,5 +1,8 @@
 const Post = require('./Post');
 const Comment = require('./Comments');
+const Recommend = require('./Recommend');
+const Report = require('./Report');
+const Vote = require('./Vote');
 
 const getAllPosts = async () => {
   try {
@@ -37,9 +40,9 @@ const votePost = async (id, voteType) => {
     const post = await getPostById(id); 
     if (!post) return;
 
-    if (voteType === 'for') {
+    if (voteType === 'agree') {
       post.votesFor++; 
-    } else if (voteType === 'against') {
+    } else if (voteType === 'disagree') {
       post.votesAgainst++; 
     }
     await post.save(); 
@@ -54,7 +57,7 @@ const recommendPost = async (id) => {
     const post = await getPostById(id); 
     if (!post) return;
 
-    post.recommendations++; 
+    post.recommend++; 
     await post.save(); 
   } catch (error) {
     console.error('Error recommending post:', error);
@@ -67,7 +70,7 @@ const addComment = async (id, comment) => {
     const post = await getPostById(id);
     if (!post) return;
 
-    await Comment.create({ ...comment, postId: id });
+    await Comment.create({ ...comment, postid: id });
   } catch (error) {
     console.error('Error adding comment:', error);
     throw error;
@@ -79,7 +82,7 @@ const recommendComment = async (postId, commentId) => {
     const post = await getPostById(postId);
     if (!post) return;
 
-    const comment = await Comment.findOne({ where: { id: commentId, postId: postId } });
+    const comment = await Comment.findOne({ where: { id: commentId, postid: postId } });
     if (comment) {
       comment.recommendations++;
       await comment.save(); 

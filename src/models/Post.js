@@ -1,44 +1,45 @@
 'use strict';
 
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../index'); // sequelize 인스턴스를 가져옵니다
 
 module.exports = class Post extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      author: {
-        type: DataTypes.STRING(8),
-        allowNull: false,
-      },
-      title: {
-        type: DataTypes.STRING(20),
+      userid: {
+        type: DataTypes.STRING(15), // 변경된 부분
         allowNull: false,
       },
       content: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      voteTitle: {
-        type: DataTypes.STRING,
-        allowNull: true,
+      title: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
       },
       category: {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: 'complain',
       },
-      votesFor: {
+      recommend: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
-      votesAgainst: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
+      image: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
-      recommendations: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
+      date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.NOW,
       },
+      reports: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0,
+      }
     }, {
       sequelize,
       timestamps: true,
@@ -52,6 +53,10 @@ module.exports = class Post extends Sequelize.Model {
   }
 
   static associate(index) {
-    this.hasMany(index.Comments, { foreignKey: 'postId', sourceKey: 'id', as: 'comments' });
+    this.belongsTo(index.User, { foreignKey: 'userid', targetKey: 'userid' }); // 변경된 부분
+    this.hasMany(index.Comment, { foreignKey: 'postid', sourceKey: 'id' });
+    this.hasMany(index.Recommend, { foreignKey: 'postid', sourceKey: 'id' });
+    this.hasMany(index.Report, { foreignKey: 'postid', sourceKey: 'id' });
+    this.hasMany(index.Vote, { foreignKey: 'postid', sourceKey: 'id' });
   }
 }

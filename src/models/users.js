@@ -5,38 +5,29 @@ const { Sequelize, DataTypes } = require('sequelize');
 module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      name: {
+      userid: { // user의 고유 아이디 필드 추가
+        type: DataTypes.STRING(15),
+        allowNull: false,
+        unique: true, // 고유 아이디로 설정
+        primaryKey: true, // 기본 키로 설정
+      },
+      username: {
         type: DataTypes.STRING(50),  
         allowNull: false,
-      },
-      phone: {
-        type: DataTypes.STRING(20),  
-        allowNull: false,
-        unique: true,
-        defaultValue: 'N/A',  // 기본값 설정
-      },
-      email: {
-        type: DataTypes.STRING(100),  
-        allowNull: false,
-        unique: true,
-        defaultValue: 'N/A',  // 기본값 설정
       },
       password: {
         type: DataTypes.STRING(100), 
         allowNull: false,
-        defaultValue: 'N/A',  // 기본값 설정
       },
-      admin:{
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-        
-      },
-      blacked:{
-        type: DataTypes.INTEGER,
-        allownull: true,
+      black: {
+        type: DataTypes.INTEGER, // 블랙당한 횟수이므로 INTEGER로 변경
+        allowNull: true,
         defaultValue: 0,
-        
+      },
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
       }
     }, {
       sequelize,
@@ -50,6 +41,10 @@ module.exports = class User extends Sequelize.Model {
     });
   }
   static associate(db) {
-    // 테이블 관계 설정
+    this.hasMany(db.Post, { foreignKey: 'userid', sourceKey: 'userid' });
+    this.hasMany(db.Comment, { foreignKey: 'userid', sourceKey: 'userid' });
+    this.hasMany(db.Recommend, { foreignKey: 'userid', sourceKey: 'userid' });
+    this.hasMany(db.Report, { foreignKey: 'userid', sourceKey: 'userid' });
+    this.hasMany(db.Vote, { foreignKey: 'userid', sourceKey: 'userid' });
   }
 }

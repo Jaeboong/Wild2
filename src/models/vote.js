@@ -2,23 +2,23 @@
 
 const { Sequelize, DataTypes } = require('sequelize');
 
-module.exports = class Postdata extends Sequelize.Model {
+module.exports = class Vote extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      userId: {
+      postid: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      postId: {
-        type: DataTypes.INTEGER,
+      userid: {
+        type: DataTypes.STRING(15), // 변경된 부분
         allowNull: false,
       },
-      isVoted: {
+      agree: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
       },
-      isRecommended: {
+      disagree: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
@@ -27,16 +27,16 @@ module.exports = class Postdata extends Sequelize.Model {
       sequelize,
       timestamps: true,
       underscored: false,
-      modelName: 'Postdata',
-      tableName: 'postdata',
+      modelName: 'Vote',
+      tableName: 'votes',
       paranoid: false,
       charset: 'utf8',
       collate: 'utf8_general_ci',
     });
   }
 
-  static associate(index) {
-    this.belongsTo(index.User, { foreignKey: 'userId', targetKey: 'id' });
-    this.belongsTo(index.Post, { foreignKey: 'postId', targetKey: 'id' });
+  static associate(db) {
+    this.belongsTo(db.Post, { foreignKey: 'postid', targetKey: 'id' });
+    this.belongsTo(db.User, { foreignKey: 'userid', targetKey: 'userid' }); // 변경된 부분
   }
 }

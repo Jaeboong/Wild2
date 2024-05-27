@@ -40,9 +40,8 @@ const initializeApp = async () => {
     
     const adminPassword = await bcrypt.hash('qwer1234', 10);
     await User.bulkCreate([
-      { name: 'admin', 
-      phone: '010-1111-1111', 
-      email: 'admin@admin.com', 
+      { userid: 'admin',
+      username: 'admin', 
       password: adminPassword,
       admin: true }
     ]);

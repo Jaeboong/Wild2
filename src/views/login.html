@@ -10,8 +10,8 @@
     <p>Login to access your travelwise account</p>
     <form action="/login" method="post">
       <div class="form-floating mb-3">
-        <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="email">
-        <label for="floatingInput">Email</label>
+        <input type="text" class="form-control" id="floatingInput" placeholder="username" name="username"> <!-- Email을 username으로 변경 -->
+        <label for="floatingInput">Username</label>
       </div>
       <div class="form-floating">
         <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
@@ -23,8 +23,7 @@
         <a href="">Forgot Password</a>
       </div>
       <button type="submit" class="btn btn-primary">login</button>
-      <p>Don't have an acount? <a href="/sign-up">Sign up</a> </p>
-
+      <p>Don't have an account? <a href="/sign-up">Sign up</a> </p>
       </form>
 </body>
 </html>

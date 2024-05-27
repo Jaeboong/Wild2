@@ -1,4 +1,3 @@
-<!-- signup.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -6,16 +5,14 @@
 </head>
 <body>
     <h1>Sign up</h1>
-    <p>Let's get you all st up so you can access your personal account.</p>
+    <p>Let's get you all set up so you can access your personal account.</p>
     <form action="/sign-up", method="post">
         <div class="row g-3">
             <div class="col">
-                <input type="text" class="form-control" placeholder="First name" aria-label="First name" name="fName">
-                <input type="text" class="form-control" placeholder="Last name" aria-label="Last name" name="lName">
+                <input type="text" class="form-control" placeholder="User ID" aria-label="User ID" name="userid"> <!-- First name과 Last name을 User ID로 변경 -->
             </div>
             <div class="col">
-                <input type="email" class="form-control" placeholder="Email" aria-label="Email" name="email">
-                <input type="tel" class="form-control" placeholder="Phone Number (-제외)" aria-label="Phone Number (-제외)" pattern="[0-9]{3}[0-9]{4}[0-9]{4}" name="phone">
+                <input type="text" class="form-control" placeholder="Username" aria-label="Username" name="username"> <!-- Email을 Username으로 변경 -->
             </div>
             <input type="password" class="form-control" placeholder="Password" aria-label="Password" name="psw">
             <input type="password" class="form-control" placeholder="Confirm Password" aria-label="Password" name="cPsw">
@@ -24,7 +21,7 @@
                 <p>I agree to all the <a href="">Terms</a> and <a href="">Privacy Policies</a></p>
             </div>
             <button type="submit" class="btn btn-primary">Create account</button>
-            <p>Already have an acount? <a href="/login">Login</a> </p>
+            <p>Already have an account? <a href="/login">Login</a> </p>
         </div>
     </form>
 </body>
