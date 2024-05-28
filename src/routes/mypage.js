@@ -5,13 +5,14 @@ const mainLayout = "../views/layouts/main.ejs";
 
 const { sequelize, User } = require('../index');  // Sequelize 인스턴스 및 모델 가져오기
 // const asyncHandler = require('express-async-handler');
+const email = 'bob@example.com'
 
 // mypage
 router.get("/mypage", async (req, res) => {
     const locals = {
         title: "mypageInfo"
     }
-    const users = await User.findOne({ where: { email : 'david@example.com' } });
+    const users = await User.findOne({ where: { email } });
 
     res.render("mypageInfo", {locals, users, layout: mainLayout});
 });
@@ -19,14 +20,14 @@ router.get("/mypage", async (req, res) => {
 router.post('/updateUser', async (req, res) => {
     const { name, email, password, phone } = req.body;
 
-    console.log('Received data:', req.body);  // 디버그용 로그
+    // console.log('Received data:', req.body);  // 디버그용 로그
 
     try {
         const result = await User.update( // 이메일은 수정 불가.
             { name, password, phone },
             { where: { email } }
         );
-        console.log('Update result:', result);  // 업데이트 결과 로그
+        // console.log('Update result:', result);  // 업데이트 결과 로그
 
         if (result[0] > 0) {
             console.log('User updated successfully');
@@ -41,12 +42,13 @@ router.post('/updateUser', async (req, res) => {
     }
 });
 
-
-router.get("/mypageBoard", (req, res) => {
+router.get("/mypageBoard", async (req, res) => {
     const locals = {
         title: "mypageBoard"
     }
-    res.render("mypageBoard", {locals, layout: mainLayout});
+    const users = await User.findOne({ where: { email } });
+
+    res.render("mypageBoard", {locals, users, layout: mainLayout});
 });
 
 module.exports = router;

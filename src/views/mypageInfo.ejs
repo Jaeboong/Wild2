@@ -12,6 +12,10 @@
             <a href="/mypage">개인정보수정</a>
             <a href="/mypageBoard">내가 쓴 글</a>
             <a href="#">추천한 글</a>
+            <% if (users && users.admin === true) { %>
+                ------------------------------
+                <a class="reportboard" href="/reports">신고 목록</a>
+            <% } %>
         </div>
         <div class="content">
             <form action="/updateUser" method="POST">
