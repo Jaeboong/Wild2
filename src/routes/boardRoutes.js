@@ -293,38 +293,13 @@ router.post('/board/create', asyncHandler(async (req, res) => {
       res.status(500).send({ error: '게시물 작성 중 오류가 발생했습니다.' });
   }
 }));
-// 게시물 보기
-// router.get('/board/view/:id', asyncHandler(async (req, res) => {
-//   const { id } = req.params;
-//   const post = await getPostById(id);
-//   if (!post) {
-//     res.status(404).send('Post not found');
-//     return;
-//   }
-//   console.log(post);
 
-//   // 작성자의 이름 가져오기
-//   const author = await User.findByPk(post.userid);
-//   post.authorName = author ? author.username : 'Unknown';
+// 게시글 조회
 
-//   //댓글 작성자의 이름 가져오기
-//   const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
-//     const commentAuthor = await User.findByPk(comment.userid);
-//     return {
-//       ...comment,
-//       authorName: commentAuthor ? commentAuthor.username : 'Unknown'
-//     };
-//   }));
-  // const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
-  // const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
-  // const commentRecommendations = req.session.commentRecommendations || {};
-
-  // res.json({post, author});
-//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-  //★★★★★★★★★★게시물보기 이렇게 해야 제대로 실행 된다 참고★★★★★★★★★★★★★★
-  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
   router.get('/board/view/:id', asyncHandler(async (req, res) => {
     const { id } = req.params;
+
+    
     
     const post = await Post.findByPk(id, {
       include: [
