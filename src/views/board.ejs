@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title><%= locals.title %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>민원 게시판</h1>
+    <div class="wrapper">
+        <form action="/post-write" method="get">
+            <input type="hidden" name="board" value="complain">
+            <button type="submit">글 작성</button>
+        </form>
+        <div class="search-wrapper">
+            <form action="/board/complain" method="get">
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="검색..."
+                    value="<%= typeof searchKeyword !== 'undefined' ? searchKeyword : '' %>"
+                />
+                <button type="submit">검색</button>
+            </form>
+        </div>
+    </div>
+
+    <table class="post-table">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>추천 수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% data.forEach((post, index) => { %>
+                <tr>
+                    <td><%= (currentPage - 1) * postsPerPage + index + 1 %></td>
+                    <td><a href="/board/view/<%= post.id %>"><%= post.title %></a></td>
+                    <td><%= post.userId %></td>
+                    <td><%= post.recommend %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>">이전</a>
+        <% } %>
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>">다음</a>
+        <% } %>
+    </div>
+</body>
+</html>

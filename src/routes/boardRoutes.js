@@ -106,31 +106,40 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// 핫 게시물 목록
+// HOT 게시판
 router.get(
   ["/board/hot"],
   asyncHandler(async (req, res) => {
       const locals = {
           title: "Hot",
       };
-      const data = await Post.findAll({
-        attributes: ['title', 'content', 'userid', 'date']
+      const hotPosts = await Post.findAll({
+          attributes: ['title', 'content', 'userId', 'recommend', 'date'],
+          where: {
+              recommend: {
+                  [Op.gte]: 10 // 추천수가 10 이상인 게시물만 가져옴
+              }
+          },
+          order: [['createdAt', 'DESC']]
       });
-      res.render("hot", { locals, data, layout: mainLayout });
+      res.render("hot", { locals, hotPosts });
   })
 );
 
-// 공지 게시판 목록
+// 공지 게시판
 router.get(
-  ["/board/announce"],
+  ["/board/notice"],
   asyncHandler(async (req, res) => {
       const locals = {
           title: "Notice",
       };
       const data = await Post.findAll({
-          attributes: ['title', 'content', 'userid', 'date']
+          attributes: ['title', 'content', 'userId', 'date'],
+          where: {
+              category: 'notice'
+          }
       });
-      res.render("notice", { locals, data, layout: mainLayout });
+      res.render("notice", { locals, data });
   })
 );
 
@@ -144,19 +153,63 @@ router.get(
       const data = await Post.findAll({
         attributes: ['title', 'content', 'userid', 'date']
       });
-      res.render("reports", { locals, data, layout: mainLayout });
+      res.render("reports", { locals, data });
+  })
+);
+
+// 제보 게시판 목록
+router.get(
+  ["/board/report"],
+  asyncHandler(async (req, res) => {
+      const locals = {
+          title: "Report",
+      };
+      const data = await Post.findAll({
+          attributes: ['title', 'content', 'userId', 'recommend', 'date'],
+          where: {
+              category: 'report'
+          },
+          order: [['createdAt', 'DESC']] 
+      });
+      res.render("report", { locals, data });
   })
 );
 
 // 민원 게시판 목록
-router.get('/board/complain', checkLogin, asyncHandler(async (req, res) => {
-  try {
-    const posts = await getAllPosts();
-    res.render('listBoard', { posts, layout: mainLayout });
-  } catch (error) {
-    res.status(500).send('Error retrieving posts');
-  }
-}));
+router.get(
+  ["/board/complain"],
+  asyncHandler(async (req, res) => {
+      const locals = {
+          title: "Complain",
+      };
+      
+      const page = parseInt(req.query.page, 10) || 1;
+      const postsPerPage = 10; // 한 페이지에 보여줄 게시글 수
+      const offset = (page - 1) * postsPerPage;
+
+      const { count, rows } = await Post.findAndCountAll({
+          attributes: ['id', 'title', 'userId', 'recommend', 'createdAt'],
+          where: {
+              category: 'complain'
+          },
+          order: [['createdAt', 'DESC']],
+          limit: postsPerPage,
+          offset: offset
+      });
+
+      const totalPages = Math.ceil(count / postsPerPage);
+
+      res.render("board", {
+          locals,
+          data: rows,
+          currentPage: page,
+          totalPages,
+          postsPerPage,
+          layout: mainLayout
+      });
+  })
+);
+
 
 // 게시물 작성 페이지
 router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
@@ -165,8 +218,7 @@ router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
 
 // 게시물 작성 처리
 router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
-  const { title, content, category } = req.body;
-  const userid = req.user.id; // req.user.id를 사용하여 userid 설정
+  const { title, content, category, userid } = req.body;
 
   const newPost = {
     userid, // userid를 추가
