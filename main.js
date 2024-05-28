@@ -4,7 +4,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const asyncHandler = require('express-async-handler');
-const sequelize = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
+const {sequelize} = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
 const mainRouter = require('./routes/main');
 
 const app = express();
