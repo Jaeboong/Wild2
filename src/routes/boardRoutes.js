@@ -321,6 +321,8 @@ router.post('/board/create', asyncHandler(async (req, res) => {
       res.status(404).send('Post not found');
       return;
     }
+
+    
   
     // 작성자의 이름 가져오기
     const author = await User.findByPk(post.userid);
@@ -333,18 +335,35 @@ router.post('/board/create', asyncHandler(async (req, res) => {
         authorName: comment.User ? comment.User.username : 'Unknown'
       };
     });
-  
-    const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
-    const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
-    const commentRecommendations = req.session.commentRecommendations || {};
+
+      // Vote 모델에서 userid와 postid가 존재하는지 검사
+    const userId = req.user.id; // 로그인된 사용자의 ID를 가져온다고 가정
+    const voteExists = await Vote.findOne({
+      where: {
+        postid: id,
+        userid: userId
+      }
+    });
+
+    const hasVoted = voteExists ? true : false;
+
+    // Recommend 모델에서 userid, postid로 추천이 존재하는지 검사
+    const recommendExists = await Recommend.findOne({
+      where: {
+        postid: id,
+        userid: userId
+      }
+    });
+
+    const hasRecommended = recommendExists ? true : false;
+
   
     res.json({ 
       post: post.dataValues, 
       author: author.username, 
       comments: commentsWithAuthors,
       hasVoted, 
-      hasRecommended, 
-      commentRecommendations 
+      hasRecommended
     });
 
   }));
