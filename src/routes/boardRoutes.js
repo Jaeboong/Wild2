@@ -16,7 +16,6 @@ router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-let postid = 14;
 
 // 로그인 페이지
 router.get('/login', (req, res) => {
@@ -44,7 +43,7 @@ router.post('/login', async function(req, res) {
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const token = jwt.sign({
-        username: user.username, 
+        username: user.username,
         id: user.userid, 
         pw: user.password
         }, 
@@ -62,7 +61,6 @@ router.post('/login', async function(req, res) {
     return res.status(500).send('Internal server error');
   }
 });
-
 // 회원가입 처리
 router.post('/signup', async function(req, res) {
   const userid = req.body.userid; // userid 필드 추가
