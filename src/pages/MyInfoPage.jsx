@@ -62,14 +62,23 @@ const Button = styled.button`
   margin-top: 10px;
 `;
 
+const Line = styled.div`
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #2d2d2d;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
+`;
+
 function MyInfoPage() {
   const token = localStorage.getItem('token');
   const payload = token.split('.')[1];
   const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
+  console.log(dec.isAdmin);
 
-  const [nickname, setNickname] = useState(dec.nickname);
+  const [nickname, setNickname] = useState(dec.username);
   const [id, setId] = useState(dec.id);
-  const [pw, setPw] = useState(dec.pw);
+  const [pw, setPw] = useState();
   const [editMode, setEditMode] = useState(false);
 
   const navigate = useNavigate();
@@ -77,10 +86,10 @@ function MyInfoPage() {
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.put('http://localhost:4000/api/user', {
-        nickname: nickname !== dec.nickname ? nickname : dec.nickname,
+      const response = await axios.put('http://localhost:3001/user', {
+        username: nickname !== dec.username ? nickname : dec.username,
         id: id !== dec.id ? id : dec.id,
-        pw: pw !== dec.pw ? pw : dec.pw,
+        pw: pw,
       });
       if (response.status === 200) {
         alert('정보가 성공적으로 수정되었습니다.');
@@ -96,7 +105,7 @@ function MyInfoPage() {
     const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
     if (confirmDelete) {
       try {
-        const response = await axios.delete('http://localhost:4000/api/user', {
+        const response = await axios.delete('http://localhost:3001/api/user', {
           data: { id: dec.id }
         });
         if (response.status === 200) {
@@ -120,8 +129,15 @@ function MyInfoPage() {
           <Linkto to="#" onClick={() => setEditMode(false)}>● 내 정보</Linkto>
           <Linkto to="#" onClick={() => setEditMode(true)}>● 개인 정보 수정</Linkto>
           <Linkto to="/mypost">● 내가쓴 글</Linkto>
-          <Linkto to="/myrecommend">● 추천한 글</Linkto>
+          {/* <Linkto to="/myrecommend">● 추천한 글</Linkto> */}
           <Linkto to="#" onClick={handleDelete}>● 회원 탈퇴</Linkto>
+
+          {dec.isAdmin &&
+          <>
+            <Line/>
+            <Linkto to="/ban">● 신고글 목록</Linkto>
+          </>
+          }
         </LeftBottom>
         <RightBottom>
           {editMode ? (
@@ -145,7 +161,7 @@ function MyInfoPage() {
               <label>
                 패스워드:
                 <Input
-                  type="text"
+                  type="password"
                   value={pw}
                   onChange={(e) => setPw(e.target.value)}
                 />
@@ -158,7 +174,6 @@ function MyInfoPage() {
               <h1>사용자 정보</h1>
               <h1>닉네임 : {dec.username}</h1>
               <h1>아이디 : {dec.id}</h1>
-              <h1>패스워드 : {dec.pw}</h1>
             </>
           )}
         </RightBottom>

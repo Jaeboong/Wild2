@@ -84,6 +84,8 @@ function PostViewPage() {
     const [hasReported, setHasReported] = useState(false);
     const [hasRecommended, setHasRecommended] = useState(false);
     const [hasVoted, setHasVoted] = useState(false);
+    const [agree, setAgree] = useState(0);
+    const [disagree, setDisagree] = useState(0);
     const [isAuthor, setIsAuthor] = useState(false);
     const [author, setAuthor] = useState("");
     
@@ -100,7 +102,11 @@ function PostViewPage() {
 
     const fetchPost = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/board/view/${postId}`, {
+            const response = await axios.get(`http://localhost:3001/board/view/${postId}`,
+            {
+                params:{
+                    userid: dec.id,
+                },
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
@@ -110,8 +116,10 @@ function PostViewPage() {
             setBringedComment(response.data.comments);
             setAuthor(response.data.author);
             setIsAuthor(response.data.author === dec.username);
-            setHasReported(response.data.hasReported);
+            setHasRecommended(response.data.hasRecommended);
             setHasVoted(response.data.hasVoted);
+            setAgree(response.data.agreeCount);
+            setDisagree(response.data.disagreeCount);
         } catch (error) {
             console.error("Error fetching post:", error);
         }
@@ -119,11 +127,12 @@ function PostViewPage() {
 
     useEffect(() => {
         fetchPost();
-    }, [postId, hasRecommended, hasVoted, hasReported]);
+    }, [postId, hasRecommended, hasVoted]);
 
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`http://localhost:4000/api/posts/${postId}`, {
+            console.log(postId);
+            const response = await axios.delete(`http://localhost:3001/post/${postId}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
@@ -131,7 +140,7 @@ function PostViewPage() {
 
             if (response.status === 200) {
                 alert("게시글이 정상적으로 삭제되었습니다.");
-                navigate(`/${post.board}`);
+                navigate(`/${post.category}`);
             } else {
                 console.error("Error deleting post");
             }
@@ -142,15 +151,17 @@ function PostViewPage() {
 
     const handleRecommendation = async () => {
         try {
+            console.log(dec.id);
             const response = await axios.post(
                 `http://localhost:3001/board/recommend/${postId}`,
-                { userid: dec.userid },
                 {
+                    params:{ userid: dec.id },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                 }
             );// 백에서 추천했으면 -1, 안했으면 +1
+            setHasRecommended(response.data.recommended);
         } catch (error) {
             console.error("Error updating recommendation:", error);
         }
@@ -176,7 +187,7 @@ function PostViewPage() {
     const handleReport = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:4000/api/posts/${postId}/report`,
+                `http://localhost:3001/api/posts/${postId}/report`,
                 { userid: dec.id },
                 {
                     headers: {
@@ -293,8 +304,8 @@ function PostViewPage() {
                         ) : (
                             <div>
                                 <h2>투표 결과</h2>
-                                {/* <p>찬성: {voteInfo.votesFor}</p>
-                                <p>반대: {voteInfo.votesAgainst}</p> */}
+                                <p>찬성: {agree}</p>
+                                <p>반대: {disagree}</p>
                             </div>
                         )}
 

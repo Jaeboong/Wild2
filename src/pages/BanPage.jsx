@@ -40,7 +40,7 @@ const SearchButton = styled.button`
   cursor: pointer;
 `;
 
-function MyPostPage() {
+function BanPage() {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState([]);
@@ -58,19 +58,14 @@ function MyPostPage() {
     setCurrentPage(page);
   };
 
-  const fetchPosts = async (keyword = '', board = 'mypost', page = 1) => {
+  const fetchPosts = async (keyword = '', board = 'ban', page = 1) => {
     try {
-      const endpoint = keyword ? 'search' : 'mypost';
-      console.log(dec.id);
+      const endpoint = keyword ? 'search' : 'ban';
       const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
-        params: {
-          query: keyword,
-          page: page,
-          category: board,
-          userid: dec.id
-        }
+        query: keyword,
+        page: page,
+        userid: dec.id,
       });
-      
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {
@@ -79,13 +74,13 @@ function MyPostPage() {
   };
 
   useEffect(() => {
-    fetchPosts(searchKeyword, 'mypost', currentPage);
+    fetchPosts(searchKeyword, 'ban', currentPage);
   }, [currentPage, clickSearch]);
 
   const handleSearch = () => {
     setCurrentPage(1);
     setClickSearch(true);
-    fetchPosts(searchKeyword, 'mypost', 1);
+    fetchPosts(searchKeyword, 'ban', 1);
   };
 
   const totalPages = Math.ceil(totalPosts / postsPerPage);
@@ -93,7 +88,7 @@ function MyPostPage() {
   return (
     <>
       <Header />
-      <Title>내가쓴 글</Title>
+      <Title>신고글 목록</Title>
       <Wrapper>
         <SearchWrapper>
           <input
@@ -110,4 +105,4 @@ function MyPostPage() {
   );
 }
 
-export default MyPostPage;
+export default BanPage;
