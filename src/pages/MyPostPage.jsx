@@ -61,14 +61,16 @@ function MyPostPage() {
   const fetchPosts = async (keyword = '', board = 'mypost', page = 1) => {
     try {
       const endpoint = keyword ? 'search' : 'mypost';
-      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
+      console.log(dec.userid);
+      const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
         params: {
           query: keyword,
           page: page,
-          limit: postsPerPage,
-          author: dec.nickname
+          category: board,
+          userid: dec.id
         }
       });
+      
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
     } catch (error) {

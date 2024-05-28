@@ -4,6 +4,7 @@ import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import Header from "../components/Header";
+import axios from "axios";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -41,27 +42,23 @@ function PostWritePage(props) {
 
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-        // const timestamp = new Date();
-        // const date = new Date(timestamp).toISOString().slice(0, 19);
-        // console.log(date); //날짜 찍기
+        console.log(dec.id);
 
         try {
-            const response = await fetch("http://localhost:3001/board/create", {
-                method: "POST",
+            const response = await axios.post("http://localhost:3001/board/create", {
+                title,
+                content,
+                category: boardType,
+                userid: dec.id,
+            }, {
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`
-                },
-                body: JSON.stringify({
-                    title,
-                    content,
-                    category: boardType,
-                    userid: dec.userid,
-                })
+                    Authorization: `Bearer ${token}`
+                }
             });
 
-            if (response.ok) {
-                console.log("ok");
+            if (response.status === 200) {
+                console.log("Post created successfully");
                 navigate(`/${boardType}`);
             } else {
                 console.error('Error creating post');

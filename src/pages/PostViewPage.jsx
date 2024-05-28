@@ -160,7 +160,7 @@ function PostViewPage() {
         try {
             const response = await axios.post(
                 `http://localhost:3001/board/vote/${postId}`,
-                { userid: dec.userid, checked: checkValue },
+                { userid: dec.id, checked: checkValue },
                 {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -299,7 +299,7 @@ function PostViewPage() {
                         )}
 
                         <div style={{ display: "flex", alignItems: "flex-end" }}>
-                            <h2>추천수 : {post.recommends}</h2> {/*따봉 아이콘으로 변경 예정*/}
+                            <h2>추천수 : {post.recommend}</h2> {/*따봉 아이콘으로 변경 예정*/}
                         </div>
                     </div>
                     
