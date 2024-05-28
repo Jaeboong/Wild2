@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const bcrypt = require('bcrypt');
 const path = require('path');
-const checkLogin = require('../../middleware/auth');
 const { User, Post, Comment, Recommend, Report, Vote } = require('../index');
 const { Op } = require('sequelize');
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
@@ -15,6 +14,8 @@ const cors = require('cors');
 router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
+
+let postid = 14;
 
 
 // 로그인 페이지
@@ -263,7 +264,7 @@ router.get('/board/search', asyncHandler(async (req, res) => {
 }));
 
 // 게시물 작성 페이지
-router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
+router.get('/board/create',  asyncHandler(async(req, res) => {
   res.render('createBoard');
 }));
 
@@ -297,7 +298,7 @@ router.post('/board/create', asyncHandler(async (req, res) => {
   router.get('/board/view/:id', asyncHandler(async (req, res) => {
     const { id } = req.params;
 
-    
+    console.log(id);
     
     const post = await Post.findByPk(id, {
       include: [
@@ -335,13 +336,13 @@ router.post('/board/create', asyncHandler(async (req, res) => {
     });
 
       // Vote 모델에서 userid와 postid가 존재하는지 검사
-    const userId = req.user.id; // 로그인된 사용자의 ID를 가져온다고 가정
-    const voteExists = await Vote.findOne({
-      where: {
-        postid: id,
-        userid: userId
-      }
-    });
+      const userId = req.query.userid; // 쿼리 파라미터에서 userid를 가져옴
+      const voteExists = await Vote.findOne({
+        where: {
+          postid: id,
+          userid: userId
+        }
+      });
 
     const hasVoted = voteExists ? true : false;
 
@@ -355,14 +356,31 @@ router.post('/board/create', asyncHandler(async (req, res) => {
 
     const hasRecommended = recommendExists ? true : false;
 
-  
-    res.json({ 
-      post: post.dataValues, 
-      author: author.username, 
-      comments: commentsWithAuthors,
-      hasVoted, 
-      hasRecommended
+        // Vote 모델에서 해당 postid에 대한 agree와 disagree 수를 계산
+    const agreeCount = await Vote.count({
+        where: {
+            postid: id,
+            agree: true
+         }
     });
+  
+    const disagreeCount = await Vote.count({
+        where: {
+            postid: id,
+            disagree: true
+        }
+    });
+
+  
+    res.json({
+      post: post.dataValues,
+      author: author.username,
+      comments: commentsWithAuthors,
+      hasVoted,
+      hasRecommended,
+      agreeCount, // agree 투표 수
+      disagreeCount // disagree 투표 수
+  });
 
   }));
 
@@ -392,21 +410,30 @@ router.post('/board/vote/:id', asyncHandler(async (req, res) => {
 }));
 
 // 게시물 추천 처리
-router.post('/board/recommend/:id', checkLogin, asyncHandler(async (req, res) => {
-  if (!req.session.recommendations) {
-    req.session.recommendations = [];
+router.post('/board/recommend/:id', asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.query.userid; 
+
+  const existingRecommend = await Recommend.findOne({
+      where: {
+          postid: id,
+          userid: userId
+      }
+  });
+
+  if (existingRecommend) {
+      await existingRecommend.destroy();
+      await Post.increment('recommend', { by: -1, where: { id: id } });
+  } else {
+      await Recommend.create({ postid: id, userid: userId });
+      await Post.increment('recommend', { by: 1, where: { id: id } });
   }
 
-  if (!req.session.recommendations.includes(req.params.id)) {
-    await recommendPost(req.params.id); 
-    req.session.recommendations.push(req.params.id);
-  }
-
-  res.redirect(`/board/view/${req.params.id}`);
+  res.redirect(`/board/view/${id}`);
 }));
 
 // 댓글 작성 처리
-router.post('/board/comment/:id', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/comment/:id', asyncHandler(async (req, res) => {
   const { comment } = req.body;
   const userid = req.user.id;
 
