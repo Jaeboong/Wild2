@@ -16,6 +16,8 @@ router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
+let postid = 14;
+
 // 로그인 페이지
 router.get('/login', (req, res) => {
   const filePath = path.join(__dirname, '../views', 'login.html');
@@ -200,117 +202,201 @@ router.get(
   })
 );
 
+//내 게시글 보기(로그인 하고)
+router.get(
+  ["/board/mypost"],
+  asyncHandler(async (req, res) => {
+    const { page = 1, userid } = req.query;
+    console.log(userid);
+    const limit = 10;
+    const offset = (page - 1) * limit;
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+        where: {
+          userid: userid
+        },
+        order: [
+          ['date', 'DESC'],
+          ['postid', 'DESC']
+        ],
+        limit: limit,
+        offset: offset,
+      });
+      res.json({ total: count, posts: rows });
+  })
+);
+
+//게시글 검색
+router.get('/board/search', asyncHandler(async (req, res) => {
+  const { query: searchKeyword, category, userid, page = 1 } = req.query;
+  const keyword = searchKeyword || '';
+  const limit = 10;
+  const offset = (page - 1) * limit;
+
+  try {
+        const whereConditions = {
+          [Op.or]: [
+            { title: { [Op.like]: `%${keyword}%` } },
+            { userId: { [Op.like]: `%${keyword}%` } }
+          ]
+        };
+
+      if (category === 'hot') {
+          whereConditions.recommend = { [Op.gte]: 10 };
+      } else if (category === 'mypost') {
+          whereConditions.userid = userid;
+      } else {
+          whereConditions.category = category;
+      }
+
+      const results = await Post.findAndCountAll({
+          where: whereConditions,
+          attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+          order: [['date', 'DESC'], ['postid', 'DESC']],
+          limit,
+          offset
+      });
+
+      res.json({ total: results.count, posts: results.rows });
+  } catch (err) {
+      console.error('Error searching posts:', err);
+      res.status(500).send({ error: '검색 중 오류가 발생했습니다.' });
+  }
+}));
+
 // 게시물 작성 페이지
 router.get('/board/create', checkLogin, asyncHandler(async(req, res) => {
   res.render('createBoard');
 }));
 
 // 게시물 작성 처리
-router.post('/board/create', checkLogin, asyncHandler(async (req, res) => {
+router.post('/board/create', asyncHandler(async (req, res) => {
   const { title, content, category, userid } = req.body;
+  console.log(userid);
 
   const newPost = {
-    userid, // userid를 추가
-    title,
-    content,
-    category,
-    recommend: 0,
-    reports: 0,
-    date: new Date(),
+      postid: postid++,
+      userid,
+      title,
+      content,
+      category,
+      recommend: 0,
+      reports: 0,
+      date: new Date(),
   };
-  await createPost(newPost);
-  res.redirect('/board/complain');
-  console.log("post creat success");
-}));
 
-// 게시물 보기
-router.get('/board/view/:id', asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const post = await getPostById(id);
-  if (!post) {
-    res.status(404).send('Post not found');
-    return;
+  try {
+      await createPost(newPost)
+      res.status(200).send({ message: "Post created successfully" });
+  } catch (error) {
+      console.error("Error creating post:", error);
+      res.status(500).send({ error: '게시물 작성 중 오류가 발생했습니다.' });
   }
-  console.log(post);
-
-  // 작성자의 이름 가져오기
-  const author = await User.findByPk(post.userid);
-  post.authorName = author ? author.username : 'Unknown';
-
-  //댓글 작성자의 이름 가져오기
-  const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
-    const commentAuthor = await User.findByPk(comment.userid);
-    return {
-      ...comment,
-      authorName: commentAuthor ? commentAuthor.username : 'Unknown'
-    };
-  }));
-  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-  //★★★★★★★★★★게시물보기 이렇게 해야 제대로 실행 된다 참고하셈★★★★★★★★★★★★★★
-  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-  // router.get('/board/view/:id', asyncHandler(async (req, res) => {
-  //   const { id } = req.params;
-    
-  //   const post = await Post.findByPk(id, {
-  //     include: [
-  //       {
-  //         model: Comment,
-  //         as: 'Comments',
-  //         include: [
-  //           {
-  //             model: User,
-  //             as: 'User',  // 'Author' 대신 'User' 사용
-  //             attributes: ['username']
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   });
-  
-  //   if (!post) {
-  //     res.status(404).send('Post not found');
-  //     return;
-  //   }
-  
-  //   // 작성자의 이름 가져오기
-  //   const author = await User.findByPk(post.userid);
-  //   post.dataValues.authorName = author ? author.username : 'Unknown';
-  
-  //   // 댓글 작성자의 이름 가져오기
-  //   const commentsWithAuthors = post.Comments.map(comment => {
-  //     return {
-  //       ...comment.dataValues,
-  //       authorName: comment.User ? comment.User.username : 'Unknown'
-  //     };
-  //   });
-  
-  //   const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
-  //   const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
-  //   const commentRecommendations = req.session.commentRecommendations || {};
-  
-  //   res.json({ post: post.dataValues, comments: commentsWithAuthors, hasVoted, hasRecommended, commentRecommendations });
-  // }));
-
-  const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
-  const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
-  const commentRecommendations = req.session.commentRecommendations || {};
-
-  res.json({post, author});
 }));
+// 게시물 보기
+// router.get('/board/view/:id', asyncHandler(async (req, res) => {
+//   const { id } = req.params;
+//   const post = await getPostById(id);
+//   if (!post) {
+//     res.status(404).send('Post not found');
+//     return;
+//   }
+//   console.log(post);
+
+//   // 작성자의 이름 가져오기
+//   const author = await User.findByPk(post.userid);
+//   post.authorName = author ? author.username : 'Unknown';
+
+//   //댓글 작성자의 이름 가져오기
+//   const commentsWithAuthors = await Promise.all(post.comments.map(async comment => {
+//     const commentAuthor = await User.findByPk(comment.userid);
+//     return {
+//       ...comment,
+//       authorName: commentAuthor ? commentAuthor.username : 'Unknown'
+//     };
+//   }));
+  // const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
+  // const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
+  // const commentRecommendations = req.session.commentRecommendations || {};
+
+  // res.json({post, author});
+//★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  //★★★★★★★★★★게시물보기 이렇게 해야 제대로 실행 된다 참고★★★★★★★★★★★★★★
+  //★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  router.get('/board/view/:id', asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    
+    const post = await Post.findByPk(id, {
+      include: [
+        {
+          model: Comment,
+          as: 'Comments',
+          include: [
+            {
+              model: User,
+              as: 'User', 
+              attributes: ['username']
+            }
+          ]
+        }
+      ]
+    });
+  
+    if (!post) {
+      res.status(404).send('Post not found');
+      return;
+    }
+  
+    // 작성자의 이름 가져오기
+    const author = await User.findByPk(post.userid);
+    post.dataValues.authorName = author ? author.username : 'Unknown';
+  
+    // 댓글 작성자의 이름 가져오기
+    const commentsWithAuthors = post.Comments.map(comment => {
+      return {
+        ...comment.dataValues,
+        authorName: comment.User ? comment.User.username : 'Unknown'
+      };
+    });
+  
+    const hasVoted = req.session.votes && req.session.votes.includes(req.params.id);
+    const hasRecommended = req.session.recommendations && req.session.recommendations.includes(req.params.id);
+    const commentRecommendations = req.session.commentRecommendations || {};
+  
+    res.json({ 
+      post: post.dataValues, 
+      author: author.username, 
+      comments: commentsWithAuthors,
+      hasVoted, 
+      hasRecommended, 
+      commentRecommendations 
+    });
+
+  }));
 
 // 게시물 투표 처리
-router.post('/board/vote/:id', checkLogin, asyncHandler(async (req, res) => {
-  if (!req.session.votes) {
-    req.session.votes = [];
-  }
+router.post('/board/vote/:id', asyncHandler(async (req, res) => {
+    const postid = req.params.id;
+    const { userid, checked } = req.body;
 
-  if (!req.session.votes.includes(req.params.id)) {
-    const { voteType } = req.body;
-    await votePost(req.params.id, voteType);
-    req.session.votes.push(req.params.id);
-  }
+    if (!userid || !checked) {
+        return res.status(400).json({ error: 'Invalid request data' });
+    }
 
-  res.redirect(`/board/view/${req.params.id}`);
+    try {
+        // 투표 정보 저장
+        const vote = await Vote.create({
+            postid,
+            userid,
+            agree: checked === 'agree' ? true : false,
+            disagree: checked === 'disagree' ? true : false
+        });
+
+        res.status(200).json({ message: 'Vote recorded successfully', vote });
+    } catch (error) {
+        console.error("Error recording vote:", error);
+        res.status(500).json({ error: 'Error recording vote' });
+    }
 }));
 
 // 게시물 추천 처리

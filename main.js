@@ -69,7 +69,7 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-19T00:00:00.000Z'), 
+      date: new Date('2024-05-20T00:00:00.000Z'), 
       },
       {
       postid: 3,
@@ -80,7 +80,7 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-20T00:00:00.000Z'), 
+      date: new Date('2024-05-21T00:00:00.000Z'), 
       },
       { 
       postid: 4,
@@ -91,7 +91,7 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-21T00:00:00.000Z'), 
+      date: new Date('2024-05-22T00:00:00.000Z'), 
       },
       { 
       postid: 5,
@@ -102,7 +102,7 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-22T00:00:00.000Z'), 
+      date: new Date('2024-05-23T00:00:00.000Z'), 
       },
       { 
       postid: 6,
@@ -113,20 +113,9 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-19T00:00:00.000Z'), 
+      date: new Date('2024-05-24T00:00:00.000Z'), 
       },
       {
-      postid: 8,
-      userid: 'admin', 
-      title: '제목8', 
-      content: '내용 8 - 민원넣습니다.', 
-      category: 'report', 
-      recommend: 19, 
-      image: 'no',
-      reports: 0, 
-      date: new Date('2024-05-20T00:00:00.000Z'), 
-      },
-      { 
       postid: 7,
       userid: 'admin', 
       title: '제목7', 
@@ -135,7 +124,18 @@ const initializeApp = async () => {
       recommend: 19, 
       image: 'no',
       reports: 0, 
-      date: new Date('2024-05-21T00:00:00.000Z'), 
+      date: new Date('2024-05-25T00:00:00.000Z'), 
+      },
+      { 
+      postid: 8,
+      userid: 'admin', 
+      title: '제목8', 
+      content: '내용 8 - 민원넣습니다.', 
+      category: 'report', 
+      recommend: 19, 
+      image: 'no',
+      reports: 0, 
+      date: new Date('2024-05-26T00:00:00.000Z'), 
       },
       
       { 
@@ -147,7 +147,7 @@ const initializeApp = async () => {
         recommend: 19, 
         image: 'no',
         reports: 0, 
-        date: new Date('2024-05-19T00:00:00.000Z'), 
+        date: new Date('2024-05-27T00:00:00.000Z'), 
         },
         {
         postid: 10,
@@ -158,7 +158,7 @@ const initializeApp = async () => {
         recommend: 19, 
         image: 'no',
         reports: 0, 
-        date: new Date('2024-05-20T00:00:00.000Z'), 
+        date: new Date('2024-05-28T00:00:00.000Z'), 
         },
         { 
         postid: 11,
@@ -169,7 +169,7 @@ const initializeApp = async () => {
         recommend: 19, 
         image: 'no',
         reports: 0, 
-        date: new Date('2024-05-21T00:00:00.000Z'), 
+        date: new Date('2024-05-28T01:00:00.000Z'), 
         },
         { 
         postid: 12,
@@ -180,7 +180,7 @@ const initializeApp = async () => {
         recommend: 19, 
         image: 'no',
         reports: 0, 
-        date: new Date('2024-05-21T00:00:00.000Z'), 
+        date: new Date('2024-05-28T02:00:00.000Z'), 
         },
         { 
         postid: 13,
@@ -191,7 +191,7 @@ const initializeApp = async () => {
         recommend: 19, 
         image: 'no',
         reports: 0, 
-        date: new Date('2024-05-21T00:00:00.000Z'), 
+        date: new Date('2024-05-28T03:00:00.000Z'), 
         },
     ]);
 
