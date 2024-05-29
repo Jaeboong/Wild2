@@ -43,6 +43,11 @@ module.exports = class Post extends Sequelize.Model {
         type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: 0,
+      },
+      needVote: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
       }
     }, {
       sequelize,

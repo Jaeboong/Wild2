@@ -350,28 +350,28 @@ router.get('/board/create',  asyncHandler(async(req, res) => {
   res.render('createBoard');
 }));
 
-// 게시물 작성 처리
+// 게시글 작성 코드 수정
 router.post('/board/create', asyncHandler(async (req, res) => {
-  const { title, content, category, userid } = req.body;
-  console.log(userid);
+  const { title, content, category, userid, needVote } = req.body; // 수정된 부분
 
   const newPost = {
-      postid: postid++,
-      userid,
-      title,
-      content,
-      category,
-      recommend: 0,
-      reports: 0,
-      date: new Date(),
+    postid: postid++,
+    userid,
+    title,
+    content,
+    category,
+    recommend: 0,
+    reports: 0,
+    date: new Date(),
+    needVote: needVote, // 수정된 부분
   };
 
   try {
-      await createPost(newPost)
-      res.status(200).send({ message: "Post created successfully" });
+    await createPost(newPost);
+    res.status(200).send({ message: "Post created successfully" });
   } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).send({ error: '게시물 작성 중 오류가 발생했습니다.' });
+    console.error("Error creating post:", error);
+    res.status(500).send({ error: '게시물 작성 중 오류가 발생했습니다.' });
   }
 }));
 
