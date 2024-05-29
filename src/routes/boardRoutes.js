@@ -652,4 +652,55 @@ router.post('/board/reported/:id', asyncHandler(async (req, res) => {
   }
 }));
 
+// 개인 정보 수정
+router.put('/updateUser', async (req, res) => {
+  const { id, username, pw } = req.body;
+
+  try {
+    let updateData = { username };
+    if (pw) {
+      const hashedPassword = await bcrypt.hash(pw, 10);
+      updateData.password = hashedPassword; // 비밀번호 해시 추가 및 필드명 수정
+    }
+
+    // userid가 수정 불가능하므로 해당 필드를 제외하고 업데이트
+    const result = await User.update(
+      updateData,
+      { where: { userid: id } }
+    );
+
+    if (result[0] > 0) {
+      console.log('User updated successfully');
+      res.json({ success: true });
+    } else {
+      console.log('No rows updated');
+      res.json({ success: false, message: 'No rows updated' });
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// 회원탈퇴 deleteUser DELETE 요청
+router.delete('/user', async (req, res) => {
+  const { id } = req.body;
+
+  try {
+      // userid를 사용하여 해당 사용자의 정보를 삭제
+      const result = await User.destroy({ where: { userid: id } });
+
+      if (result > 0) {
+          console.log('User deleted successfully');
+          res.json({ success: true });
+      } else {
+          console.log('No user found');
+          res.json({ success: false, message: 'No user found' });
+      }
+  } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).send('Internal Server Error');
+  }
+});
+
 module.exports = router;
