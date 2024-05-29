@@ -276,6 +276,7 @@ router.get(
   })
 );
 
+//추천한 글
 router.get(
   "/board/myrecommend",
   asyncHandler(async (req, res) => {
@@ -418,7 +419,6 @@ router.post('/board/create', asyncHandler(async (req, res) => {
 
       // Vote 모델에서 userid와 postid가 존재하는지 검사
       const userId = req.query.userid; // 쿼리 파라미터에서 userid를 가져옴
-  
       const voteExists = await Vote.findOne({
         where: {
           postid: id,
