@@ -20,6 +20,10 @@ module.exports = class Post extends Sequelize.Model {
       title: {
         type: DataTypes.STRING(20),
         allowNull: false,
+      },voteTitle: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+        defalutValue: "투표",
       },
       category: {
         type: DataTypes.STRING,

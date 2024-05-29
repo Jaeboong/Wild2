@@ -32,7 +32,7 @@ router.get('/sign-up', (req, res) => {
 
 // 로그인 처리
 router.post('/login', async function(req, res) {
-  const userid = req.body.userid; // 올바르게 수정된 부분
+  const userid = req.body.userid;
   const password = req.body.password;
 
   try {
@@ -352,7 +352,7 @@ router.get('/board/create',  asyncHandler(async(req, res) => {
 
 // 게시글 작성 코드 수정
 router.post('/board/create', asyncHandler(async (req, res) => {
-  const { title, content, category, userid, needVote } = req.body; // 수정된 부분
+  const { title, content, category, userid, needVote, voteTitle } = req.body;
 
   const newPost = {
     postid: postid++,
@@ -363,7 +363,8 @@ router.post('/board/create', asyncHandler(async (req, res) => {
     recommend: 0,
     reports: 0,
     date: new Date(),
-    needVote: needVote, // 수정된 부분
+    needVote: needVote,
+    voteTitle: voteTitle,
   };
 
   try {
@@ -462,7 +463,9 @@ router.post('/board/create', asyncHandler(async (req, res) => {
         }
     });
 
-  
+    const needVote = post.needVote;
+    const voteTitle = post.voteTitle;
+
     res.json({
       post: post.dataValues,
       author: author.username,
@@ -470,8 +473,10 @@ router.post('/board/create', asyncHandler(async (req, res) => {
       hasVoted,
       hasRecommended,
       hasReported,
-      agreeCount, // agree 투표 수
-      disagreeCount // disagree 투표 수
+      agreeCount,
+      disagreeCount,
+      needVote,
+      voteTitle,
   });
 
   }));
