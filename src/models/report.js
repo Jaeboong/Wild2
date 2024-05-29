@@ -13,10 +13,10 @@ module.exports = class Report extends Sequelize.Model {
         type: DataTypes.STRING(15), // 변경된 부분
         allowNull: false,
       },
-      report_reason: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      }
+      // report_reason: {
+      //   type: DataTypes.STRING,
+      //   allowNull: false,
+      // }
     }, {
       sequelize,
       timestamps: true,

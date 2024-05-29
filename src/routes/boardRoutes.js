@@ -117,7 +117,7 @@ router.get('/homepage', async (req, res) => {
       },
       order: [['date', 'DESC']],
       limit: 4,
-      attributes: ['title','recommend'] 
+      attributes: ['postid','title','recommend'] 
     });
   }
   else{
@@ -127,7 +127,7 @@ router.get('/homepage', async (req, res) => {
         category: 'announce'
       },
       limit: 4,
-      attributes: ['title','recommend']
+      attributes: ['postid','title','recommend']
     });
   }
 
@@ -428,6 +428,15 @@ router.post('/board/create', asyncHandler(async (req, res) => {
 
     const hasVoted = voteExists ? true : false;
 
+    const reportExists = await Report.findOne({
+      where: {
+        postid: id,
+        userid: userId
+      }
+    });
+
+    const hasReported = reportExists ? true : false;
+
     // Recommend 모델에서 userid, postid로 추천이 존재하는지 검사
     const recommendExists = await Recommend.findOne({
       where: {
@@ -460,6 +469,7 @@ router.post('/board/create', asyncHandler(async (req, res) => {
       comments: commentsWithAuthors,
       hasVoted,
       hasRecommended,
+      hasReported,
       agreeCount, // agree 투표 수
       disagreeCount // disagree 투표 수
   });
@@ -586,10 +596,10 @@ router.post('/board/comment/:id', asyncHandler(async (req, res) => {
 }));
 
 
-// 페이지가 존재하지 않는 경우
-router.use((req, res) => {
-  res.status(404).send('Page not found');
-});
+  // 페이지가 존재하지 않는 경우
+  // router.use((req, res) => {
+  //   res.status(404).send('Page not found');
+  // });
 
 // 투표 데이터 가져오기
 router.get('/vote/data/:id', asyncHandler(async (req, res) => {
