@@ -12,7 +12,7 @@ const Title = styled.div`
   justify-content: center;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 45px;
-  font-weight: 500;
+  font-weight: 550;
   padding: 20px;
   margin-top: 50px;
 `;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PostTable from '../components/PostTable';
 import Button from '../components/Button';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Pagination from '../components/Pagination';
 import axios from 'axios';
@@ -12,7 +12,7 @@ const Title = styled.div`
   justify-content: center;
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 45px;
-  font-weight: 500;
+  font-weight: 550;
   padding: 20px;
   margin-top: 50px;
 `;
@@ -41,12 +41,16 @@ const SearchButton = styled.button`
 `;
 
 function AnnouncementPage() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [posts, setPosts] = useState([]);
   const [totalPosts, setTotalPosts] = useState(0);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [clickSearch, setClickSearch] = useState(false);
+
+  const token = localStorage.getItem('token');
+  const payload = token.split('.')[1];
+  const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
 
   const postsPerPage = 10;
 
@@ -93,12 +97,12 @@ function AnnouncementPage() {
       <Header />
       <Title>공지사항</Title>
       <Wrapper>
-        {/* <Button
-          title="글 작성"
+        {dec.isAdmin && <Button
+          title="글 작성 ."
           onClick={() => {
             navigate('/post-write?board=announce');
           }}
-        /> */}
+        /> }
         <SearchWrapper>
           <input
             placeholder="검색..."

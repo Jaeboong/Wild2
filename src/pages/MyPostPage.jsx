@@ -10,7 +10,7 @@ import axios from 'axios';
 const Title = styled.div`
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 45px;
-  font-weight: 500;
+  font-weight: 550;
   display: flex;
   justify-content: center;
   padding: 20px;
@@ -66,7 +66,6 @@ function MyPostPage() {
         params: {
           query: keyword,
           page: page,
-          category: board,
           userid: dec.id
         }
       });

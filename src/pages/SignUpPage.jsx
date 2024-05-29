@@ -71,31 +71,31 @@ function SignUpPage() {
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState(null);
-  // useEffect(() => {
-  //   axios.get('http://localhost:4000/api/user')
-  //     .then((response) => setUserInfo(response.data));
-  // }, []);
 
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post('http://localhost:3001/signup', {
-      username: NickName,
-      userid: Id,
-      pw: Password,
-      cpw: ConfirmPassword
-    });
-
-    if(response.status == 201){
-      alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요! `);
-      navigate(`/`);
+    try {
+      const response = await axios.post('http://localhost:3001/signup', {
+        username: NickName,
+        userid: Id,
+        pw: Password,
+        cpw: ConfirmPassword
+      });
+  
+      if (response.status === 201) {
+        alert('가입되었습니다. 아이디를 입력하여 로그인 해주세요!');
+        navigate(`/`);
+      } else {
+        alert(response.data);
+        navigate(`/signup`);
+      }
+    } catch (error) {
+      console.error('Error during signup:', error);
+      alert('가입 요청 중 오류가 발생했습니다.');
     }
-    else{
-      alert(response.status);
-      navigate(`/signup`);
-    }
-  }
+  };
 
   return (
     <Wrapper>

@@ -2,12 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Button from './Button';
+import LOGO from '../image/KULOGO.png'
 
 const HeaderWrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 10px 20px;
-  background-color: #8C0327;
+  background-color: rgba(235, 187, 187);
   border-bottom: 1px solid #ccc;
 `;
 
@@ -16,7 +17,10 @@ const Logo = styled.div`
   font-weight: 600;
   font-size: 26px;
   font-weight: bold;
-  color: #ffffff;
+  color: rgba(149, 29, 62);
+`;
+const LogoImg = styled.img`
+  height: 5vh;
 `;
 
 const Navigation = styled.div`
@@ -33,14 +37,14 @@ const Linkto = styled(NavLink)`
   margin-left: 15px;
   text-decoration: none;
   padding-top: 5px;
-  font-size: 16px;
-  color: #ffffff;
+  font-size: 19px;
+  color: #000000;
   
   &:hover {
-    color: #ffbbcd;
+    color: #9a4d63;
   }
   &.active {
-    color: #ffbbcd;
+    color: #9a4d63;
   }
 `;
 
@@ -54,7 +58,13 @@ function Header(){
 
   return (
     <HeaderWrapper>
-      <Logo>고려대 신문고</Logo>
+      <div style={{display: 'flex'}}>
+        <LogoImg 
+        src={LOGO} 
+        alt="고려대 로고"
+        />
+        <Logo>고려대 신문고</Logo>
+      </div>
       <Navigation>
         <Linkto to="/home">Home</Linkto>
         <Linkto to="/complain">민원 게시판</Linkto>

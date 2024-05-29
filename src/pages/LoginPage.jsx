@@ -95,7 +95,7 @@ function LoginPage(){
             <LoginTitle>Login</LoginTitle>
             <br/>
             <InfoInput name='ID' value={ID} onChange={onIDHandler}/>
-            <InfoInput name='Password' value={Password} onChange={onPasswordHandler}/>
+            <InfoInput type= 'password' name='Password' value={Password} onChange={onPasswordHandler}/>
 
             <MovePage href = "/"> Forgot Password? </MovePage>
             <LoginButton 

@@ -14,6 +14,7 @@ import MyPostPage from './pages/MyPostPage';
 import ProtectedRoute from './route/ProtectedRoute';
 import PostEditPage from './pages/PostEditPage';
 import BanPage from './pages/BanPage';
+import MyRecommendPage from './pages/MyRecommendPage';
 
 function App() {
   return (
@@ -106,6 +107,14 @@ function App() {
           element={
             <ProtectedRoute>
               <BanPage />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/myrecommend" 
+          element={
+            <ProtectedRoute>
+              <MyRecommendPage />
             </ProtectedRoute>
           } 
         />

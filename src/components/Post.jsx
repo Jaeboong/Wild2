@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { FaThumbsUp } from "react-icons/fa6";
 
 const Tr = styled.tr`
   font-family: 'Noto Sans KR', sans-serif;
@@ -11,9 +12,16 @@ const Tr = styled.tr`
 `;
 
 const Td = styled.td`
-  border: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
   padding: 8px;
   font-family: 'Noto Sans KR', sans-serif;
+`;
+
+const RecommendTd = styled.td`
+  border-bottom: 1px solid #ccc; 
+  padding: 8px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: red;
 `;
 
 function Post(props){
@@ -32,8 +40,8 @@ function Post(props){
             <Td>{post.postid}</Td>
             <Td>{post.userid}</Td>
             <Td>{post.title}</Td>
-            <Td>{post.recommend}</Td>
             <Td>{formatDate(post.date)}</Td>
+            <RecommendTd><FaThumbsUp style={{color: "red"}}/>&nbsp;{post.recommend}</RecommendTd>
         </Tr>
   );
 };

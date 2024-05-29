@@ -6,6 +6,11 @@ import Button from "../components/Button";
 import Header from "../components/Header";
 import axios from "axios";
 import CommentList from "../components/CommentList";
+import Graph from "../components/Graph";
+
+import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
+import { FiShare2 } from "react-icons/fi";
+import { AiFillAlert } from "react-icons/ai";
 
 const baseURL = "http://localhost:8080";
 
@@ -29,9 +34,6 @@ const Container = styled.div`
     }
 `;
 
-const PostContainer = styled.div`
-`;
-
 const VoteContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -51,16 +53,31 @@ const TitleText = styled.div`
     font-weight: 500;
 `;
 
+const PostHeader = styled.div`
+  display: flex;
+  justify-content: space-between;  
+`;
+
+const PostContainer = styled.div`
+    padding: 16px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    margin-top: 20px;
+`;
+
 const AuthorText = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     font-size: 12px;
     font-weight: 400;
 `;
 
-const ReportButton = styled.button`
-    font-size: 12px;
+const DateText = styled.div`
     display: flex;
+    justify-content: flex-start;
+    font-size: 10px;
+    font-weight: 400;
+    color: #989898;
 `;
 
 const ContentText = styled.div`
@@ -72,6 +89,24 @@ const ContentText = styled.div`
 const CommentLabel = styled.div`
     font-size: 16px;
     font-weight: 500;
+`;
+
+const IconContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items:flex-end;
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  padding: 5px;
+  border: 2px solid black; 
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #a9a9a9; 
+  }
 `;
 
 function PostViewPage() {
@@ -127,9 +162,11 @@ function PostViewPage() {
 
     useEffect(() => {
         fetchPost();
-    }, [postId, hasRecommended, hasVoted]);
+    }, [postId, hasRecommended, hasVoted, hasReported]);
 
     const handleDelete = async () => {
+        const confirmDelete = window.confirm('게시글을 삭제하시겠습니까?');
+        if (confirmDelete) {
         try {
             console.log(postId);
             const response = await axios.delete(`http://localhost:3001/post/${postId}`, {
@@ -147,15 +184,18 @@ function PostViewPage() {
         } catch (error) {
             console.error("Error deleting post:", error);
         }
+    }
     };
 
     const handleRecommendation = async () => {
         try {
-            console.log(dec.id);
             const response = await axios.post(
                 `http://localhost:3001/board/recommend/${postId}`,
+                {},
                 {
-                    params:{ userid: dec.id },
+                    params: { // 쿼리 파라미터로 userid 전달
+                        userid: dec.id,
+                    },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
@@ -166,6 +206,7 @@ function PostViewPage() {
             console.error("Error updating recommendation:", error);
         }
     };
+    
 
     const handleVote = async () => {
         try {
@@ -187,15 +228,19 @@ function PostViewPage() {
     const handleReport = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:3001/api/posts/${postId}/report`,
-                { userid: dec.id },
+                `http://localhost:3001/reported/${postId}`,
+                { }, 
                 {
+                    params: {
+                        userid: dec.id
+                    },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
                 }
             );
             setHasReported(true);
+            alert("신고 완료!");
         } catch (error) {
             console.error("Error reporting post:", error);
         }
@@ -204,9 +249,12 @@ function PostViewPage() {
     const handleComment = async () => {
         try {
             const response = await axios.post(
-                `http://localhost:4000/api/posts/${postId}/comment`,
-                { username: dec.nickname, content: comment },
+                `http://localhost:3001/board/comment/${postId}`,
+                {},
                 {
+                    params: { 
+                        userid: dec.id, content: comment
+                    },
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     }
@@ -230,6 +278,11 @@ function PostViewPage() {
         }
     };
 
+    const formatDate = (dateString) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        return new Date(dateString).toLocaleString('ko-KR', options);
+    };
+
     if (!post) {
         return <p>Loading...</p>;
     }
@@ -245,29 +298,42 @@ function PostViewPage() {
                         navigate(`/${post.category}`);
                     }}
                 />
-
                 <PostContainer>
+                <PostHeader>
+                    <div>
                     <TitleText>{post.title}</TitleText>
                     <AuthorText>
-                        <div style={{display: "flex", flexDirection: "column"}}>
                         {author}
-                        {/* 날짜 */}
-                        </div>
-
-                        <div>
-                        <button
-	                        onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
-                        >
-                            주소복사 {/*아이콘으로 변경 예정*/}
-                        </button>
-                        <ReportButton onClick={handleReport}>신고하기</ReportButton>
-                        </div>
                     </AuthorText>
+                    <DateText>
+                     {formatDate(post.date)}
+                    </DateText>
+                    </div>
+
+                    <IconContainer>
+                        <IconWrapper>
+                            <FiShare2 
+                            size='24px'
+                            onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
+                            title="공유하기"
+                            />
+                        </IconWrapper>
+                        <IconWrapper>
+                            <AiFillAlert 
+                            size='24px'
+                            onClick={handleReport}
+                            title="게시글 신고하기"
+                            />
+                        </IconWrapper>
+                    </IconContainer>
+                </PostHeader>
+                
+
+                    
                     <br/><h1>사진</h1><br/>
                     <ContentText>{post.content}</ContentText>
-                </PostContainer>
 
-                {isAuthor && (
+                {(isAuthor || dec.isAdmin) && (
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
                         <Button title="수정" onClick={() => {
                             navigate(`/edit-post/${postId}`);
@@ -276,6 +342,7 @@ function PostViewPage() {
                         <Button title="삭제" onClick={handleDelete} />
                     </div>
                 )}
+                </PostContainer>
 
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                         {!hasVoted ? (
@@ -302,23 +369,39 @@ function PostViewPage() {
                                 <Button title='제출' onClick={handleVote} />
                             </VoteContainer>
                         ) : (
-                            <div>
+                            <VoteContainer>
                                 <h2>투표 결과</h2>
                                 <p>찬성: {agree}</p>
                                 <p>반대: {disagree}</p>
-                            </div>
+                                <Graph agree={agree} disagree={disagree}/>
+                            </VoteContainer>
                         )}
 
-                        <div style={{ display: "flex", alignItems: "flex-end" }}>
-                            <h2>추천수 : {post.recommend}</h2> {/*따봉 아이콘으로 변경 예정*/}
+                        <div style={{ padding: "10px", display: "flex", fontSize: "25px", color: "red"}}>
+                            {hasRecommended ?  
+                            <FaThumbsUp
+                            style={{color: "red"}}
+                            title="추천하기"
+                            onClick={handleRecommendation}
+                            size="28px"
+                            cursor="pointer"
+                            />
+                            : 
+                        
+                            <FaRegThumbsUp 
+                            style={{color: "red"}}
+                            title="추천하기"
+                            onClick={handleRecommendation}
+                            size="28px"
+                            cursor="pointer"
+                            />
+                            } 
+                            &nbsp; {post.recommend}
                         </div>
                     </div>
                     
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                        <Button 
-                            title="추천하기"
-                            onClick={handleRecommendation}
-                        />
+                        
                     </div>
 
                 <CommentLabel>댓글</CommentLabel>

@@ -74,7 +74,6 @@ function MyInfoPage() {
   const token = localStorage.getItem('token');
   const payload = token.split('.')[1];
   const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
-  console.log(dec.isAdmin);
 
   const [nickname, setNickname] = useState(dec.username);
   const [id, setId] = useState(dec.id);
@@ -86,7 +85,7 @@ function MyInfoPage() {
   const handleUpdate = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.put('http://localhost:3001/user', {
+      const response = await axios.put('http://localhost:3001/updateUser', {
         username: nickname !== dec.username ? nickname : dec.username,
         id: id !== dec.id ? id : dec.id,
         pw: pw,
@@ -105,7 +104,7 @@ function MyInfoPage() {
     const confirmDelete = window.confirm('정말 탈퇴하시겠습니까?');
     if (confirmDelete) {
       try {
-        const response = await axios.delete('http://localhost:3001/api/user', {
+        const response = await axios.delete('http://localhost:3001/user', {
           data: { id: dec.id }
         });
         if (response.status === 200) {
@@ -129,7 +128,7 @@ function MyInfoPage() {
           <Linkto to="#" onClick={() => setEditMode(false)}>● 내 정보</Linkto>
           <Linkto to="#" onClick={() => setEditMode(true)}>● 개인 정보 수정</Linkto>
           <Linkto to="/mypost">● 내가쓴 글</Linkto>
-          {/* <Linkto to="/myrecommend">● 추천한 글</Linkto> */}
+          <Linkto to="/myrecommend">● 추천한 글</Linkto>
           <Linkto to="#" onClick={handleDelete}>● 회원 탈퇴</Linkto>
 
           {dec.isAdmin &&

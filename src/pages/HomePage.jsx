@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import SummaryBoard from '../components/SummaryBoard';
 import Header from "../components/Header";
+import imagefile from "../image/고려대배너.jpg"
 
 const Container = styled.div`
   display: flex;
@@ -33,7 +34,7 @@ function HomePage() {
       <Container>
         <LeftBottom>
           <BannerImage 
-            src={`${process.env.PUBLIC_URL}/image/고려대배너.jpg`} 
+            src={imagefile} 
             alt="고려대 배너"
           />
         </LeftBottom>

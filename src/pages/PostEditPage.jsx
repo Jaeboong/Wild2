@@ -59,15 +59,26 @@ function PostEditPage() {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+    
+    const token = localStorage.getItem('token');
+    const payload = token.split('.')[1];
+    const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
 
     useEffect(() => {
         const fetchPost = async () => {
             try {
-                const response = await axios.get(`http://localhost:4000/api/posts/${postId}`);
-                const postData = response.data;
-                setPost(postData);
-                setTitle(postData.title);
-                setContent(postData.content);
+                const response = await axios.get(`http://localhost:3001/board/view/${postId}`,
+                {
+                    params: {
+                        userid: dec.id,
+                    },
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                setPost(response.data.post);
+                setTitle(response.data.post.title);
+                setContent(response.data.post.content);
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching post:", error);
@@ -80,10 +91,9 @@ function PostEditPage() {
 
     const handleSave = async () => {
         try {
-            const response = await axios.put(`http://localhost:4000/api/posts/${postId}`, {
+            const response = await axios.put(`http://localhost:3001/post/${postId}`, {
                 title,
-                content,
-                author: localStorage.getItem("nickname")
+                content
             }, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -106,39 +116,39 @@ function PostEditPage() {
 
     return (
         <>
-        <Header/>
-        <Wrapper>
-            <Container>
-                <Button
-                    title="뒤로 가기"
-                    onClick={() => {
-                        navigate(-1);
-                    }}
-                />
-                <PostContainer>
-                    <TitleText>글 수정하기</TitleText>
-                    <TextInput
-                        height={30}
-                        value={title}
-                        onChange={(event) => setTitle(event.target.value)}
-                        placeholder="제목"
-                    />
-                    <TextInput
-                        height={200}
-                        value={content}
-                        onChange={(event) => setContent(event.target.value)}
-                        placeholder="내용"
-                    />
-                </PostContainer>
-
-                <div style={{display:"flex", justifyContent:"flex-end"}}>
+            <Header/>
+            <Wrapper>
+                <Container>
                     <Button
-                        title="저장"
-                        onClick={handleSave}
+                        title="뒤로 가기"
+                        onClick={() => {
+                            navigate(-1);
+                        }}
                     />
-                </div>
-            </Container>
-        </Wrapper>
+                    <PostContainer>
+                        <TitleText>글 수정하기</TitleText>
+                        <TextInput
+                            height={30}
+                            value={title}
+                            onChange={(event) => setTitle(event.target.value)}
+                            placeholder="제목"
+                        />
+                        <TextInput
+                            height={200}
+                            value={content}
+                            onChange={(event) => setContent(event.target.value)}
+                            placeholder="내용"
+                        />
+                    </PostContainer>
+
+                    <div style={{display:"flex", justifyContent:"flex-end"}}>
+                        <Button
+                            title="저장"
+                            onClick={handleSave}
+                        />
+                    </div>
+                </Container>
+            </Wrapper>
         </>
     );
 }

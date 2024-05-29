@@ -24,13 +24,13 @@ const Label = styled.label`
 `;
 
 function InfoInput(props){
-    const {name, value, onChange} = props;
+    const {type = 'text', name, value, onChange} = props;
 
     return (
         <>
             <InputWrapper>
                 <Label>{name}</Label>
-                <Input value={value} onChange={onChange}/>
+                <Input type={type} value={value} onChange={onChange}/>
             </InputWrapper>
         </>
     )

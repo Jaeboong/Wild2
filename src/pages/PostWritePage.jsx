@@ -72,7 +72,11 @@ function PostWritePage(props) {
         <>
             <Header />
             <Wrapper>
-                <h1>{boardType === 'complain' ? '민원 게시판' : '제보 게시판'}</h1>
+                <h1>
+                    {boardType === 'complain' ? '민원 게시판' :
+                    boardType === 'announce' ? '공지사항 게시판' :
+                    '제보 게시판'}
+                </h1>
                 <Container>
                     <TextInput
                         height={20}

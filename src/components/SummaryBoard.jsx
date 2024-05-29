@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
+import { FaThumbsUp } from "react-icons/fa6";
 
 const BoardBox = styled.div`
   display: flex;
@@ -25,7 +26,9 @@ const Title = styled(NavLink)`
 
 const BoardLink = styled(NavLink)`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; 
   text-decoration: none;
   color: #333;
   padding: 10px;
@@ -45,10 +48,10 @@ function SummaryBoard({ postwhat, link, title }) {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/home`, {
-          params: { board: postwhat }
+        const response = await axios.get(`http://localhost:3001/homepage`, {
+          params: { category: postwhat }
         });
-        setPosts(response.data.posts);
+        setPosts(response.data.filteredPosts);
       } catch (error) {
         console.error('Error fetching posts:', error);
       }
@@ -60,9 +63,10 @@ function SummaryBoard({ postwhat, link, title }) {
   return (
     <BoardBox>
       <Title to={link}>{title} +</Title>
-      {posts.map(post => (
-        <BoardLink key={post.id} to={`/post/${post.id}`}>
-          {post.title}
+      {posts && posts.map(post => (
+        <BoardLink key={post.postid} to={`/post/${post.postid}`}>
+          <div>{post.title}</div>
+          <div style={{color: 'red'}}><FaThumbsUp style={{color: "red"}}/>{post.recommend}</div>
         </BoardLink>
       ))}
     </BoardBox>

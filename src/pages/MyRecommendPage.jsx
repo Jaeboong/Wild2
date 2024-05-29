@@ -61,10 +61,12 @@ function MyRecommendPage() {
   const fetchPosts = async (keyword = '', board = 'myrecommend', page = 1) => {
     try {
       const endpoint = keyword ? 'search' : 'myrecommend';
-      const response = await axios.get(`http://localhost:4000/api/${endpoint}`, {
-        query: keyword,
-        page: page,
-        userid: dec.id,
+      const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
+        params: {
+          query: keyword,
+          page: page,
+          userid: dec.id
+        }
       });
       setPosts(response.data.posts);
       setTotalPosts(response.data.total);
