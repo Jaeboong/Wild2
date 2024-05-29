@@ -12,7 +12,7 @@ import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
 import { FiShare2 } from "react-icons/fi";
 import { AiFillAlert } from "react-icons/ai";
 
-const baseURL = "http://localhost:8080";
+const baseURL = "https://seungyun-park.github.io/udr-project";
 
 const Wrapper = styled.div`
     padding: 16px;
@@ -246,7 +246,7 @@ function PostViewPage() {
                     }
                 }
             );
-            setHasReported(true);
+            setHasReported(response.data);
             alert("신고 완료!");
         } catch (error) {
             console.error("Error reporting post:", error);
