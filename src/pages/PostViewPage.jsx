@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams, useLocation, HashRouter } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
@@ -123,6 +123,8 @@ function PostViewPage() {
     const [disagree, setDisagree] = useState(0);
     const [isAuthor, setIsAuthor] = useState(false);
     const [author, setAuthor] = useState("");
+    const [needVote, setNeedVote] = useState(false);
+    const [voteTitle, setVoteTitle] = useState("");
     
     const location = useLocation();
 
@@ -156,6 +158,10 @@ function PostViewPage() {
             setHasVoted(response.data.hasVoted);
             setAgree(response.data.agreeCount);
             setDisagree(response.data.disagreeCount);
+            setVoteTitle(response.data.voteTitle);
+            setNeedVote(response.data.needVote);
+            console.log(voteTitle);
+            console.log(response.data.voteTitle);
         } catch (error) {
             console.error("Error fetching post:", error);
         }
@@ -350,11 +356,11 @@ function PostViewPage() {
                     </div>
                 )}
                 </PostContainer>
-
-                    <div style={{ display: "flex", justifyContent: "space-between" }}>
-                        {!hasVoted ? (
+                
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                        {needVote && !hasVoted && (
                             <VoteContainer>
-                                <h2>투표</h2><hr />
+                                <h2>{voteTitle}</h2><hr />
                                 <VoteRow>
                                     <input
                                         type="checkbox"
@@ -375,26 +381,31 @@ function PostViewPage() {
                                 </VoteRow>
                                 <Button title='제출' onClick={handleVote} />
                             </VoteContainer>
-                        ) : (
+                        )}
+                        {needVote && hasVoted && (
                             <VoteContainer>
-                                <h2>투표 결과</h2>
+                                <h2>{voteTitle} <br/>투표 결과</h2>
                                 <p>찬성: {agree}</p>
                                 <p>반대: {disagree}</p>
                                 <Graph agree={agree} disagree={disagree}/>
                             </VoteContainer>
                         )}
 
-                        <div style={{ padding: "10px", display: "flex", fontSize: "25px", color: "red"}}>
+                        <div style={{ padding: "10px", 
+                        display: "flex", 
+                        marginLeft: 'auto',
+                        fontSize: "25px", 
+                        color: "red"}}
+                        >
                             {hasRecommended ?  
                             <FaThumbsUp
                             style={{color: "red"}}
-                            title="추천하기"
+                            title="추천취소"
                             onClick={handleRecommendation}
                             size="28px"
                             cursor="pointer"
                             />
                             : 
-                        
                             <FaRegThumbsUp 
                             style={{color: "red"}}
                             title="추천하기"

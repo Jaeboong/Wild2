@@ -35,6 +35,8 @@ function PostWritePage(props) {
     
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [needVote, setNeedVote] = useState(false);
+    const [voteTitle, setVoteTitle] = useState("투표");
 
     const token = localStorage.getItem('token');
     const payload = token.split('.')[1];
@@ -50,6 +52,8 @@ function PostWritePage(props) {
                 content,
                 category: boardType,
                 userid: dec.id,
+                needVote: needVote,
+                voteTitle
             }, {
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
@@ -95,8 +99,25 @@ function PostWritePage(props) {
                         }}
                         placeHolder="내용을 입력하세요"
                     />
-
+                    <div style={{display: 'flex', flexDirection:'column'}}>
                     <input type="file" multiple />
+                    {boardType === "complain" &&
+                    <div>
+                    <input 
+                        type="checkbox" 
+                        onChange={(event) => {
+                            setNeedVote(event.target.checked);
+                        }}/> 투표여부
+                    </div>
+                    }
+                    {needVote && <input 
+                                    placeholder="투표제목을 입력하세요"
+                                    style={{width: "45%", height: "30px"}}
+                                    type="text" 
+                                    onChange={(event) => {
+                                    setVoteTitle(event.target.value);
+                                }}/>}
+                    </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button
