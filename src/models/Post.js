@@ -58,7 +58,7 @@ module.exports = class Post extends Sequelize.Model {
 
   static associate(index) {
     this.belongsTo(index.User, { foreignKey: 'userid', targetKey: 'userid' }); // 변경된 부분
-    this.hasMany(index.Comment, { foreignKey: 'postid', sourceKey: 'id' });
+    this.hasMany(index.Comment, { foreignKey: 'postid', sourceKey: 'id' , as: 'Comments'});
     this.hasMany(index.Recommend, { foreignKey: 'postid', sourceKey: 'id' });
     this.hasMany(index.Report, { foreignKey: 'postid', sourceKey: 'id' });
     this.hasMany(index.Vote, { foreignKey: 'postid', sourceKey: 'id' });

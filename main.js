@@ -43,7 +43,7 @@ const initializeApp = async () => {
       { userid: 'admin',
       username: 'admin', 
       password: adminPassword,
-      admin: true }
+      isAdmin: true }
     ]);
     console.log('Admin account created');
 
