@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, HashRouter } from "react-router-dom";
 import styled from "styled-components";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
@@ -152,6 +152,7 @@ function PostViewPage() {
             setAuthor(response.data.author);
             setIsAuthor(response.data.author === dec.username);
             setHasRecommended(response.data.hasRecommended);
+            setHasReported(response.data.hasReported);
             setHasVoted(response.data.hasVoted);
             setAgree(response.data.agreeCount);
             setDisagree(response.data.disagreeCount);
@@ -226,10 +227,16 @@ function PostViewPage() {
     };
 
     const handleReport = async () => {
+        // 이미 신고를 했으면 함수 종료
+        if (hasReported) {
+            alert("이미 신고하셨습니다.");
+            return;
+        }
+    
         try {
             const response = await axios.post(
-                `http://localhost:3001/reported/${postId}`,
-                { }, 
+                `http://localhost:3001/board/reported/${postId}`,
+                {}, 
                 {
                     params: {
                         userid: dec.id
