@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const asyncHandler = require('express-async-handler');
 const {sequelize} = require('./src/index');  // Sequelize 인스턴스 및 모델 가져오기
-const mainRouter = require('./routes/main');
+const mainRouter = require('./routes/mainRoutes');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,7 +14,7 @@ const initializeApp = async () => {
   try {
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
-    await sequelize.sync({ force: true });  // 데이터베이스 동기화 (force: true로 설정하여 기존 테이블을 삭제하고 다시 생성)
+    await sequelize.sync();  
     console.log('Database synchronized');
 
   } catch (error) {

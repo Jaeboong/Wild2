@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const {sequelize} = require('../src/index');
+const { sequelize } = require('../index');
 
-const Announcement = sequelize.define('Announcement', {
+const Complain = sequelize.define('Complain', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -19,4 +19,4 @@ const Announcement = sequelize.define('Announcement', {
   timestamps: false
 });
 
-module.exports = Announcement;
+module.exports = Complain;
