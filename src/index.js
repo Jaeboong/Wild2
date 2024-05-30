@@ -28,7 +28,7 @@ const Post = require('./models/Post');
 const Comment = require('./models/Comments');
 const Recommend = require('./models/Recommend');
 const Report = require('./models/report');
-const Vote = require('./models/Vote');
+const Vote = require('./models/vote');
 
 User.init(sequelize);
 Post.init(sequelize);

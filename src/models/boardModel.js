@@ -1,8 +1,8 @@
 const Post = require('./Post');
 const Comment = require('./Comments');
 const Recommend = require('./Recommend');
-const Report = require('./Report');
-const Vote = require('./Vote');
+const Report = require('./report');
+const Vote = require('./vote');
 
 const getAllPosts = async () => {
   try {
