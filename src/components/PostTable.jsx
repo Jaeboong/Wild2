@@ -25,8 +25,8 @@ const Thead = styled.thead`
   font-family: 'Noto Sans KR', sans-serif;
   background-color: #dfd9ce;
   font-weight: 550;
-  font-size: 23px;
-  height: 50px;
+  font-size: 22px;
+  height: 40px;
 `;
 
 

@@ -9,7 +9,7 @@ const Tr = styled.tr`
     background-color: lightgray;
   }
     cursor: pointer;
-  font-size: 22px;
+  font-size: 20px;
 `;
 
 const Td = styled.td`

@@ -31,9 +31,17 @@ const Title = styled.div`
 const Line = styled.div`
   width: 100%;
   text-align: center;
-  border-bottom: 2px solid #D6CDBE;
+  border-bottom: 4px solid #D6CDBE;
   line-height: 0.2em;
   margin: 15px 0 15px;
+`;
+
+const RedLine = styled.div`
+  width: 85%;
+  text-align: center;
+  border-bottom: 4px solid rgb(140,3,39);
+  line-height: 0.2em;
+  margin: 30px auto 15px;
 `;
 
 const Wrapper = styled.div`
@@ -124,9 +132,10 @@ function AnnouncementPage() {
         <Title>공지사항</Title>
         <Line/>
       </TitleContainer>
+      <RedLine/>
       <Wrapper>
         {dec.isAdmin && <Button
-          title="글 작성 ."
+          title="글쓰기 ."
           onClick={() => {
             navigate('/post-write?board=announce');
           }}

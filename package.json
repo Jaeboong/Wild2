@@ -21,7 +21,9 @@
     "start": "set PORT=8080 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "browserslist": {
     "production": [
@@ -36,8 +38,8 @@
     ]
   },
   "proxy": "http://localhost:3001",
+  "homepage": "https://seungyun-park.github.io/udr-project/",
   "devDependencies": {
-    "gh-pages": "^6.1.1",
     "web-vitals": "^4.0.1"
   }
 }

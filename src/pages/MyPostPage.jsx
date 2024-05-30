@@ -31,9 +31,17 @@ const Title = styled.div`
 const Line = styled.div`
   width: 100%;
   text-align: center;
-  border-bottom: 2px solid #D6CDBE;
+  border-bottom: 4px solid #D6CDBE;
   line-height: 0.2em;
   margin: 15px 0 15px;
+`;
+
+const RedLine = styled.div`
+  width: 85%;
+  text-align: center;
+  border-bottom: 4px solid rgb(140,3,39);
+  line-height: 0.2em;
+  margin: 30px auto 15px;
 `;
 
 const Wrapper = styled.div`
@@ -120,6 +128,7 @@ function MyPostPage() {
           <Title>내가쓴 글</Title>
         <Line />
       </TitleContainer>
+      <RedLine/>
       <Wrapper>
         <SearchWrapper>
           <input

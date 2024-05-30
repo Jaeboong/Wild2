@@ -38,7 +38,7 @@ const Title = styled.div`
 const HeadLine = styled.div`
   width: 100%;
   text-align: center;
-  border-bottom: 2px solid #D6CDBE;
+  border-bottom: 4px solid #D6CDBE;
   line-height: 0.2em;
   margin: 15px 0 15px;
 `;
@@ -384,7 +384,7 @@ function PostViewPage() {
                         <IconWrapper>
                             <FiShare2 
                             size='24px'
-                            onClick={() => handleCopyClipBoard(`${process.env.PUBLIC_URL}${location.pathname}`)}
+                            onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
                             title="공유하기"
                             />
                         </IconWrapper>
