@@ -5,22 +5,32 @@ const { Sequelize, DataTypes } = require('sequelize');
 module.exports = class User extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
-      userid: { // user의 고유 아이디 필드 추가
+      userid: {
         type: DataTypes.STRING(15),
         allowNull: false,
-        unique: true, // 고유 아이디로 설정
-        primaryKey: true, // 기본 키로 설정
+        unique: true,
+        primaryKey: true,
       },
       username: {
-        type: DataTypes.STRING(50),  
+        type: DataTypes.STRING(50),
         allowNull: false,
       },
       password: {
-        type: DataTypes.STRING(100), 
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
+      email: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: ''
+      },
+      phoneNumber: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        defaultValue: ''
+      },
       black: {
-        type: DataTypes.INTEGER, // 블랙당한 횟수이므로 INTEGER로 변경
+        type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: 0,
       },

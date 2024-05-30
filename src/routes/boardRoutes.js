@@ -69,9 +69,11 @@ router.post('/signup', async function(req, res) {
   const username = req.body.username; // name을 username으로 변경
   const password = req.body.pw;
   const confirmPassword = req.body.cpw;
+  const email = req.body.email;
+  const phoneNumber = req.body.phoneNumber;
 
   // 모두 입력 안하는 경우
-  if (!userid || !username || !password || !confirmPassword) {
+  if (!userid || !username || !password || !confirmPassword || !email || !phoneNumber) {
     return res.status(401).send('정보를 모두 입력하세요');
   }
 
@@ -82,17 +84,36 @@ router.post('/signup', async function(req, res) {
 
   try {
     // 아이디 중복 확인
-    const existingUser = await User.findOne({ where: { userid: userid } });
-    if (existingUser) {
+    const existingUserById = await User.findOne({ where: { userid: userid } });
+    if (existingUserById) {
       return res.status(403).send('이미 사용 중인 아이디입니다.');
+    }
+
+    // 이메일 중복 확인
+    const existingUserByEmail = await User.findOne({ where: { email: email } });
+    if (existingUserByEmail) {
+      return res.status(403).send('이미 사용 중인 이메일입니다.');
+    }
+
+    // 전화번호 중복 확인
+    const existingUserByPhone = await User.findOne({ where: { phoneNumber: phoneNumber } });
+    if (existingUserByPhone) {
+      return res.status(403).send('이미 사용 중인 전화번호입니다.');
     }
 
     // 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // DB 저장 (username 추가됨)
-    const newUser = await User.create({ userid: userid, username: username, password: hashedPassword }); // 수정된 부분
-    return res.status(201).send('회원가입이 완료되었습니다.')
+    // DB 저장 (username, email, phoneNumber 추가됨)
+    const newUser = await User.create({
+      userid: userid,
+      username: username,
+      password: hashedPassword,
+      email: email,
+      phoneNumber: phoneNumber
+    });
+    
+    return res.status(201).send('회원가입이 완료되었습니다.');
   } catch (err) {
     console.error(err);
     return res.status(500).send('Internal server error');
@@ -107,6 +128,7 @@ router.get('/logout', (req, res) => {
   });
 });
 
+// 홈페이지
 router.get('/homepage', async (req, res) => {
   const { category } = req.query;
   let filteredPosts;
@@ -375,6 +397,8 @@ router.get(
   })
 );
 
+
+// 내 추천 목록
 router.get(
   "/board/myrecommend",
   asyncHandler(async (req, res) => {
@@ -716,12 +740,6 @@ router.post('/board/comment/:id', asyncHandler(async (req, res) => {
   }
 }));
 
-
-  // 페이지가 존재하지 않는 경우
-  // router.use((req, res) => {
-  //   res.status(404).send('Page not found');
-  // });
-
 // 투표 데이터 가져오기
 router.get('/vote/data/:id', asyncHandler(async (req, res) => {
   const post = await getPostById(req.params.id);
@@ -770,13 +788,13 @@ router.post('/board/reported/:id', asyncHandler(async (req, res) => {
 
 // 개인 정보 수정
 router.put('/updateUser', async (req, res) => {
-  const { userid, username, pw } = req.body;
+  const { userid, username, pw, email, phoneNumber } = req.body;
 
   try {
-    let updateData = { username };
+    let updateData = { username, email, phoneNumber };
     if (pw) {
       const hashedPassword = await bcrypt.hash(pw, 10);
-      updateData.password = hashedPassword; // 비밀번호 해시 추가 및 필드명 수정
+      updateData.password = hashedPassword; // 비밀번호 해시 추가
     }
 
     // userid가 수정 불가능하므로 해당 필드를 제외하고 업데이트

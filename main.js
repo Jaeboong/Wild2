@@ -42,6 +42,8 @@ const initializeApp = async () => {
     await User.bulkCreate([
       { userid: 'admin',
       username: 'admin', 
+      email: 'admin@korea.ac.kr',
+      phoneNumber: 'adminNumber',
       password: adminPassword,
       isAdmin: true }
     ]);
