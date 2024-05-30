@@ -35,6 +35,7 @@ function PostWritePage(props) {
     
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [image, setImage] = useState(""); // 이미지 파일 상태 추가
     const [needVote, setNeedVote] = useState(false);
     const [voteTitle, setVoteTitle] = useState("투표");
 
@@ -42,9 +43,17 @@ function PostWritePage(props) {
     const payload = token.split('.')[1];
     const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
 
+    const handleImageChange = (event) => {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+            setImage(reader.result);
+        };
+    };
+
     const handlePostSubmit = async (event) => {
         event.preventDefault();
-        console.log(dec.id);
 
         try {
             const response = await axios.post("http://localhost:3001/board/create", {
@@ -53,7 +62,8 @@ function PostWritePage(props) {
                 category: boardType,
                 userid: dec.id,
                 needVote: needVote,
-                voteTitle
+                voteTitle,
+                image, // Base64 인코딩된 이미지
             }, {
                 headers: {
                     "Content-Type": "application/json;charset=UTF-8",
@@ -100,7 +110,7 @@ function PostWritePage(props) {
                         placeHolder="내용을 입력하세요"
                     />
                     <div style={{display: 'flex', flexDirection:'column'}}>
-                    <input type="file" multiple />
+                    <input type="file" onChange={handleImageChange} accept="image/*" multiple />
                     {boardType === "complain" &&
                     <div>
                     <input 
@@ -116,7 +126,7 @@ function PostWritePage(props) {
                                     type="text" 
                                     onChange={(event) => {
                                     setVoteTitle(event.target.value);
-                                }}/>}
+                                }}/> }
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

@@ -7,6 +7,7 @@ import Header from "../components/Header";
 import axios from "axios";
 import CommentList from "../components/CommentList";
 import Graph from "../components/Graph";
+import noImage from '../image/no_image.png'
 
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa6";
 import { FiShare2 } from "react-icons/fi";
@@ -180,7 +181,7 @@ function PostViewPage() {
     const token = localStorage.getItem('token');
     const payload = token.split('.')[1];
     const dec = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(payload), (c) => c.charCodeAt(0))));
-    
+
     const checkOnlyOne = (e) => {
         e.target.checked = true;
         setCheckValue(e.target.defaultValue);
@@ -188,8 +189,7 @@ function PostViewPage() {
 
     const fetchPost = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/board/view/${postId}`,
-            {
+            const response = await axios.get(`http://localhost:3001/board/view/${postId}`, {
                 params:{
                     userid: dec.id,
                 },
@@ -197,7 +197,7 @@ function PostViewPage() {
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 }
             });
-            
+
             setPost(response.data.post);
             setBringedComment(response.data.comments);
             setAuthor(response.data.author);
@@ -260,7 +260,6 @@ function PostViewPage() {
             console.error("Error updating recommendation:", error);
         }
     };
-    
 
     const handleVote = async () => {
         try {
@@ -285,7 +284,7 @@ function PostViewPage() {
             alert("이미 신고하셨습니다.");
             return;
         }
-    
+
         try {
             const response = await axios.post(
                 `http://localhost:3001/board/reported/${postId}`,
@@ -328,7 +327,7 @@ function PostViewPage() {
             console.error("Error posting comment:", error);
         }
     };
-    
+
     const handleCopyClipBoard = async (text) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -398,10 +397,12 @@ function PostViewPage() {
                     </IconContainer>
                 </PostHeader>
                 
-
-                    
-                    <br/><h1>사진</h1><br/>
-                    <ContentText>{post.content}</ContentText>
+                <img 
+                    src={ post.image ? `data:image/jpeg;base64,${post.image}` : noImage} 
+                    alt="image" 
+                    style={{ width: '100%', maxHeight: '300px', objectFit: 'contain' }} 
+                />
+                <ContentText>{post.content}</ContentText>
 
                 {(isAuthor || dec.isAdmin) && (
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -413,7 +414,7 @@ function PostViewPage() {
                     </div>
                 )}
                 </PostContainer>
-                
+
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                         {needVote && !hasVoted && (
                             <VoteContainer>
@@ -474,15 +475,15 @@ function PostViewPage() {
                             &nbsp; <div style={{color: "#da0a41"}}>{post.recommend}</div>
                         </div>
                     </div>
-                    
+
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
                         
                     </div>
-                
+
                 <Line/>
                 <CommentLabel>댓글</CommentLabel>
                 <CommentList comments={bringedComment}/>
-                    
+
                 <TextInput
                     height = {30}
                     value = {comment}
