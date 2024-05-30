@@ -8,6 +8,7 @@ const BoardBox = styled.div`
   display: flex;
   flex-direction: column;
   width: 400px;
+  height: 240px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -66,7 +67,7 @@ function SummaryBoard({ postwhat, link, title }) {
       {posts && posts.map(post => (
         <BoardLink key={post.postid} to={`/post/${post.postid}`}>
           <div>{post.title}</div>
-          <div style={{color: 'red'}}><FaThumbsUp style={{color: "red"}}/>{post.recommend}</div>
+          <div style={{color: '#da0a41'}}><FaThumbsUp style={{color: "#da0a41"}}/>{post.recommend}</div>
         </BoardLink>
       ))}
     </BoardBox>

@@ -14,6 +14,35 @@ import { AiFillAlert } from "react-icons/ai";
 
 const baseURL = "https://seungyun-park.github.io/udr-project";
 
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+  background-color: rgb(140,3,39);
+  padding: 40px;
+`;
+
+const Title = styled.div`
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 45px;
+  font-weight: 550;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: #ffffff;
+`;
+
+const HeadLine = styled.div`
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid #D6CDBE;
+  line-height: 0.2em;
+  margin: 15px 0 15px;
+`;
+
 const Wrapper = styled.div`
     padding: 16px;
     width: calc(100% - 32px);
@@ -48,9 +77,20 @@ const VoteRow = styled.div`
     display: flex;
 `;
 
+const VoteTitle = styled.div`
+    margin-top: 10px;
+    font-size: 35px;
+    font-weight: 550;
+`;
+
+const VoteResult = styled.div`
+    font-size: 18px;
+    color: #828282;
+`;
+
 const TitleText = styled.div`
-    font-size: 28px;
-    font-weight: 500;
+    font-size: 30px;
+    font-weight: 550;
 `;
 
 const PostHeader = styled.div`
@@ -68,14 +108,14 @@ const PostContainer = styled.div`
 const AuthorText = styled.div`
     display: flex;
     justify-content: flex-start;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 400;
 `;
 
 const DateText = styled.div`
     display: flex;
     justify-content: flex-start;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 400;
     color: #989898;
 `;
@@ -89,6 +129,7 @@ const ContentText = styled.div`
 const CommentLabel = styled.div`
     font-size: 16px;
     font-weight: 500;
+    margin-bottom: 12px;
 `;
 
 const IconContainer = styled.div`
@@ -107,6 +148,14 @@ const IconWrapper = styled.div`
   &:hover {
     border-color: #a9a9a9; 
   }
+`;
+
+const Line = styled.div`
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #6b6b6b;
+  line-height: 0.1em;
+  margin: 10px 0 20px;
 `;
 
 function PostViewPage() {
@@ -160,8 +209,6 @@ function PostViewPage() {
             setDisagree(response.data.disagreeCount);
             setVoteTitle(response.data.voteTitle);
             setNeedVote(response.data.needVote);
-            console.log(voteTitle);
-            console.log(response.data.voteTitle);
         } catch (error) {
             console.error("Error fetching post:", error);
         }
@@ -303,6 +350,16 @@ function PostViewPage() {
     return (
         <>
         <Header/>
+        <TitleContainer>
+        <HeadLine/>
+            <Title>
+                {post.category === "complain" ? '민원 게시판' : 
+                    post.category === "report" ? '제보 게시판' : 
+                    post.category === "announce" ? "공지사항" : "신고글 목록"
+                }
+            </Title>
+        <HeadLine/>
+        </TitleContainer>
         <Wrapper>
             <Container>
                 <Button
@@ -327,7 +384,7 @@ function PostViewPage() {
                         <IconWrapper>
                             <FiShare2 
                             size='24px'
-                            onClick={() => handleCopyClipBoard(`${baseURL}${location.pathname}`)}
+                            onClick={() => handleCopyClipBoard(`${process.env.PUBLIC_URL}${location.pathname}`)}
                             title="공유하기"
                             />
                         </IconWrapper>
@@ -384,9 +441,9 @@ function PostViewPage() {
                         )}
                         {needVote && hasVoted && (
                             <VoteContainer>
-                                <h2>{voteTitle} <br/>투표 결과</h2>
-                                <p>찬성: {agree}</p>
-                                <p>반대: {disagree}</p>
+                                <VoteTitle>{voteTitle}</VoteTitle>
+                                <VoteResult>투표 결과</VoteResult>
+                                <br/>
                                 <Graph agree={agree} disagree={disagree}/>
                             </VoteContainer>
                         )}
@@ -399,7 +456,7 @@ function PostViewPage() {
                         >
                             {hasRecommended ?  
                             <FaThumbsUp
-                            style={{color: "red"}}
+                            style={{color: "#da0a41"}}
                             title="추천취소"
                             onClick={handleRecommendation}
                             size="28px"
@@ -407,24 +464,25 @@ function PostViewPage() {
                             />
                             : 
                             <FaRegThumbsUp 
-                            style={{color: "red"}}
+                            style={{color: "#da0a41"}}
                             title="추천하기"
                             onClick={handleRecommendation}
                             size="28px"
                             cursor="pointer"
                             />
                             } 
-                            &nbsp; {post.recommend}
+                            &nbsp; <div style={{color: "#da0a41"}}>{post.recommend}</div>
                         </div>
                     </div>
                     
                     <div style={{ display: "flex", justifyContent: "flex-end" }}>
                         
                     </div>
-
+                
+                <Line/>
                 <CommentLabel>댓글</CommentLabel>
                 <CommentList comments={bringedComment}/>
-
+                    
                 <TextInput
                     height = {30}
                     value = {comment}

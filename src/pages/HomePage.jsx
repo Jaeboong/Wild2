@@ -2,11 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import SummaryBoard from '../components/SummaryBoard';
 import Header from "../components/Header";
-import imagefile from "../image/고려대배너.jpg"
+import imagefile from "../image/신문고배너.png"
 
 const Container = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
 `;
 
 const LeftBottom = styled.div`
@@ -14,32 +14,33 @@ const LeftBottom = styled.div`
   justify-content: center;
   align-items: center;
   flex: 0 0 calc(50%);
+  margin-top: 30px;
 `;
 
 const RightBottom = styled.div`
   flex: 1;
-  margin-top: 60px;
   margin-left: 60px;
+  margin-top: 30px;
 `;
 
 const BannerImage = styled.img`
-  max-width: 100vh;
-  height: 93.8vh;
+  width: 100%;
+  height: 45vh;
 `;
 
 function HomePage() {
   return (
     <>
       <Header />
-      <Container>
-        <LeftBottom>
           <BannerImage 
             src={imagefile} 
             alt="고려대 배너"
           />
+      <Container>
+        <LeftBottom>
+          <SummaryBoard title="공지사항" postwhat="announce" link="/announce" />
         </LeftBottom>
         <RightBottom>
-          <SummaryBoard title="공지사항" postwhat="announce" link="/announce" />
           <SummaryBoard title="Hot 게시판" postwhat="hot" link="/hot" />
         </RightBottom>
       </Container>

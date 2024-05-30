@@ -5,12 +5,15 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import LoginButton from '../components/LoginButton';
 import axios from 'axios';
 
+// 배경색 설정
 const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   width: 100%;
   height: 100vh;
+  background-color: #D6CDBE; // 이미지 배경색과 동일하게 설정
 `;
 
 const LoginTitle = styled.h1`
@@ -32,6 +35,23 @@ const MovePage = styled(NavLink)`
   font-size: 12px;
   text-decoration: none;
 `
+
+const Logo = styled.img`
+  width: px; // 기존 크기에서 1.5배 증가
+  margin-bottom: 20px;
+`;
+
+const StyledInput = styled.input`
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  &::placeholder {
+    color: #bbb; // 글자를 흐리게 설정
+  }
+`;
+
 function LoginPage(){
     const [ID, setID] = useState("");
     const [Password, setPassword] = useState("");
@@ -91,12 +111,28 @@ function LoginPage(){
 
     return (
       <Wrapper>
+          {/* 로그인 페이지 상단에 로고 이미지 추가 */}
+          <Logo src="https://sejong.korea.ac.kr/mbshome/mbs/kr/images/sub/s_img010201_logo1.png" alt="Logo" />
           <form style={{ display: 'flex', flexDirection: 'column'}}>
             <LoginTitle>Login</LoginTitle>
             <br/>
-            <InfoInput name='ID' value={ID} onChange={onIDHandler}/>
-            <InfoInput type= 'password' name='Password' value={Password} onChange={onPasswordHandler}/>
-
+            {/* 수정된 입력 필드 */}
+            <StyledInput 
+              type='text' 
+              placeholder='아이디' 
+              value={ID} 
+              onChange={onIDHandler} 
+              onFocus={(e) => e.target.placeholder = ''} 
+              onBlur={(e) => e.target.placeholder = '아이디'}
+            />
+            <StyledInput 
+              type='password' 
+              placeholder='비밀번호' 
+              value={Password} 
+              onChange={onPasswordHandler} 
+              onFocus={(e) => e.target.placeholder = ''} 
+              onBlur={(e) => e.target.placeholder = '비밀번호'}
+            />
             <MovePage href = "/"> Forgot Password? </MovePage>
             <LoginButton 
               title="Login" 

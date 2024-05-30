@@ -9,6 +9,7 @@ const Tr = styled.tr`
     background-color: lightgray;
   }
     cursor: pointer;
+  font-size: 22px;
 `;
 
 const Td = styled.td`
@@ -21,7 +22,6 @@ const RecommendTd = styled.td`
   border-bottom: 1px solid #ccc; 
   padding: 8px;
   font-family: 'Noto Sans KR', sans-serif;
-  color: red;
 `;
 
 function Post(props){
@@ -41,7 +41,12 @@ function Post(props){
             <Td>{post.userid}</Td>
             <Td>{post.title}</Td>
             <Td>{formatDate(post.date)}</Td>
-            <RecommendTd><FaThumbsUp style={{color: "red"}}/>&nbsp;{post.recommend}</RecommendTd>
+            <RecommendTd>
+              <div style={{color: "#da0a41"}}>
+                <FaThumbsUp style={{color: "#da0a41"}}/>&nbsp;
+                {post.recommend}  
+              </div>
+            </RecommendTd>
         </Tr>
   );
 };

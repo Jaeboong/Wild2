@@ -7,14 +7,33 @@ import Header from '../components/Header';
 import Pagination from '../components/Pagination';
 import axios from 'axios';
 
+const TitleContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 10vh;
+  background-color: rgb(140,3,39);
+  padding: 40px;
+`;
+
 const Title = styled.div`
   font-family: 'Noto Sans KR', sans-serif;
   font-size: 45px;
   font-weight: 550;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 20px;
-  margin-top: 50px;
+  color: #ffffff;
+`;
+
+const Line = styled.div`
+  width: 100%;
+  text-align: center;
+  border-bottom: 2px solid #D6CDBE;
+  line-height: 0.2em;
+  margin: 15px 0 15px;
 `;
 
 const Wrapper = styled.div`
@@ -32,6 +51,7 @@ const SearchWrapper = styled.div`
 `;
 
 const SearchButton = styled.button`
+font-size: 18px;
   margin-left: 10px;
   padding: 5px 10px;
   border: 1px solid #ccc;
@@ -61,7 +81,6 @@ function MyPostPage() {
   const fetchPosts = async (keyword = '', board = 'mypost', page = 1) => {
     try {
       const endpoint = keyword ? 'search' : 'mypost';
-      console.log(dec.id);
       const response = await axios.get(`http://localhost:3001/board/${endpoint}`, {
         params: {
           query: keyword,
@@ -92,7 +111,11 @@ function MyPostPage() {
   return (
     <>
       <Header />
-      <Title>내가쓴 글</Title>
+      <TitleContainer>
+        <Line />
+          <Title>내가쓴 글</Title>
+        <Line />
+      </TitleContainer>
       <Wrapper>
         <SearchWrapper>
           <input
