@@ -66,6 +66,8 @@ function SignUpPage() {
   const [NickName, setNickName] = useState("");
   const [Id, setID] = useState("");
   const [Password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [Agree, setAgree] = useState(false);
 
@@ -81,6 +83,12 @@ function SignUpPage() {
   const onConfirmPasswordHandler = (event) => {
     setConfirmPassword(event.currentTarget.value);
   }
+  const onEmailHandler = (event) => {
+    setEmail(event.currentTarget.value);
+  }
+  const onPhoneNumberHandler = (event) => {
+    setPhoneNumber(event.currentTarget.value);
+  }
   const onAgreeHandler = () => {
     setAgree(!Agree);
   }
@@ -89,13 +97,20 @@ function SignUpPage() {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    
+
+    if (!Agree) {
+      alert('Please agree to the terms and conditions');
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:3001/signup', {
         username: NickName,
         userid: Id,
         pw: Password,
-        cpw: ConfirmPassword
+        cpw: ConfirmPassword,
+        phoneNumber: phoneNumber,
+        email: email
       });
 
       if (response.status === 201) {
@@ -139,6 +154,14 @@ function SignUpPage() {
         />
         <StyledInput 
               type='text' 
+              placeholder='이메일' 
+              value={email} 
+              onChange={onEmailHandler} 
+              onFocus={(e) => e.target.placeholder = ''} 
+              onBlur={(e) => e.target.placeholder = '이메일'}
+        />
+        <StyledInput 
+              type='text' 
               placeholder='아이디' 
               value={Id} 
               onChange={onIDHandler} 
@@ -160,6 +183,14 @@ function SignUpPage() {
               onChange={onConfirmPasswordHandler} 
               onFocus={(e) => e.target.placeholder = ''} 
               onBlur={(e) => e.target.placeholder = '비밀번호 확인'}
+        />
+        <StyledInput 
+              type='text' 
+              placeholder='연락처' 
+              value={phoneNumber} 
+              onChange={onPhoneNumberHandler} 
+              onFocus={(e) => e.target.placeholder = ''} 
+              onBlur={(e) => e.target.placeholder = '연락처'}
         />
         <CheckboxLabel>
           <Checkbox type="checkbox" checked={Agree} onChange={onAgreeHandler} />

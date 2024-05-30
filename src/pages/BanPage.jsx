@@ -58,13 +58,19 @@ const SearchWrapper = styled.div`
 `;
 
 const SearchButton = styled.button`
-font-size: 18px;
+  font-size: 18px;
   margin-left: 10px;
   padding: 5px 10px;
   border: 1px solid #ccc;
   background-color: #8C0327;
   color: #fff;
   cursor: pointer;
+`;
+
+const Detail = styled.div`
+  width: 30%;
+  font-size: 18px;
+  color: lightgrey;
 `;
 
 function BanPage() {
@@ -126,6 +132,7 @@ function BanPage() {
       </TitleContainer>
       <RedLine/>
       <Wrapper>
+        <Detail>신고 누적 개수가 10개인 글 목록 입니다.</Detail>
         <SearchWrapper>
           <input
             placeholder="검색..."

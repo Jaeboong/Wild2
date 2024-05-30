@@ -73,7 +73,8 @@ const Button = styled.button`
   background-color: #8C0327;
   color: white;
   cursor: pointer;
-  margin-top: 10px;
+  margin-right: 20px;
+  font-size: 15px;
 `;
 
 const Line = styled.div`
@@ -125,6 +126,8 @@ function MyInfoPage() {
 
   const [username, setUsername] = useState("");
   const [pw, setPw] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [editMode, setEditMode] = useState(false);
 
   const navigate = useNavigate();
@@ -140,6 +143,8 @@ function MyInfoPage() {
         
         if (response.data.result) {
           setUsername(response.data.result.username);
+          setEmail(response.data.result.email);
+          setPhoneNumber(response.data.result.phoneNumber);
         } else {
           console.error('User not found');
         }
@@ -159,8 +164,10 @@ function MyInfoPage() {
     try {
       const response = await axios.put('http://localhost:3001/updateUser', {
         userid : dec.id,
-        username: username !== dec.username ? username : dec.username,
+        username: username,
         pw: pw,
+        email: email,
+        phoneNumber: phoneNumber
       });
       if (response.status === 200) {
         alert('정보가 성공적으로 수정되었습니다.');
@@ -246,6 +253,14 @@ function MyInfoPage() {
                 />
               </Label>
               <Label>
+                이메일 &nbsp;<VLine/>&nbsp;&nbsp;&nbsp;
+                <Input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Label>
+              <Label>
                 아이디 &nbsp;<VLine/>&nbsp;&nbsp;&nbsp; {dec.id}
               </Label>
               <Label>
@@ -256,9 +271,17 @@ function MyInfoPage() {
                   onChange={(e) => setPw(e.target.value)}
                 />
               </Label>
+              <Label>
+                전화번호 &nbsp;<VLine/>&nbsp;&nbsp;&nbsp;
+                <Input
+                  type="text"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                />
+              </Label>
               </InfoContainer>
-              <div style={{display:'flex',flexDirection:'column', alignItems:'flex-end', marginRight: '200px'}}>
-                <Button type="submit">정보 수정</Button>
+              <div style={{display:'flex', justifyContent:'flex-end', marginRight: '200px'}}>
+                <Button type="submit">정보 수정 하기</Button>
                 <Button type="button" onClick={() => setEditMode(false)}>취소</Button>
               </div>
             </Form>
@@ -275,7 +298,13 @@ function MyInfoPage() {
                 닉네임 &nbsp;<VLine/>&nbsp;&nbsp; {username}
                 </Label>
                 <Label>
+                이메일 &nbsp;<VLine/>&nbsp;&nbsp; {email}
+                </Label>
+                <Label>
                 아이디 &nbsp;<VLine/>&nbsp;&nbsp; {dec.id}
+                </Label>
+                <Label>
+                전화번호 &nbsp;<VLine/>&nbsp;&nbsp; {phoneNumber}
                 </Label>
               </InfoContainer>
             </>
