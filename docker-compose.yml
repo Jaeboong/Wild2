@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mariadb:
     image: mariadb:latest
@@ -9,7 +7,7 @@ services:
       MYSQL_USER: wild2
       MYSQL_PASSWORD: wild2
     ports:
-      - "3308:3306"  # 로컬 포트를 MariaDB에 연결
+      - "3306:3306"  # 로컬 포트를 MariaDB에 연결
     volumes:
       - mariadb_data:/var/lib/mysql  # 로컬 볼륨을 MariaDB의 데이터 폴더에 마운트
 
@@ -18,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3001:3001"  # 로컬 포트를 Node.js 애플리케이션에 연결
+      - "3000:3000"  # 로컬 포트를 Node.js 애플리케이션에 연결
     depends_on:
       - mariadb
     environment:
