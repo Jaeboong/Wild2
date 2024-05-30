@@ -38,7 +38,7 @@ function Post(props){
   return (
         <Tr onClick={onClick}>
             <Td>{post.postid}</Td>
-            <Td>{post.userid}</Td>
+            <Td>{post.username}</Td>
             <Td>{post.title}</Td>
             <Td>{formatDate(post.date)}</Td>
             <RecommendTd>

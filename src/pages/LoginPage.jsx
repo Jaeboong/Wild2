@@ -103,9 +103,14 @@ function LoginPage(){
               navigate("/home"); // 성공시 홈으로 이동
           }
       } catch (error) {
-          console.error("로그인 실패:", error);
-          alert("틀린 정보입니다. 다시 입력해주세요.");
-          setLoginCheck(true);
+        if (error.response.status === 401) {
+          alert('아이디가 존재하지 않습니다.');
+          navigate(`/`);
+        } else if (error.response.status === 402) {
+          alert('비밀번호가 일치하지 않습니다');
+          navigate(`/`);
+        }
+        setLoginCheck(true);
       }
   };
 

@@ -89,23 +89,39 @@ function SignUpPage() {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    
+    try {
+      const response = await axios.post('http://localhost:3001/signup', {
+        username: NickName,
+        userid: Id,
+        pw: Password,
+        cpw: ConfirmPassword
+      });
 
-    const response = await axios.post('http://localhost:3001/signup', {
-      username: NickName,
-      userid: Id,
-      pw: Password,
-      cpw: ConfirmPassword
-    });
-
-    if(response.status == 201){
-      alert(`가입되었습니다. 아이디를 입력하여 로그인 해주세요! `);
-      navigate(`/`);
+      if (response.status === 201) {
+        alert('가입되었습니다. 아이디를 입력하여 로그인 해주세요!');
+        navigate(`/`);
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          alert('정보를 모두 입력하세요');
+          navigate(`/signup`);
+        } else if (error.response.status === 402) {
+          alert('비밀번호가 일치하지 않습니다');
+          navigate(`/signup`);
+        } else if (error.response.status === 403) {
+          alert('이미 사용 중인 아이디입니다');
+          navigate(`/signup`);
+        } else {
+          alert('서버 오류가 발생했습니다. 나중에 다시 시도하세요.');
+        }
+      } else {
+        console.error('Error:', error);
+        alert('서버 오류가 발생했습니다. 나중에 다시 시도하세요.');
+      }
     }
-    else{
-      alert(response.status);
-      navigate(`/signup`);
-    }
-  }
+  };
 
   return (
     <Wrapper>
@@ -130,7 +146,7 @@ function SignUpPage() {
               onBlur={(e) => e.target.placeholder = '아이디'}
         />
         <StyledInput 
-              type='text' 
+              type='password' 
               placeholder='비밀번호' 
               value={Password} 
               onChange={onPasswordHandler} 
@@ -138,7 +154,7 @@ function SignUpPage() {
               onBlur={(e) => e.target.placeholder = '비밀번호'}
         />
         <StyledInput 
-              type='text' 
+              type='password' 
               placeholder='비밀번호 확인' 
               value={ConfirmPassword} 
               onChange={onConfirmPasswordHandler} 

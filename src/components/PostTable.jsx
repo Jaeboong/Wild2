@@ -7,7 +7,7 @@ const Table = styled.table`
   border-collapse: collapse;
   width: 80%; 
   margin: 0 auto; 
-  border: 1px solid #000000;
+  border: 2px solid #000000;
 `;
 
 const Tr = styled.tr`
@@ -52,7 +52,7 @@ function PostTable(props){
                         navigate(`/post/${item.postid}`);
                     }}
                 />
-                  }
+              }
         </Table>
   );
 };

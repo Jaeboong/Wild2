@@ -104,6 +104,12 @@ function ReportPage() {
     setClickSearch(true);
     fetchPosts(searchKeyword, 'report', 1);
   };
+  
+  const activeEnter = (e) => {
+    if(e.key === "Enter") {
+      handleSearch();
+    }
+  }
 
   const totalPages = Math.ceil(totalPosts / postsPerPage);
 
@@ -127,6 +133,7 @@ function ReportPage() {
             placeholder="검색..."
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={(e) => activeEnter(e)}
           />
           <SearchButton onClick={handleSearch}>검색</SearchButton>
         </SearchWrapper>

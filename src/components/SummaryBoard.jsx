@@ -43,6 +43,14 @@ const BoardLink = styled(NavLink)`
   }
 `;
 
+const Line = styled.div`
+  width: 100%;
+  text-align: center;
+  border-bottom: 1px solid #7e7e7e;
+  line-height: 0.1em;
+  margin: 10px 0 10px;
+`;
+
 function SummaryBoard({ postwhat, link, title }) {
   const [posts, setPosts] = useState([]);
 
@@ -64,6 +72,7 @@ function SummaryBoard({ postwhat, link, title }) {
   return (
     <BoardBox>
       <Title to={link}>{title} +</Title>
+      <Line/>
       {posts && posts.map(post => (
         <BoardLink key={post.postid} to={`/post/${post.postid}`}>
           <div>{post.title}</div>

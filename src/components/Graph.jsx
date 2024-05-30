@@ -16,7 +16,7 @@ function Graph (props){
     return (
         <BarChart width={300} height={200} data={data}>
           <XAxis dataKey="name" />
-          <YAxis />
+          <YAxis interval={1}/>
           <Bar dataKey="num" fill="#8C0327" />
         </BarChart>
     );

@@ -154,6 +154,8 @@ function MyInfoPage() {
 
   const handleUpdate = async (event) => {
     event.preventDefault();
+    const confirmDelete = window.confirm('정보를 수정하시겠습니까?');
+    if (confirmDelete) {
     try {
       const response = await axios.put('http://localhost:3001/updateUser', {
         userid : dec.id,
@@ -167,6 +169,7 @@ function MyInfoPage() {
     } catch (error) {
       console.error('Error updating user information:', error);
       alert('아이디는 바꿀 수 없습니다.');
+    }
     }
   };
 

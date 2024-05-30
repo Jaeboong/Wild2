@@ -107,7 +107,11 @@ function MyPostPage() {
   };
 
   const totalPages = Math.ceil(totalPosts / postsPerPage);
-
+  const activeEnter = (e) => {
+    if(e.key === "Enter") {
+      handleSearch();
+    }
+  }
   return (
     <>
       <Header />
@@ -122,6 +126,7 @@ function MyPostPage() {
             placeholder="검색..."
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={(e) => activeEnter(e)}
           />
           <SearchButton onClick={handleSearch}>검색</SearchButton>
         </SearchWrapper>
