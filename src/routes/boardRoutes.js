@@ -55,13 +55,14 @@ router.post('/login', async function(req, res) {
 
       return res.json({token});
     } else {
-      return res.status(401).send('비밀번호가 일치하지 않습니다');
+      return res.status(402).send('비밀번호가 일치하지 않습니다');
     }
   } catch (err) {
     console.error(err);
     return res.status(500).send('Internal server error');
   }
 });
+
 // 회원가입 처리
 router.post('/signup', async function(req, res) {
   const userid = req.body.userid; // userid 필드 추가
@@ -71,19 +72,19 @@ router.post('/signup', async function(req, res) {
 
   // 모두 입력 안하는 경우
   if (!userid || !username || !password || !confirmPassword) {
-    return res.status(400).send('정보를 모두 입력하세요');
+    return res.status(401).send('정보를 모두 입력하세요');
   }
 
   // 비밀번호가 다른 경우
   if (password !== confirmPassword) {
-    return res.status(400).send('비밀번호가 일치하지 않습니다');
+    return res.status(402).send('비밀번호가 일치하지 않습니다');
   }
 
   try {
     // 아이디 중복 확인
     const existingUser = await User.findOne({ where: { userid: userid } });
     if (existingUser) {
-      return res.status(400).send('이미 사용 중인 아이디입니다.');
+      return res.status(403).send('이미 사용 중인 아이디입니다.');
     }
 
     // 비밀번호 암호화
@@ -154,9 +155,25 @@ router.get(
           ],
           limit: limit,
           offset: offset,
-      });
-      res.json({ total: count, posts: rows });
-  })
+          include: [
+            {
+              model: User,
+              attributes: ['username'], // username만 포함
+            }
+          ],
+        });
+        
+        const posts = rows.map(post => ({
+          postid: post.postid,
+          title: post.title,
+          content: post.content,
+          username: post.User.username, // User 모델에서 가져온 username
+          recommend: post.recommend,
+          date: post.date
+        }));
+    
+        res.json({ total: count, posts: posts });
+      })
 );
 
 // 공지 게시판 목록
@@ -166,19 +183,36 @@ router.get(
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (page - 1) * limit;
-      const { count, rows } = await Post.findAndCountAll({
-        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
-        where: {
-          category: 'announce'
-        },
-        order: [
-          ['date', 'DESC'],
-          ['postid', 'DESC']
-        ],
-        limit: limit,
-        offset: offset,
-      });
-      res.json({ total: count, posts: rows });
+    
+    const { count, rows } = await Post.findAndCountAll({
+      attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+      where: {
+        category: 'announce'
+      },
+      order: [
+        ['date', 'DESC'],
+        ['postid', 'DESC']
+      ],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          attributes: ['username'], // username만 포함
+        }
+      ],
+    });
+    
+    const posts = rows.map(post => ({
+      postid: post.postid,
+      title: post.title,
+      content: post.content,
+      username: post.User.username, // User 모델에서 가져온 username
+      recommend: post.recommend,
+      date: post.date
+    }));
+
+    res.json({ total: count, posts: posts });
   })
 );
 
@@ -186,23 +220,39 @@ router.get(
 router.get(
   ["/board/report"],
   asyncHandler(async (req, res) => {
-      const { page = 1 } = req.query;
-      const limit = 10;
-      const offset = (page - 1) * limit;
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+    
+    const { count, rows } = await Post.findAndCountAll({
+      attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+      where: {
+        category: 'report'
+      },
+      order: [
+        ['date', 'DESC'],
+        ['postid', 'DESC']
+      ],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          attributes: ['username'], // username만 포함
+        }
+      ],
+    });
+    
+    const posts = rows.map(post => ({
+      postid: post.postid,
+      title: post.title,
+      content: post.content,
+      username: post.User.username, // User 모델에서 가져온 username
+      recommend: post.recommend,
+      date: post.date
+    }));
 
-      const { count, rows } = await Post.findAndCountAll({
-        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
-        where: {
-          category: 'report'
-        },
-        order: [
-          ['date', 'DESC'],
-          ['postid', 'DESC']
-        ],
-        limit: limit,
-        offset: offset,
-      });
-      res.json({ total: count, posts: rows });
+    res.json({ total: count, posts: posts });
   })
 );
 
@@ -213,19 +263,36 @@ router.get(
     const { page = 1 } = req.query;
     const limit = 10;
     const offset = (page - 1) * limit;
-      const { count, rows } = await Post.findAndCountAll({
-        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
-        where: {
-          category: 'complain'
-        },
-        order: [
-          ['date', 'DESC'],
-          ['postid', 'DESC']
-        ],
-        limit: limit,
-        offset: offset,
-      });
-      res.json({ total: count, posts: rows });
+    
+    const { count, rows } = await Post.findAndCountAll({
+      attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+      where: {
+        category: 'complain'
+      },
+      order: [
+        ['date', 'DESC'],
+        ['postid', 'DESC']
+      ],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          attributes: ['username'], // username만 포함
+        }
+      ],
+    });
+    
+    const posts = rows.map(post => ({
+      postid: post.postid,
+      title: post.title,
+      content: post.content,
+      username: post.User.username, // User 모델에서 가져온 username
+      recommend: post.recommend,
+      date: post.date
+    }));
+
+    res.json({ total: count, posts: posts });
   })
 );
 
@@ -247,63 +314,112 @@ router.get(
         ],
         limit: limit,
         offset: offset,
+        include: [
+          {
+            model: User,
+            attributes: ['username'], // username만 포함
+          }
+        ],
       });
-      res.json({ total: count, posts: rows });
-  })
+      
+      const posts = rows.map(post => ({
+        postid: post.postid,
+        title: post.title,
+        content: post.content,
+        username: post.User.username, // User 모델에서 가져온 username
+        recommend: post.recommend,
+        date: post.date
+      }));
+  
+      res.json({ total: count, posts: posts });
+    })
 );
 
 // 신고10번이상 된 글 목록
 router.get(
   ["/board/ban"],
   asyncHandler(async (req, res) => {
-      const { page = 1 } = req.query;
-      const limit = 10;
-      const offset = (page - 1) * limit;
+    const { page = 1 } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+    
+    const { count, rows } = await Post.findAndCountAll({
+      attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+      where: {
+        category: 'ban'
+      },
+      order: [
+        ['date', 'DESC'],
+        ['postid', 'DESC']
+      ],
+      limit: limit,
+      offset: offset,
+      include: [
+        {
+          model: User,
+          attributes: ['username'], // username만 포함
+        }
+      ],
+    });
+    
+    const posts = rows.map(post => ({
+      postid: post.postid,
+      title: post.title,
+      content: post.content,
+      username: post.User.username, // User 모델에서 가져온 username
+      recommend: post.recommend,
+      date: post.date
+    }));
 
-      const { count, rows } = await Post.findAndCountAll({
-        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
-        where: {
-          category: 'ban'
-        },
-        order: [
-          ['date', 'DESC'],
-          ['postid', 'DESC']
-        ],
-        limit: limit,
-        offset: offset,
-      });
-      res.json({ total: count, posts: rows });
+    res.json({ total: count, posts: posts });
   })
 );
 
-//추천한 글
 router.get(
   "/board/myrecommend",
   asyncHandler(async (req, res) => {
-      const { page = 1, userid } = req.query;
-      const limit = 10;
-      const offset = (page - 1) * limit;
+    const { page = 1, userid } = req.query;
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-      try {
-        const { count, rows } = await Post.findAndCountAll({
-          attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'], 
-          include: [{
+    try {
+      const { count, rows } = await Post.findAndCountAll({
+        attributes: ['postid', 'title', 'content', 'userid', 'recommend', 'date'],
+        include: [
+          {
             model: Recommend,
             as: 'Recommends',
             where: {
               userid: userid
             },
-          }],
-          order: [['date', 'DESC']], 
-          limit: limit,
-          offset: offset
-        });
+            include: [
+              {
+                model: User,
+                attributes: ['username']
+              }
+            ]
+          }
+        ],
+        order: [['date', 'DESC']],
+        limit: limit,
+        offset: offset
+      });
 
-        res.json({ total: count, posts: rows });
-      } catch (error) {
-        console.error('Error fetching recommended posts:', error);
-        res.status(500).send('추천한 게시글 목록을 가져오는 중 오류가 발생했습니다.');
-      }
+      const posts = rows.map(post => ({
+        postid: post.postid,
+        title: post.title,
+        content: post.content,
+        userid: post.userid,
+        recommend: post.recommend,
+        date: post.date,
+        username: post.Recommends.length > 0 ? post.Recommends[0].User.username : null // username 추가
+      }));
+
+      res.json({ total: count, posts: posts });
+    } catch (error) {
+      console.error('Error fetching recommended posts:', error);
+      res.status(500).send('추천한 게시글 목록을 가져오는 중 오류가 발생했습니다.');
+    }
   })
 );
 
@@ -654,7 +770,7 @@ router.post('/board/reported/:id', asyncHandler(async (req, res) => {
 
 // 개인 정보 수정
 router.put('/updateUser', async (req, res) => {
-  const { id, username, pw } = req.body;
+  const { userid, username, pw } = req.body;
 
   try {
     let updateData = { username };
@@ -666,7 +782,7 @@ router.put('/updateUser', async (req, res) => {
     // userid가 수정 불가능하므로 해당 필드를 제외하고 업데이트
     const result = await User.update(
       updateData,
-      { where: { userid: id } }
+      { where: { userid: userid } }
     );
 
     if (result[0] > 0) {
@@ -702,5 +818,26 @@ router.delete('/user', async (req, res) => {
       res.status(500).send('Internal Server Error');
   }
 });
+
+// 내 정보
+router.get('/user', async (req, res) => {
+  const { userid } = req.query;
+  console.log(userid)
+
+  try {
+    // userid를 사용하여 해당 사용자의 정보를 찾음
+    const result = await User.findOne({ where: { userid: userid } });
+
+    if (!result) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ result });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 module.exports = router;
