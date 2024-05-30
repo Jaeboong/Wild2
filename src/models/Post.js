@@ -35,7 +35,7 @@ module.exports = class Post extends Sequelize.Model {
         defaultValue: 0,
       },
       image: {
-        type: DataTypes.STRING,
+        type: DataTypes.BLOB,
         allowNull: true,
       },
       date: {

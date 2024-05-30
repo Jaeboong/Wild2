@@ -485,30 +485,32 @@ router.get('/board/search', asyncHandler(async (req, res) => {
   }
 }));
 
-// 게시물 작성 페이지
-router.get('/board/create',  asyncHandler(async(req, res) => {
-  res.render('createBoard');
-}));
-
-// 게시글 작성 코드 수정
+// 게시글 작성
 router.post('/board/create', asyncHandler(async (req, res) => {
-  const { title, content, category, userid, needVote, voteTitle } = req.body;
+  const { title, content, category, userid, needVote, voteTitle, image } = req.body;
+
+  let imageBuffer = null;
+  if (image) {
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    imageBuffer = Buffer.from(base64Data, 'base64');
+  }
 
   const newPost = {
-    postid: postid++,
+    postid: postid++,  // Assuming you have some mechanism to generate unique post IDs
     userid,
     title,
     content,
     category,
     recommend: 0,
     reports: 0,
+    image: imageBuffer,  // BLOB 타입으로 이미지 저장
     date: new Date(),
-    needVote: needVote,
-    voteTitle: voteTitle,
+    needVote,
+    voteTitle,
   };
 
   try {
-    await createPost(newPost);
+    await createPost(newPost);  // Assuming createPost is a function to save post to the database
     res.status(200).send({ message: "Post created successfully" });
   } catch (error) {
     console.error("Error creating post:", error);
@@ -517,109 +519,108 @@ router.post('/board/create', asyncHandler(async (req, res) => {
 }));
 
 // 게시글 조회
+router.get('/board/view/:id', asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-  router.get('/board/view/:id', asyncHandler(async (req, res) => {
-    const { id } = req.params;
-
-    console.log(id);
-    
-    const post = await Post.findByPk(id, {
-      include: [
-        {
-          model: Comment,
-          as: 'Comments',
-          include: [
-            {
-              model: User,
-              as: 'User', 
-              attributes: ['username']
-            }
-          ]
-        }
-      ]
-    });
+  console.log(id);
   
-    if (!post) {
-      res.status(404).send('Post not found');
-      return;
-    }
-
-    
-  
-    // 작성자의 이름 가져오기
-    const author = await User.findByPk(post.userid);
-    post.dataValues.authorName = author ? author.username : 'Unknown';
-  
-    // 댓글 작성자의 이름 가져오기
-    const commentsWithAuthors = post.Comments.map(comment => {
-      return {
-        ...comment.dataValues,
-        authorName: comment.User ? comment.User.username : 'Unknown'
-      };
-    });
-
-      // Vote 모델에서 userid와 postid가 존재하는지 검사
-      const userId = req.query.userid; // 쿼리 파라미터에서 userid를 가져옴
-      const voteExists = await Vote.findOne({
-        where: {
-          postid: id,
-          userid: userId
-        }
-      });
-
-    const hasVoted = voteExists ? true : false;
-
-    const reportExists = await Report.findOne({
-      where: {
-        postid: id,
-        userid: userId
+  const post = await Post.findByPk(id, {
+    include: [
+      {
+        model: Comment,
+        as: 'Comments',
+        include: [
+          {
+            model: User,
+            as: 'User', 
+            attributes: ['username']
+          }
+        ]
       }
-    });
-
-    const hasReported = reportExists ? true : false;
-
-    // Recommend 모델에서 userid, postid로 추천이 존재하는지 검사
-    const recommendExists = await Recommend.findOne({
-      where: {
-        postid: id,
-        userid: userId
-      }
-    });
-
-    const hasRecommended = recommendExists ? true : false;
-
-        // Vote 모델에서 해당 postid에 대한 agree와 disagree 수를 계산
-    const agreeCount = await Vote.count({
-        where: {
-            postid: id,
-            agree: true
-         }
-    });
-  
-    const disagreeCount = await Vote.count({
-        where: {
-            postid: id,
-            disagree: true
-        }
-    });
-
-    const needVote = post.needVote;
-    const voteTitle = post.voteTitle;
-
-    res.json({
-      post: post.dataValues,
-      author: author.username,
-      comments: commentsWithAuthors,
-      hasVoted,
-      hasRecommended,
-      hasReported,
-      agreeCount,
-      disagreeCount,
-      needVote,
-      voteTitle,
+    ]
   });
 
-  }));
+  if (!post) {
+    res.status(404).send('Post not found');
+    return;
+  }
+
+  // 작성자의 이름 가져오기
+  const author = await User.findByPk(post.userid);
+  post.dataValues.authorName = author ? author.username : 'Unknown';
+
+  // 댓글 작성자의 이름 가져오기
+  const commentsWithAuthors = post.Comments.map(comment => {
+    return {
+      ...comment.dataValues,
+      authorName: comment.User ? comment.User.username : 'Unknown'
+    };
+  });
+
+  // Vote 모델에서 userid와 postid가 존재하는지 검사
+  const userId = req.query.userid; // 쿼리 파라미터에서 userid를 가져옴
+  const voteExists = await Vote.findOne({
+    where: {
+      postid: id,
+      userid: userId
+    }
+  });
+
+  const hasVoted = voteExists ? true : false;
+
+  const reportExists = await Report.findOne({
+    where: {
+      postid: id,
+      userid: userId
+    }
+  });
+
+  const hasReported = reportExists ? true : false;
+
+  // Recommend 모델에서 userid, postid로 추천이 존재하는지 검사
+  const recommendExists = await Recommend.findOne({
+    where: {
+      postid: id,
+      userid: userId
+    }
+  });
+
+  const hasRecommended = recommendExists ? true : false;
+
+  // Vote 모델에서 해당 postid에 대한 agree와 disagree 수를 계산
+  const agreeCount = await Vote.count({
+    where: {
+        postid: id,
+        agree: true
+     }
+  });
+
+  const disagreeCount = await Vote.count({
+    where: {
+        postid: id,
+        disagree: true
+    }
+  });
+
+  const needVote = post.needVote;
+  const voteTitle = post.voteTitle;
+
+  // 이미지 데이터를 Base64 문자열로 변환하여 전송
+  const imageBase64 = post.image ? post.image.toString('base64') : null;
+
+  res.json({
+    post: { ...post.dataValues, image: imageBase64 },  // 이미지 데이터 포함
+    author: author.username,
+    comments: commentsWithAuthors,
+    hasVoted,
+    hasRecommended,
+    hasReported,
+    agreeCount,
+    disagreeCount,
+    needVote,
+    voteTitle,
+  });
+}));
 
   // 게시글 삭제 라우트
 router.delete('/post/:id', asyncHandler(async (req, res) => {
