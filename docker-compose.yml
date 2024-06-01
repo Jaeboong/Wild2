@@ -1,3 +1,5 @@
+version: '3.8'
+  
 services:
   mariadb:
     image: mariadb:latest
@@ -10,11 +12,14 @@ services:
       - "3306:3306"  # 로컬 포트를 MariaDB에 연결
     volumes:
       - mariadb_data:/var/lib/mysql  # 로컬 볼륨을 MariaDB의 데이터 폴더에 마운트
+    networks:
+      portainer_default:
+        ipv4_address: 172.19.0.11  # 선택 사항: 고정 IP 주소 설정
 
   nodeapp:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     ports:
       - "3001:3001"  # 로컬 포트를 Node.js 애플리케이션에 연결
     depends_on:
@@ -25,6 +30,14 @@ services:
       DB_USER: wild2
       DB_PASSWORD: wild2
       DB_NAME: wild2
+    networks:
+      portainer_default:
+        ipv4_address: 172.19.0.10  # 선택 사항: 고정 IP 주소 설정
 
 volumes:
   mariadb_data:  # 로컬에 저장할 볼륨을 생성
+
+networks:
+  portainer_default:
+    external: true
+
