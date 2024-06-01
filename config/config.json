@@ -3,7 +3,7 @@
     "username": "root",
     "password": "wild2",
     "database": "wild2",
-    "host": "db",
+    "host": "127.0.0.1",
     "dialect": "mariadb",
     "port": "3306"
   },
@@ -11,7 +11,7 @@
     "username": "root",
     "password": "wild2",
     "database": "wild2",
-    "host": "db",
+    "host": "127.0.0.1",
     "dialect": "mariadb",
     "port": "3306"
   },
@@ -19,7 +19,7 @@
     "username": "root",
     "password": "wild2",
     "database": "wild2",
-    "host": "db",
+    "host": "127.0.0.1",
     "dialect": "mariadb",
     "port": "3306"
   }

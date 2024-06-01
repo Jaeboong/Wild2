@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # 로컬 포트를 Node.js 애플리케이션에 연결
+      - "3001:3001"  # 로컬 포트를 Node.js 애플리케이션에 연결
     depends_on:
       - mariadb
     environment:

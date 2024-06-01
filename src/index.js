@@ -12,7 +12,7 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
   sequelize = new Sequelize(config.database, config.username, config.password, {
-    host: config.host,
+    host: process.env.DB_HOST || '127.0.0.1',
     dialect: config.dialect,
     port: config.port,
     define: {
