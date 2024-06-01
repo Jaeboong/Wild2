@@ -29,7 +29,7 @@ function CommentListItem(props){
 
     return (
         <Wrapper>
-            <Name>{comment.userid}</Name>
+            <Name>{comment.authorName}</Name>
             <CommentText>{comment.comment}</CommentText>
         </Wrapper>
     );
