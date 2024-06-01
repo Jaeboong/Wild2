@@ -6,16 +6,16 @@ module.exports = class Post extends Sequelize.Model {
   static init(sequelize) {
     return super.init({
       postid: {
-        type: DataTypes.INTEGER(15), 
+        type: DataTypes.INTEGER(50), 
         allowNull: false,
       },
       userid: {
-        type: DataTypes.STRING(15), // 변경된 부분
+        type: DataTypes.STRING(50), // 변경된 부분
         allowNull: false,
       },
       content: {
-        type: DataTypes.STRING,
-        allowNull: false,
+        type: DataTypes.TEXT, 
+        allowNull: false
       },
       title: {
         type: DataTypes.STRING(20),

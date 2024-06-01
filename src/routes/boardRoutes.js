@@ -15,7 +15,7 @@ router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-let postid = 14;
+let postid = 35;
 
 
 // 로그인 페이지
@@ -633,6 +633,11 @@ router.delete('/post/:id', asyncHandler(async (req, res) => {
     await Vote.destroy({ where: { postid: id } });
 
     await Post.destroy({ where: { id } });
+
+    await Post.update(
+      { postid: Sequelize.literal('postid - 1') },
+      { where: { postid: { [Op.gt]: id } } }
+    );
 
     res.status(200).send('게시글이 정상적으로 삭제되었습니다.');
   } catch (error) {
