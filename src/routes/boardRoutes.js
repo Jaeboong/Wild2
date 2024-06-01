@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { User, Post, Comment, Recommend, report, vote } = require('../index');
+const { User, Post, Comment, Recommend, Report, Vote } = require('../index');
 const { Op } = require('sequelize');
 const { getAllPosts, createPost, getPostById, votePost, recommendPost, addComment, recommendComment } = require('../models/boardModel');
 
