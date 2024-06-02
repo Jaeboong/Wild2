@@ -15,8 +15,22 @@ router.use(cors());
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-let postid = 35;
+let postid = 1;
 
+// postid 검사
+async function generateUniquePostId() {
+  let postid = 1;
+  let exists = true;
+  while (exists) {
+    const existingPost = await Post.findOne({ where: { postid } });
+    if (existingPost) {
+      postid++;
+    } else {
+      exists = false;
+    }
+  }
+  return postid;
+}
 
 // 로그인 페이지
 router.get('/login', (req, res) => {
@@ -485,7 +499,6 @@ router.get('/board/search', asyncHandler(async (req, res) => {
   }
 }));
 
-// 게시글 작성
 router.post('/board/create', asyncHandler(async (req, res) => {
   const { title, content, category, userid, needVote, voteTitle, image } = req.body;
 
@@ -495,8 +508,12 @@ router.post('/board/create', asyncHandler(async (req, res) => {
     imageBuffer = Buffer.from(base64Data, 'base64');
   }
 
+  // 고유한 postid 생성
+  const postid = await generateUniquePostId(); // 수정된 부분
+
   const newPost = {
-    postid: postid++,  // Assuming you have some mechanism to generate unique post IDs
+    id: postid,  // 수정된 부분
+    postid,  // 수정된 부분
     userid,
     title,
     content,
@@ -539,6 +556,8 @@ router.get('/board/view/:id', asyncHandler(async (req, res) => {
       }
     ]
   });
+
+  console.log(postid);
 
   if (!post) {
     res.status(404).send('Post not found');
